@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    
+    <groupId>nl.softcause</groupId>
+    <artifactId>json-templates</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Poly site</name>
+
+    <properties>
+        <project.version>${project.version}</project.version>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>renzo.slijp</id>
+            <name>Renzo Slijp</name>
+            <organization>SoftCause</organization>
+            <email>renzo.slijp@softcause.nl</email>
+        </developer>       
+    </developers>
+
+
+    <profiles>
+        <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+<!--                <module>frontend</module>-->
+                <module>json-templates</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>java</id>
+            <modules>
+                <module>json-templates</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>frontend</id>
+            <modules>
+                <module>frontend</module>                
+            </modules>
+        </profile>
+    </profiles>
+
+</project>

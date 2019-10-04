@@ -1,0 +1,27 @@
+package nl.softcause.jsontemplates.expressions.comparison;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import nl.softcause.jsontemplates.OperatorPrecendence;
+import nl.softcause.jsontemplates.expressions.arithmetic.ArithmeticTupleExpression;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
+public class GreaterThan extends NumericComparisonTupleExpression {
+
+
+    @Override
+    protected Boolean innerEvaluate(Double lhs, Double rhs) {
+        return lhs > rhs;
+    }
+
+    @Override
+    public String operator() {
+        return ">";
+    }
+
+
+    @Override
+    public Integer priority() {
+        return OperatorPrecendence.Comparison;
+    }
+
+}
