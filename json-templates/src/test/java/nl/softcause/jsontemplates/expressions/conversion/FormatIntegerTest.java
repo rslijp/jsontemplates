@@ -45,11 +45,11 @@ public class FormatIntegerTest {
     public void should_format_big_integer_using_model_locale(){
         var formatNumber = new FormatInteger(Arrays.asList(new Constant(371312321321312L)));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-        model.setLocale(Locale.FRANCE);
+        model.setLocale(Locale.GERMANY);
 
         var r = formatNumber.evaluate(model);
 
-        assertThat(r, is("371 312 321 321 312"));
+        assertThat(r, is("371.312.321.321.312"));
     }
 
     @Test

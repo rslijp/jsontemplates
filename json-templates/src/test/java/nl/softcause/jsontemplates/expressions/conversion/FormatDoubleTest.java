@@ -41,10 +41,10 @@ public class FormatDoubleTest {
     public void should_format_constant_fraction_using_model_locale(){
         var formatNumber = new FormatDouble(Arrays.asList(new Constant(12337.324)));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-        model.setLocale(Locale.FRANCE);
+        model.setLocale(Locale.GERMANY);
         var r = formatNumber.evaluate(model);
 
-        assertThat(r, is("12 337,324"));
+        assertThat(r, is("12.337,324"));
     }
 
 
