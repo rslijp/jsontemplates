@@ -27,13 +27,13 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
     public TemplateModel(T model) {
         this.model=new DefinedModel<>(model);
-        this.locale=Locale.getDefault();
+        this.locale=Locale.ENGLISH;
         pushScope(this);
     }
 
     public TemplateModel(DefinedModel<T> model) {
         this.model=model;
-        this.locale=Locale.getDefault();
+        this.locale=Locale.ENGLISH;
         pushScope(this);
     }
 

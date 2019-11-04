@@ -24,7 +24,7 @@ public class ParseDateTest {
     @Test
     public void should_parse_constant(){
         var d = trim(Instant.parse("2019-08-26T06:22:10.533293Z"));
-        var parseDate = new ParseDate(Arrays.asList(new Constant("26 Aug 2019, 08:22:10")));
+        var parseDate = new ParseDate(Arrays.asList(new Constant("Aug 26, 2019, 8:22:10 AM")));
         var r = parseDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is(d));
@@ -49,7 +49,7 @@ public class ParseDateTest {
     @Test
     public void should_parse_constant_with_pattern_short(){
         var d = trim(Instant.parse("2019-08-26T06:22:00.533293Z"));
-        var parseDate = new ParseDate(Arrays.asList(new Constant("26 Aug 2019, 08:22"),new Constant("SHORT")));
+        var parseDate = new ParseDate(Arrays.asList(new Constant("Aug 26, 2019, 8:22 AM"),new Constant("SHORT")));
         var r = parseDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is(d));
@@ -70,7 +70,7 @@ public class ParseDateTest {
     @Test
     public void should_parse_constant_with_pattern_medium(){
         var d = trim(Instant.parse("2019-08-26T06:22:10.533293Z"));        
-        var parseDate = new ParseDate(Arrays.asList(new Constant("26 Aug 2019, 08:22:10"),new Constant("MEDIUM")));
+        var parseDate = new ParseDate(Arrays.asList(new Constant("Aug 26, 2019, 8:22:10 AM"),new Constant("MEDIUM")));
         var r = parseDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is(d));
@@ -78,7 +78,7 @@ public class ParseDateTest {
 
     @Test
     public void should_parse_constant_using_model_locale_with_pattern_medium(){
-        var d = trim(Instant.parse("2019-08-26T06:22:10.533293Z"));        
+        var d = trim(Instant.parse("2019-08-26T06:22:10.533293Z"));
         var parseDate = new ParseDate(Arrays.asList(new Constant("26 août 2019 à 08:22:10"),new Constant("MEDIUM")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
@@ -91,7 +91,7 @@ public class ParseDateTest {
     @Test
     public void should_parse_constant_with_pattern_long(){
         var d = trim(Instant.parse("2019-08-26T06:22:10.533293Z"));        
-        var parseDate = new ParseDate(Arrays.asList(new Constant("26 Aug 2019, 08:22:10 CEST"),new Constant("LONG")));
+        var parseDate = new ParseDate(Arrays.asList(new Constant("Aug 26, 2019, 8:22:10 AM CEST"),new Constant("LONG")));
         var r = parseDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is(d));

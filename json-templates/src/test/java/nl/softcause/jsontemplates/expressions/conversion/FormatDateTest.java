@@ -27,7 +27,7 @@ public class FormatDateTest {
         var formatDate = new FormatDate(Arrays.asList(new Constant(d)));
         var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
-        assertThat(r, is("26 Aug 2019, 08:22:10"));
+        assertThat(r, is("Aug 26, 2019, 8:22:10 AM"));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class FormatDateTest {
         var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("SHORT")));
         var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
-        assertThat(r, is("26 Aug 2019, 08:22"));
+        assertThat(r, is("Aug 26, 2019, 8:22 AM"));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class FormatDateTest {
         var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("MEDIUM")));
         var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
-        assertThat(r, is("26 Aug 2019, 08:22:10"));
+        assertThat(r, is("Aug 26, 2019, 8:22:10 AM"));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FormatDateTest {
         var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("LONG")));
         var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
-        assertThat(r, is("26 Aug 2019, 08:22:10 CEST"));
+        assertThat(r, is("Aug 26, 2019, 8:22:10 AM CEST"));
     }
 
     @Test
