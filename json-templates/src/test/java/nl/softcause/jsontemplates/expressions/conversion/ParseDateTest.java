@@ -3,9 +3,12 @@ package nl.softcause.jsontemplates.expressions.conversion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.util.DateFormatterUtils;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,12 +17,23 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ParseDateTest {
+
+    @Before
+    public void setUp(){
+        DateFormatterUtils.FORCE_DEFAULT_LOCALE= TimeZone.getTimeZone("Europe/Amsterdam");
+    }
+
+    @After
+    public void tearDown(){
+        DateFormatterUtils.FORCE_DEFAULT_LOCALE= null;
+    }
 
     @Test
     public void should_parse_constant(){

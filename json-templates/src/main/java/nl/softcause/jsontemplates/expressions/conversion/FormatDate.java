@@ -43,11 +43,18 @@ public class FormatDate implements IExpressionWithArguments {
     public Object evaluate(IModel model) {
         var value = getArguments().get(0).evaluate(model);
         if(value!=null){
-            var patternValue = getArguments().size()==2 ? Types.OPTIONAL_TEXT.convert(getArguments().get(1).evaluate(model)) : null;
-            var format = DateFormatterUtils.buildFormatter(patternValue, model.getLocale());
+            var patternValue = getArguments().size()>=2 ? getArgument(model, 1) : null;
+            var timeZone = getArguments().size()==3 ? getArgument(model, 2) : null;
+            var format = DateFormatterUtils.buildFormatter(patternValue, timeZone, model.getLocale());
             return format.format(Date.from(Types.DATETIME.convert(value)));
         }
         return null;
+    }
+
+    private String getArgument(IModel model, int i) {
+        var raw = getArguments().get(i);
+        if(raw==null) return null;
+        return Types.OPTIONAL_TEXT.convert(raw.evaluate(model));
     }
 
 

@@ -45,8 +45,9 @@ public class ParseDate implements IExpressionWithArguments {
         var value = getArguments().get(0).evaluate(model);
         if(value!=null){
             try {
-                var patternValue = getArguments().size()==2 ? Types.OPTIONAL_TEXT.convert(getArguments().get(1).evaluate(model)) : null;
-                var format = DateFormatterUtils.buildFormatter(patternValue, model.getLocale());
+                var patternValue = getArguments().size()>=2 ? Types.OPTIONAL_TEXT.convert(getArguments().get(1).evaluate(model)) : null;
+                var timeZone = getArguments().size()==3 ? Types.OPTIONAL_TEXT.convert(getArguments().get(2).evaluate(model)) : null;
+                var format = DateFormatterUtils.buildFormatter(patternValue, timeZone,model.getLocale());
                 Date date = format.parse(Types.TEXT.convert(value));
                 return Types.DATETIME.convert(date);
             } catch (ParseException Pe){
