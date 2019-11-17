@@ -11,6 +11,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.IsoFields;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -24,6 +27,7 @@ public class FormatDateTest {
     @Test
     public void should_format_constant(){
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
+        assertThat(d.getEpochSecond(), is(1566800530L));
         var formatDate = new FormatDate(Arrays.asList(new Constant(d)));
         var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
