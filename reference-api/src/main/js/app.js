@@ -6,6 +6,9 @@ const client = require('./client');
 const _ = require('underscore');
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
+import Accordion from 'react-bootstrap/Accordion';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 class App extends React.Component {
 
@@ -42,106 +45,13 @@ class App extends React.Component {
 	}
 }
 
-// tag::create-dialog[]
-class CreateDialog extends React.Component {
-
-	constructor(props) {
-		super(props);
-		this.handleSubmit = this.handleSubmit.bind(this);
-	}
-
-	handleSubmit(e) {
-		e.preventDefault();
-		const newEmployee = {};
-		this.props.attributes.forEach(attribute => {
-			newEmployee[attribute] = ReactDOM.findDOMNode(this.refs[attribute]).value.trim();
-		});
-		this.props.onCreate(newEmployee);
-
-		// clear out the dialog's inputs
-		this.props.attributes.forEach(attribute => {
-			ReactDOM.findDOMNode(this.refs[attribute]).value = '';
-		});
-
-		// Navigate away from the dialog to hide it.
-		window.location = "#";
-	}
-
-	render() {
-		const inputs = this.props.attributes.map(attribute =>
-			<p key={attribute}>
-				<input type="text" placeholder={attribute} ref={attribute} className="field"/>
-			</p>
-		);
-
-		return (
-			<div>
-				<a href="#createEmployee">Create</a>
-
-				<div id="createEmployee" className="modalDialog">
-					<div>
-						<a href="#" title="Close" className="close">X</a>
-
-						<h2>Create new employee</h2>
-
-						<form>
-							{inputs}
-							<button onClick={this.handleSubmit}>Create</button>
-						</form>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-}
-// end::create-dialog[]
-
 class NodeList extends React.Component {
 
 	constructor(props) {
 		super(props);
-		// this.handleNavFirst = this.handleNavFirst.bind(this);
-		// this.handleNavPrev = this.handleNavPrev.bind(this);
-		// this.handleNavNext = this.handleNavNext.bind(this);
-		// this.handleNavLast = this.handleNavLast.bind(this);
-		// this.handleInput = this.handleInput.bind(this);
 	}
 
-	// handleInput(e) {
-	// 	e.preventDefault();
-	// 	const pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
-	// 	if (/^[0-9]+$/.test(pageSize)) {
-	// 		this.props.updatePageSize(pageSize);
-	// 	} else {
-	// 		ReactDOM.findDOMNode(this.refs.pageSize).value =
-	// 			pageSize.substring(0, pageSize.length - 1);
-	// 	}
-	// }
 
-	// // tag::handle-nav[]
-	// handleNavFirst(e){
-	// 	e.preventDefault();
-	// 	this.props.onNavigate(this.props.links.first.href);
-	// }
-	//
-	// handleNavPrev(e) {
-	// 	e.preventDefault();
-	// 	this.props.onNavigate(this.props.links.prev.href);
-	// }
-	//
-	// handleNavNext(e) {
-	// 	e.preventDefault();
-	// 	this.props.onNavigate(this.props.links.next.href);
-	// }
-	//
-	// handleNavLast(e) {
-	// 	e.preventDefault();
-	// 	this.props.onNavigate(this.props.links.last.href);
-	// }
-	// // end::handle-nav[]
-
-	// tag::employee-list-render[]
 	render() {
 		const nodes = this.props.nodes.map(node =>
 			<Node key={node.id} node={node} allNodes={this.props.allNodes}/>
@@ -154,15 +64,19 @@ class NodeList extends React.Component {
 			</div>
 		)
 	}
-	// end::employee-list-render[]
+
 }
 
 class Node extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.state={isCollapsed: false};
 	}
 
+	toggleIcon(){
+		this.setState({isCollapsed: !this.state.isCollapsed});
+	}
 
 	render() {
 		const argumentTypes = this.props.node.argumentTypes?Object.entries(this.props.node.argumentTypes).map(([k,v]) => {
@@ -183,34 +97,31 @@ class Node extends React.Component {
 			}
 			return (<div className="row mb-2" key={k}><div className='col-sm'>{k} {optional}</div><div className='col font-weight-light'>{value}</div></div>);
 		}):(<div className="row mb-2"><div className='col'>-</div></div>);
+
 		return (
-			<div id={'card'+this.props.node.name}>
-				<div className="card mb-3" style={{width: '18rem'}}>
-					<div id={'heading'+this.props.node.name} className="card-header">
-						{this.props.node.name}
-						<button className="btn btn-sm float-right collapsed" data-toggle="collapse" data-target={'#collapse'+this.props.node.name}
-								aria-expanded="false" aria-controls={'collapse'+this.props.node.name}>
-							<FontAwesomeIcon className="if-not-collapsed" icon={faChevronCircleUp} />
-							<FontAwesomeIcon className="if-collapsed" icon={faChevronCircleDown} />
-						</button>
-					</div>
-					<div id={'collapse'+this.props.node.name} className="collapse">
-						<div className="card-body">
+			<Accordion>
+				<Card className="mb-3" style={{ width: '18rem' }}>
+					<Card.Header>{this.props.node.name}
+						<Accordion.Toggle className="float-right" as={Button} variant="link" eventKey={'card'+this.props.node.name} onClick={this.toggleIcon.bind(this)}>
+							<FontAwesomeIcon className="if-not-collapsed" icon={this.state.isCollapsed?faChevronCircleUp:faChevronCircleDown} />
+						</Accordion.Toggle>
+					</Card.Header>
+					<Accordion.Collapse eventKey={'card'+this.props.node.name}>
+						<Card.Body>
 							<dt>Arguments</dt>
 							<dd>
 								<div className="container">
-										{argumentTypes}
+									{argumentTypes}
 								</div>
 							</dd>
 							<dt>Slots</dt>
 							<dd><div className="container">
 								{nodeSlots}
 							</div></dd>
-					</div>
-					</div>
-				</div>
-			</div>
-		)
+						</Card.Body>
+					</Accordion.Collapse>
+			</Card>
+			</Accordion>)
 	}
 }
 
