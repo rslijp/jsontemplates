@@ -24,7 +24,7 @@ public class DescribeNodeHelper {
         seen.values().forEach(description::add);
     }
 
-    private int describeNode(Class nodeClass, TemplateDescription template, Map<Class,NodeDescription> seen) {
+    private long describeNode(Class nodeClass, TemplateDescription template, Map<Class,NodeDescription> seen) {
         if(seen.containsKey(nodeClass)) return seen.get(nodeClass).getId();
         var description = new NodeDescription(template.newNodeId(), nodeClass.getSimpleName());
         seen.put(nodeClass,description);

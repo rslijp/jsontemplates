@@ -13,17 +13,17 @@ import java.util.*;
 @Getter
 public class NodeDescription {
 
-    public NodeDescription(int id, String name){
+    public NodeDescription(long id, String name){
         this.id=id;
         this.name=name;
     }
 
-    private int id;
+    private long id;
 
     private String name;
     private Map<String,String> argumentTypes;
     private Map<String,String> nodeSlots;
-    private Map<String,int[]> nodeSlotLimits;
+    private Map<String,long[]> nodeSlotLimits;
     private Map<String,NodeScopeDescription> scopeChanges;
 
     void addArgument(String name, IExpressionType argType) {
@@ -39,7 +39,7 @@ public class NodeDescription {
             if(nodeSlotLimits==null) nodeSlotLimits = new HashMap<>();
             description="limited";
             var limits = ((LimitedSlot) pattern).getLimit();
-            var limitDescription = new int[limits.length];
+            var limitDescription = new long[limits.length];
             for(var i=0; i<limits.length;i++){
                 var limit = limits[i];
                 limitDescription[i]=lookup.get(limit).getId();

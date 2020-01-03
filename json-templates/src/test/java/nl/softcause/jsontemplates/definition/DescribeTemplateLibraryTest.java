@@ -216,7 +216,7 @@ public class DescribeTemplateLibraryTest {
         var caseId = description.getNodeDescriptions().stream().filter(f->f.getName().equals("Case")).findFirst().orElseThrow().getId();
         assertThat(nodeDef.getNodeSlotLimits().size(), is(1));
         assertThat(nodeDef.getNodeSlotLimits().keySet(), hasItem("caseNode"));
-        assertThat(nodeDef.getNodeSlotLimits().get("caseNode"), is(new int[]{caseId}));
+        assertThat(nodeDef.getNodeSlotLimits().get("caseNode"), is(new long[]{caseId}));
         assertThat(nodeDef.getArgumentTypes(), nullValue());
         assertThat(nodeDef.getScopeChanges(), is(Collections.singletonMap("picked",new NodeScopeDescription(Types.BOOLEAN.getType(), false))));
     }

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 
-class TemplateDescription {
+public class TemplateDescription {
 
     @Getter
-    private Set<Integer> mainNodeIds;
+    private Set<Long> mainNodeIds;
     @Getter
     private Integer mainModelId;
     @Getter
@@ -60,7 +60,7 @@ class TemplateDescription {
         return ++modelId;
     }
 
-    void addMainNode(int nodeId) {
+    void addMainNode(long nodeId) {
         if (mainNodeIds == null) mainNodeIds = new HashSet<>();
         mainNodeIds.add(nodeId);
     }
