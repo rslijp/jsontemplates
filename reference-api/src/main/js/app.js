@@ -5,8 +5,10 @@ const ReactDOM = require('react-dom');
 const client = require('./client');
 const _ = require('underscore');
 import NodeList from './NodeList'
+import WorkBench from './WorkBench'
 import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
+import {Col, Container, Row} from "react-bootstrap";
 
 class App extends React.Component {
 
@@ -36,9 +38,16 @@ class App extends React.Component {
 
 	render() {
 		var workbench= (
-			<div className="container">
-				<NodeList nodes={this.state.applicableNodes} allNodes={this.state.nodeDescriptions}/>
-			</div>
+			<Container id="root" fluid={true}>
+				<Row>
+					<Col xs={3}>
+						<NodeList nodes={this.state.applicableNodes} allNodes={this.state.nodeDescriptions}/>
+					</Col>
+					<Col xs={9}>
+						<WorkBench/>
+					</Col>
+				</Row>
+			</Container>
 		)
 		return <DndProvider backend={Backend}>{workbench}</DndProvider>
 	}

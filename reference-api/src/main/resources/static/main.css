@@ -69,12 +69,19 @@ td, th {
 .close:hover { background: #00d9ff; }
 
 /*------*/
+html, body,#root, #react, #root > .row {
+    height: 100%;
+}
 
 .available-node {
     border: 1px solid black;
     width: 150px;
 }
 
+.workBench {
+    height: 100%;
+    width: 100%;
+}
 /*[data-toggle="collapse"].collapsed .if-not-collapsed {*/
 /*    display: none;*/
 /*}*/
