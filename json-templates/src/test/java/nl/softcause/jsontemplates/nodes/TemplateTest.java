@@ -71,7 +71,7 @@ public class TemplateTest {
         );
 
         var json = new ObjectMapper().writeValueAsString(forNode);
-
+        System.out.println(json);
         var obj = new ObjectMapper().readValue(json, INode.class);
 
         assertThat(forNode, is(obj));

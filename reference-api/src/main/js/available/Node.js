@@ -4,8 +4,9 @@ const _ = require('underscore');
 import {Accordion, Button, Card, Col, Container, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronCircleDown, faChevronCircleUp} from "@fortawesome/free-solid-svg-icons";
-import Optional from "./Optional";
+import Optional from "../common/Optional";
 import { useDrag } from 'react-dnd'
+import { ItemTypes } from '../Constants'
 
 function Node({node, allNodes}) {
 
@@ -25,6 +26,7 @@ function Node({node, allNodes}) {
         if(!nodeSlots) return (<Row className="mb-2"><Col>-</Col></Row>);
         return Object.entries(nodeSlots).map(([k,v]) => {
             let value = v;
+            const name = k.endsWith("Node")?k.substr(0,k.length-4):k
             const optional = v.endsWith("?")?<Optional/>:null;
             if(optional){
                 value=value.substr(0,value.length-1);
@@ -36,7 +38,7 @@ function Node({node, allNodes}) {
             } else if(value==='*'){
                 value = "any";
             }
-            return (<Row className="mb-2" key={k}><Col sm>{k} <br/>{optional}</Col><Col className='font-weight-light'>{value}</Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm>{name} <br/>{optional}</Col><Col className='font-weight-light'>{value}</Col></Row>);
         });
     }
 
@@ -44,7 +46,7 @@ function Node({node, allNodes}) {
     const argumentTypes = renderArguments(node.argumentTypes);
     const nodeSlots = renderNodeSlots(node.nodeSlots);
     const [{isDragging}, drag, preview] = useDrag({
-        item: { type: node.name },
+        item: { type: ItemTypes.NODE, payload: node },
         collect: monitor => ({
             isDragging: !!monitor.isDragging(),
         }),

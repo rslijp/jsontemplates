@@ -4,8 +4,8 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
 const _ = require('underscore');
-import NodeList from './NodeList'
-import WorkBench from './WorkBench'
+import NodeList from './available/NodeList'
+import WorkBench from './workbench/WorkBench'
 import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import {Col, Container, Row} from "react-bootstrap";
@@ -19,7 +19,6 @@ class App extends React.Component {
 
 	loadFromServer() {
 		client("/api/node/main",null,data => {
-			console.log(data);
 			var applicableNodes = _.filter(data.nodeDescriptions, node=>data.mainNodeIds.includes(node.id));
 			this.setState({
 				mainNodeIds: data.mainNodeIds,
@@ -37,14 +36,14 @@ class App extends React.Component {
 	}
 
 	render() {
-		var workbench= (
+		var workbench = (
 			<Container id="root" fluid={true}>
 				<Row>
 					<Col xs={3}>
 						<NodeList nodes={this.state.applicableNodes} allNodes={this.state.nodeDescriptions}/>
 					</Col>
 					<Col xs={9}>
-						<WorkBench/>
+						<WorkBench  allNodes={this.state.nodeDescriptions}/>
 					</Col>
 				</Row>
 			</Container>
