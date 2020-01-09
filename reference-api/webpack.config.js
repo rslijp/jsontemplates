@@ -3,6 +3,7 @@ var path = require('path');
 
 
 module.exports = env => {
+    console.log("*** "+env+" ***")
     const baseDir =  env==='development'?path.join(__dirname,'target','classes'):__dirname;
     const bundleFile =  env==='development'?'./static/built/bundle.js':'./src/main/resources/static/built/bundle.js'
 

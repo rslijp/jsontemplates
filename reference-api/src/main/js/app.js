@@ -9,24 +9,27 @@ import WorkBench from './workbench/WorkBench'
 import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import {Col, Container, Row} from "react-bootstrap";
+import { setAvailableNodes, setGlobalNodes } from './available/AllowedNodes'
 
 class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {mainNodeIds: [], mainModelId: null, modelDescriptions: {}, expressionDescriptions: [], nodeDescriptions:[],applicableNodes:[]};
+		this.state = {mainNodeIds: [], mainModelId: null, modelDescriptions: {}, expressionDescriptions: [], nodeDescriptions:[]};
+
 	}
 
 	loadFromServer() {
 		client("/api/node/main",null,data => {
-			var applicableNodes = _.filter(data.nodeDescriptions, node=>data.mainNodeIds.includes(node.id));
+			// var applicableNodes = _.filter(data.nodeDescriptions, node=>data.mainNodeIds.includes(node.id));
+			setGlobalNodes(data.mainNodeIds);
+			setAvailableNodes(data.nodeDescriptions, data.mainNodeIds);
 			this.setState({
 				mainNodeIds: data.mainNodeIds,
 				mainModelId: data.mainModelId,
 				modelDescriptions: data.modelDescriptions,
 				expressionDescriptions: data.expressionDescriptions,
 				nodeDescriptions: data.nodeDescriptions,
-				applicableNodes: applicableNodes
 			});
 		});
 	}
@@ -40,10 +43,10 @@ class App extends React.Component {
 			<Container id="root" fluid={true}>
 				<Row>
 					<Col xs={3}>
-						<NodeList nodes={this.state.applicableNodes} allNodes={this.state.nodeDescriptions}/>
+						<NodeList allNodes={this.state.nodeDescriptions}/>
 					</Col>
 					<Col xs={9}>
-						<WorkBench  allNodes={this.state.nodeDescriptions}/>
+						<WorkBench allNodes={this.state.nodeDescriptions} />
 					</Col>
 				</Row>
 			</Container>

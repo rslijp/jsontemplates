@@ -1,7 +1,8 @@
 const React = require('react');
 import Slot from "./Slot";
 import EmptySlot from "./EmptySlot";
-import {observe} from "./JsonTemplate";
+import {observe, slotNodes} from "./JsonTemplate";
+import {setAvailableNodes, getGlobalNodes} from "../available/AllowedNodes";
 
 class WorkBench extends React.Component {
 
@@ -13,13 +14,14 @@ class WorkBench extends React.Component {
 
     updateState(slots){
         console.log("UPDATE STATE")
+        setAvailableNodes(this.props.allNodes,slotNodes()||getGlobalNodes());
         this.setState({slots:slots});
     }
 
     render() {
         const slots = this.state.slots.map((node,i) =>{
-            // console.log(node.name);
-            return (<Slot key={node.name} path={i} node={node} allNodes={this.props.allNodes}/>);
+            const path = i.toString();
+            return (<Slot key={i} path={path} node={node} allNodes={this.props.allNodes}/>);
         });
         return (
             <div className={"workBench"}>

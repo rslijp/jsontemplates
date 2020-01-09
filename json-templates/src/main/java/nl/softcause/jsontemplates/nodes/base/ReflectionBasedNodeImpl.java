@@ -82,6 +82,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     }
 
     private void reflectOnNodeFIeld(Field field) {
+        if(field.getAnnotation(JsonIgnore.class)!=null) return;
         var fieldName = field.getName();
         var required = field.getAnnotation(RequiredSlot.class)!=null;
         var limit = field.getAnnotation(LimitSlots.class);

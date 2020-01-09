@@ -82,6 +82,10 @@ html, body,#root, #react, #root > .row {
     height: 100%;
     width: 100%;
 }
+
+.remove-container {
+    height: 20px;
+}
 /*[data-toggle="collapse"].collapsed .if-not-collapsed {*/
 /*    display: none;*/
 /*}*/

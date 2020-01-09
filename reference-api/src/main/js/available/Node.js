@@ -71,7 +71,7 @@ function Node({node, allNodes}) {
                   }}>
                 <Card.Header>{node.name}
                     <Accordion.Toggle className="float-right" as={Button} variant="link" eventKey={'card'+node.name} onClick={toggleIcon}>
-                        <FontAwesomeIcon className="if-not-collapsed" icon={isCollapsed?faChevronCircleDown:faChevronCircleUp} />
+                        <FontAwesomeIcon icon={isCollapsed?faChevronCircleDown:faChevronCircleUp} />
                     </Accordion.Toggle>
                 </Card.Header>
                 <Accordion.Collapse eventKey={'card'+node.name}>

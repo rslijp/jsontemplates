@@ -4,29 +4,32 @@ const _ = require('underscore');
 
 import React from 'react';
 import Overlay from '../common/Overlay'
-import { canAcceptNode, setNode, getNode } from './JsonTemplate'
+import {canAcceptNode, setNode, getNode, clearNode, setFocus, hasFocus, displayName, slotNodes} from './JsonTemplate'
+import {getGlobalNodes} from './../available/AllowedNodes'
 import { useDrop } from 'react-dnd'
 import {Card, Container, Row, Col} from "react-bootstrap";
 import { ItemTypes } from '../Constants'
 import Optional from "../common/Optional";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 
 function Slot({node,path,allNodes,forSlot}) {
 
-    // console.log("Constructor");
+
 
     function onDrop(item,path){
         var node = item.payload;
         setNode(path,node);
     }
 
-
+    let acceptTypes = slotNodes(path,forSlot)||getGlobalNodes();
 
     function dropArea(children, path){
 
         const [{ isOver, canDrop }, drop] = useDrop({
             accept: ItemTypes.NODE,
             drop: (item) => onDrop(item,path),
-            canDrop: () => canAcceptNode(),
+            canDrop: (item) => canAcceptNode(item.payload,acceptTypes),
             collect: monitor => ({
                 isOver: !!monitor.isOver(),
                 canDrop: !!monitor.canDrop(),
@@ -71,7 +74,7 @@ function Slot({node,path,allNodes,forSlot}) {
         var result = Object.entries(nodeSlots).map(([k,v]) => {
             let value = v;
             const optional = v.endsWith("?");
-            const name = k.endsWith("Node")?k.substr(0,k.length-4):k
+            const name = k;//.endsWith("Node")?k.substr(0,k.length-4):k
             if(optional){
                 value=value.substr(0,value.length-1);
             }
@@ -84,12 +87,11 @@ function Slot({node,path,allNodes,forSlot}) {
             }
             const childPath = path+"."+k;
             const children = getNode(childPath);
-            // const slot = existing?<Slot key={existing.name} path={childPath} node={existing} allNodes={allNodes}/>:null;
             const slots = children.map((node,i) =>{
-                // console.log(node.name);
-                return (<Slot key={i} forSlot={name} path={childPath+"."+i} node={node} allNodes={allNodes}/>);
+                const currentPath = childPath+"."+i;
+                return (<Slot key={i} forSlot={name} path={currentPath} node={node} allNodes={allNodes}/>);
             });
-            const addSlot =/*dropArea(*/<EmptySlot forSlot={name} optional={optional} path={childPath+".push"} limit={value}/>/*, childPath);*/
+            const addSlot =/*dropArea(*/<EmptySlot forSlot={name} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>/*, childPath);*/
             return (<Row className="mb-2" key={k}><Col sm>{slots}{addSlot}</Col></Row>);
         });
         return (
@@ -104,11 +106,18 @@ function Slot({node,path,allNodes,forSlot}) {
     const argumentTypes = renderArguments(node.argumentTypes);
     const nodeSlots = renderNodeSlots(node.nodeSlots);
 
+    function remove(e){
+        e.stopPropagation();
+        clearNode(path);
+    }
 
-    const header = dropArea(<Card.Header><h3>{node.name} {forSlot?(<b>for {forSlot}</b>):null}</h3></Card.Header>, path)
+    function giveFocus(e){
+        setFocus(path, null);
+    }
 
+    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null} <div className="float-right remove-container"> <FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div></h3></Card.Header>, path)
     return (
-        <Card className="mb-3">
+        <Card className={"mb-3 "+(hasFocus(path, null)?"border border-primary":"")} >
             {header}
             <Card.Body>
                 {argumentTypes}
