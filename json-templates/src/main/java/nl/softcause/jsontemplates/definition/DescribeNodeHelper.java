@@ -26,7 +26,7 @@ public class DescribeNodeHelper {
 
     private long describeNode(Class nodeClass, TemplateDescription template, Map<Class,NodeDescription> seen) {
         if(seen.containsKey(nodeClass)) return seen.get(nodeClass).getId();
-        var description = new NodeDescription(template.newNodeId(), nodeClass.getSimpleName());
+        var description = new NodeDescription(template.newNodeId(), nodeClass.getSimpleName(), nodeClass.getPackageName());
         seen.put(nodeClass,description);
         INode node = createNode(nodeClass);
         collectSubNodes(nodeClass,template,seen);

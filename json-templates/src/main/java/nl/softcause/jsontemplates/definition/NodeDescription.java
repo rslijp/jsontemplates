@@ -13,14 +13,16 @@ import java.util.*;
 @Getter
 public class NodeDescription {
 
-    public NodeDescription(long id, String name){
+    public NodeDescription(long id, String name, String packageName){
         this.id=id;
         this.name=name;
+        this.packageName=packageName;
     }
 
     private long id;
 
     private String name;
+    private String packageName;
     private Map<String,String> argumentTypes;
     private Map<String,String> nodeSlots;
     private Map<String,long[]> nodeSlotLimits;

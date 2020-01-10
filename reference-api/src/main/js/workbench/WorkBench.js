@@ -13,7 +13,7 @@ class WorkBench extends React.Component {
     }
 
     updateState(slots){
-        console.log("UPDATE STATE")
+        // console.log("UPDATE STATE")
         setAvailableNodes(this.props.allNodes,slotNodes()||getGlobalNodes());
         this.setState({slots:slots});
     }

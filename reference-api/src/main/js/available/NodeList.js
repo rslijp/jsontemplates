@@ -11,7 +11,7 @@ class NodeList extends React.Component {
     }
 
     updateState(nodes){
-        console.log("UPDATE STATE")
+        console.log("UPDATE STATE",nodes);
         this.setState({nodes:nodes});
     }
 
