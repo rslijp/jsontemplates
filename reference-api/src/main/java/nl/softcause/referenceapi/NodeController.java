@@ -11,6 +11,8 @@ import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
 import nl.softcause.jsontemplates.definition.TemplateDescription;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.nl.softcause.dialogs.Dialog;
+import nl.softcause.wizard.Wizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -82,7 +84,7 @@ public class NodeController {
     @GetMapping(path = "/main")
     public @ResponseBody TemplateDescription describe(){
         var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-        return new DescribeTemplateLibrary().describe(modelDefinition);
+        return new DescribeTemplateLibrary().addMainNodes(Wizard.class, Dialog.class).describe(modelDefinition);
     }
 
 }
