@@ -1,6 +1,5 @@
-import {setAvailableNodes} from "../available/AllowedNodes";
+import _ from 'underscore';
 
-const _ = require('underscore');
 let observer = null
 
 var slots = [];

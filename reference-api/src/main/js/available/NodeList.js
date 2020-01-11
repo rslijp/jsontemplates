@@ -13,15 +13,13 @@ class NodeList extends React.Component {
     }
 
     updateState(nodes){
-        console.log("UPDATE STATE",nodes);
-        this.setState({nodes:nodes});
+         this.setState({nodes:nodes});
     }
 
 
     render() {
         const bundles = _.groupBy(this.state.nodes, 'packageName');
         const groupsList = _.map(bundles, (nodes, bundle) => {
-                console.log(bundle, nodes);
                 const nodesList = nodes.map(node =>
                     <Node key={node.id} node={node} allNodes={this.props.allNodes}/>
                 );
@@ -32,10 +30,6 @@ class NodeList extends React.Component {
                 </div>
             }
         );
-        // const nodesList = this.state.nodes.map(node =>
-        //     <Node key={node.id} node={node} allNodes={this.props.allNodes}/>
-        // );
-
 
         return (
             <div className="position-fixed" style={{height: "100%", overflowY: "scroll", paddingRight: "15px"}}>
@@ -45,25 +39,5 @@ class NodeList extends React.Component {
         );
     }
 }
-// const bundles = _.groupBy(this.state.nodes, 'packageName');
-// const groupsList = bundles.map((bundle,nodes) => {
-//         const nodesList = nodes.map(node =>
-//             <Node key={node.id} node={node} allNodes={this.props.allNodes}/>
-//         );
-//         return  <div>
-//             <h3>bundle</h3>
-//             {nodesList}
-//         </div>
-//     }
-// );
-//
-//
-//
-// return (
-//     <div className="position-fixed">
-//         <h2>Available</h2>
-//         {groupsList}
-//     </div>
-// );
 
 export default NodeList

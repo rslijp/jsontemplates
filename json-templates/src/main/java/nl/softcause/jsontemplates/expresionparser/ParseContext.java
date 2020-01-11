@@ -52,7 +52,6 @@ class ParseContext {
     }
 
     void parseExpression(String[] until){
-        var start = parseStack.size();
         while(!done() && (until==null || !cursor.at(until))) {
             log("========");
             if(     tryLongConstant() ||
@@ -252,17 +251,17 @@ class ParseContext {
         parseStack.push(expression);
     }
 
-    private void reduce()
-    {
-        log("END GAME!");
-        reduce(-1);
-    }
-
-    private void intermediateReduce()
-    {
-        log("END GAME!");
-        reduce(-1);
-    }
+//    private void reduce()
+//    {
+//        log("END GAME!");
+//        reduce(-1);
+//    }
+//
+//    private void intermediateReduce()
+//    {
+//        log("END GAME!");
+//        reduce(-1);
+//    }
 
     private void reduce(int targetPrio)
     {

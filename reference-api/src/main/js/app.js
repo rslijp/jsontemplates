@@ -10,6 +10,7 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import {Col, Container, Row} from "react-bootstrap";
 import { setAvailableNodes, setGlobalNodes } from './available/AllowedNodes'
+import {initExpressionLibrary} from './model/ExpressionParser'
 
 class App extends React.Component {
 
@@ -21,6 +22,7 @@ class App extends React.Component {
 
 	loadFromServer() {
 		client("/api/node/main",null,data => {
+			initExpressionLibrary(data.expressionDescriptions);
 			// var applicableNodes = _.filter(data.nodeDescriptions, node=>data.mainNodeIds.includes(node.id));
 			setGlobalNodes(data.mainNodeIds);
 			setAvailableNodes(data.nodeDescriptions, data.mainNodeIds);

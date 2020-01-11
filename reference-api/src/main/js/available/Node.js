@@ -69,7 +69,8 @@ function Node({node, allNodes}) {
                       ...cardStyle,
                       opacity: isDragging ? 0.5 : 1,
                   }}>
-                <Card.Header>{node.name}
+                <Card.Header>
+                    <span style={{lineHeight: "1.7em", verticalAlign: "middle",padding:"0.375em", display: "inline-block"}}>{node.name}</span>
                     <Accordion.Toggle className="float-right" as={Button} variant="link" eventKey={'card'+node.name} onClick={toggleIcon}>
                         <FontAwesomeIcon icon={isCollapsed?faChevronCircleDown:faChevronCircleUp} />
                     </Accordion.Toggle>

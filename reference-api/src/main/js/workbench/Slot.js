@@ -1,10 +1,8 @@
 import EmptySlot from "./EmptySlot";
-
-const _ = require('underscore');
-
+import _ from 'underscore';
 import React from 'react';
 import Overlay from '../common/Overlay'
-import {canAcceptNode, setNode, getNode, clearNode, setFocus, hasFocus, displayName, slotNodes} from './JsonTemplate'
+import {canAcceptNode, setNode, getNode, clearNode, setFocus, hasFocus, displayName, slotNodes} from '../model/JsonTemplate'
 import {getGlobalNodes} from './../available/AllowedNodes'
 import { useDrop } from 'react-dnd'
 import {Card, Container, Row, Col} from "react-bootstrap";
@@ -12,6 +10,7 @@ import { ItemTypes } from '../Constants'
 import Optional from "../common/Optional";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
+import Expression from "./Expression";
 
 function Slot({node,path,allNodes,forSlot}) {
 
@@ -56,7 +55,7 @@ function Slot({node,path,allNodes,forSlot}) {
             if(optional){
                 value=value.substr(0,value.length-1);
             }
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k} <br/>{optional}</Col><Col className='font-weight-light'>{value}</Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression type={value}/></Col></Row>);
         });
         return (
             <div>
@@ -69,7 +68,6 @@ function Slot({node,path,allNodes,forSlot}) {
     }
 
     function renderNodeSlots(nodeSlots){
-        // console.log("render");
         if(!nodeSlots) return null;
         var result = Object.entries(nodeSlots).map(([k,v]) => {
             let value = v;
@@ -112,6 +110,7 @@ function Slot({node,path,allNodes,forSlot}) {
     }
 
     function giveFocus(e){
+        e.stopPropagation();
         setFocus(path, null);
     }
 

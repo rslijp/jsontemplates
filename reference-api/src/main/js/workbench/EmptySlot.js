@@ -4,7 +4,7 @@ const _ = require('underscore');
 
 import React from 'react';
 import Overlay from '../common/Overlay'
-import { canAcceptNode, setNode, setFocus,hasFocus, slotNodes, displayName} from './JsonTemplate'
+import { canAcceptNode, setNode, setFocus,hasFocus, slotNodes, displayName} from '../model/JsonTemplate'
 import { useDrop } from 'react-dnd'
 import {Jumbotron, Container, Row, Col} from "react-bootstrap";
 import Optional from "../common/Optional";
