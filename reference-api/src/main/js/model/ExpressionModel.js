@@ -1,6 +1,10 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
 
+function getReturnType(rawType){
+    return ReturnTypes[rawType.toUpperCase().replace("?","OPTIONAL")]
+}
+
 export function Constant(value, type){
     return {
         type: NodeTypes.CONSTANT,
@@ -60,14 +64,14 @@ export function Ternary(){
 export function createExpression(type){
     console.log("CREATE OF ",type)
     const args = [];
-    const argumentsTypes = _.map(type.argumentTypes, t=>ReturnTypes[t.toUpperCase()]);
+    const argumentsTypes = _.map(type.argumentTypes, t=>getReturnType(t));
     return {
-        type: NodeTypes[type.parseType],
+        type: type.name,
         arguments: args,
         argumentsTypes: argumentsTypes,
         priority: ()=>type.priority,
         returnType: (model)=>{
-            return ReturnTypes[type.returnType.toUpperCase()];
+            return getReturnType(type.returnType);
         }
     }
 }

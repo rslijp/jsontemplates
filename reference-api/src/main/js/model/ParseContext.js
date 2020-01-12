@@ -239,7 +239,7 @@ ParseContext.prototype.parseExpression=function(until){
             this.tryVariable() ||  //tested
             this.tryBrackets() || //tested
             this.tryTernary() || //tested
-            this.libScan(this.unaryLib, this.tryUnary) ||
+            this.libScan(this.unaryLib, this.tryUnary) || //tested
             this.libScan(this.functionLib, this.tryFunction) ||
             this.libScan(this.infixLib, this.tryInfix)){
             continue;

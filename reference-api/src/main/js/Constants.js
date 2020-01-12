@@ -13,9 +13,13 @@ export const NodeTypes = {
 
 export const ReturnTypes = {
     BOOLEAN: 'BOOLEAN',
+    BOOLEANOPTIONAL: 'BOOLEAN?',
     INTEGER: 'INTEGER',
+    INTEGEROPTIONAL: 'INTEGER?',
     DECIMAL: 'DECIMAL',
+    DECIMALOPTIONAL: 'DECIMAL?',
     TEXT: 'TEXT',
+    TEXTOPTIONAL: 'TEXT?',
     GENERIC: 'GENERIC',
 
     OPTIONAL: 'OPTIONAL' //WRONG

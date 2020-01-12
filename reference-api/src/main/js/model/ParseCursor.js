@@ -1,3 +1,4 @@
+import _ from 'underscore';
 
 export function ParseCursor(text){
     this.cursorIndex=0;
@@ -11,7 +12,9 @@ ParseCursor.prototype.more=function(){
 }
 
 ParseCursor.prototype.at=function(patternOrInstruction){
-    if(typeof(patternOrInstruction) === 'string'){
+    if(_.isArray(patternOrInstruction)){
+        return _.any(patternOrInstruction, i=>this.at(i));
+    } else if(typeof(patternOrInstruction) === 'string'){
         return this.text.startsWith(patternOrInstruction);
     } else {
         return patternOrInstruction.test(this.text);
@@ -19,7 +22,15 @@ ParseCursor.prototype.at=function(patternOrInstruction){
 }
 
 ParseCursor.prototype.read=function(patternOrInstruction) {
-    if(typeof(patternOrInstruction) === 'string') {
+    if(_.isArray(patternOrInstruction)){
+        for(var i=0;i<patternOrInstruction.length;i++){
+            if(this.at(patternOrInstruction[i])) {
+                this.move(patternOrInstruction.length);
+                return;
+            }
+            throw "Expected "+patternOrInstruction.join("|");
+        }
+    } else if(typeof(patternOrInstruction) === 'string') {
         if(!this.at(patternOrInstruction)) throw "Expected "+patternOrInstruction;
         this.move(patternOrInstruction.length);
     } else {
