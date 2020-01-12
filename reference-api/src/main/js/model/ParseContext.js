@@ -1,5 +1,10 @@
 import _ from 'underscore';
 import ParseCursor from "./ParseCursor";
+import {Constant, Variable, Brackets,Ternary, createExpression} from "./ExpressionModel";
+import {NodeTypes, ReturnTypes} from '../Constants';
+import {validateCompletenessOfArguments} from './ParseUtil';
+
+
 const LOG = true;
 const LONG_PATTERN = /^(-?[0-9]+)/;
 const DOUBLE_PATTERN = /^(-?[0-9]+\.[0-9]+)/;
@@ -22,19 +27,14 @@ export function ParseContext(text){
     this.infixLib={};
     this.functionLib={};
 
-    function push(type, x){
-        console.log(x);
-        parseStack.push(type);
+    function push(item){
+        parseStack.push(item);
     }
 
-    function createExpression(type){
-        console.log(type);
-        return {arguments: [], argumentsTypes:[], priority: 9}
-    }
 
     function justSawConstant() {
         if(parseStack.length === 0) return false;
-        return _.last(parseStack) === "Constant";
+        return _.last(parseStack).type === NodeTypes.CONSTANT;
     }
 
     this.done=function() {
@@ -43,16 +43,15 @@ export function ParseContext(text){
 
     this.libScan=function(lib, tryParse){
         const operators = _.sortBy(_.keys(lib), e => -e.length);
-        _.each(operators, e=>{
+        return _.any(operators, e=>{
             if(tryParse.call(this, e)) return true;
         });
-        return false;
     };
 
     this.tryVariable=function() {
         if (cursor.at(VARIABLE_PATTERN)) {
             const txt = cursor.read(VARIABLE_PATTERN);
-            push("Variable","new Variable("+txt+")");
+            push(new Variable(txt));
             return true;
         }
         return false;
@@ -61,12 +60,12 @@ export function ParseContext(text){
     this.tryBooleanConstant=function() {
         if (cursor.at("true")){
             cursor.read("true");
-            push("Constant","new Constant(true)");
+            push(new Constant(true, ReturnTypes.BOOLEAN));
             return true;
         }
         if (cursor.at("false")){
             cursor.read("false");
-            push("Constant","new Constant(false)");
+            push(new Constant(false, ReturnTypes.BOOLEAN));
             return true;
         }
         return false;
@@ -77,7 +76,7 @@ export function ParseContext(text){
             !cursor.at(DOUBLE_PATTERN) &&
             cursor.at(LONG_PATTERN)) {
             const txt = cursor.read(LONG_PATTERN);
-            push("Constant","new Constant("+parseInt(txt)+"L)");
+            push(new Constant(parseInt(txt, ReturnTypes.INTEGER)));
             return true;
         }
         return false;
@@ -86,9 +85,8 @@ export function ParseContext(text){
     this.tryDoubleConstant=function() {
         if (!justSawConstant() &&
             cursor.at(DOUBLE_PATTERN)) {
-            console.log("x");
             const txt = cursor.read(DOUBLE_PATTERN);
-            push("Constant","new Constant("+parseFloat(txt)+")");
+            push(new Constant(parseFloat(txt), ReturnTypes.DECIMAL));
             return true;
         }
         return false;
@@ -96,16 +94,15 @@ export function ParseContext(text){
 
     this.tryStringConstant=function() {
         if (cursor.at(TEXT_PATTERN)) {
-            console.log("ÿ");
             const txt = cursor.read(TEXT_PATTERN);
-            push("Constant","new Constant("+txt+")");
+            push(new Constant(txt, ReturnTypes.TEXT));
             return true;
         }
         return false;
     };
 
     this.tryFunction=function(functionName) {
-        console.log("tryFunction",functionName)
+        console.log("tryFunction",functionName);
         if (cursor.at(functionName)) {
             cursor.read(functionName);
             cursor.read(BRACKET_OPEN);
@@ -116,11 +113,7 @@ export function ParseContext(text){
                 this.parseExpression(separators);
                 expr.arguments.push(this.yield());
                 if(cursor.at(BRACKET_CLOSE)){
-                    for (let j = expr.arguments.length; j < argumentsTypes.length; j++){
-                        if(!(argumentsTypes[j].type === "Optional")){
-                            throw "Expected more arguments"
-                        }
-                    }
+                    validateCompletenessOfArguments(expr);
                     cursor.read(BRACKET_CLOSE);
                     break;
                 }
@@ -133,7 +126,7 @@ export function ParseContext(text){
     };
 
     this.tryInfix=function(operator){
-        console.log("tryInfix",operator)
+        // console.log("tryInfix",operator);
         if (cursor.at(operator) && !this.empty()) {
             cursor.read(operator);
             const expr = createExpression(this.infixLib[operator]);
@@ -148,7 +141,6 @@ export function ParseContext(text){
     };
 
     this.tryUnary=function(operator){
-        console.log("tryUnary",operator)
         if (cursor.at(operator)) {
             cursor.read(operator);
             const expr = createExpression(this.unaryLib[operator]);
@@ -161,11 +153,11 @@ export function ParseContext(text){
     this.tryBrackets=function() {
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
-            this.parseExpression([BRACKET_CLOSE]);
+            this.parseExpression(BRACKET_CLOSE);
             const inner = this.yield();
-            const brackets = {arguments:[]};//new Brackets();//broken
+            const brackets = Brackets();
             brackets.arguments.push(inner);
-            push(brackets);
+            push(brackets, "()");
             cursor.read(BRACKET_CLOSE);
             return true;
         }
@@ -175,11 +167,11 @@ export function ParseContext(text){
      this.tryTernary=function() {
         if (cursor.at("?") && !this.empty()) {
             cursor.read("?");
-            const ternary = {arguments: [], priority: 3};
-            const condition = this.yield(ternary.priority);//broken
+            const ternary = Ternary();
+            const condition = this.yield(ternary.priority());
             ternary.arguments.push(condition);
             push(ternary);
-            this.parseExpression([":"]);
+            this.parseExpression(":");
             cursor.read(":");
             return true;
         }
@@ -188,17 +180,16 @@ export function ParseContext(text){
 
     this.reduce=function(targetPrio)
     {
-        console.log(targetPrio, parseStack)
         if (parseStack.length >= 2)
         {
             const argument = parseStack.pop();
             const operator = _.last(parseStack);
-            let argumentPriority = argument.priority;
-            let operatorPriority = operator.priority;
-            let reduce = operatorPriority>=targetPrio && operator.type === 'IExpressionWithArguments';
+            let argumentPriority = argument.priority();
+            let operatorPriority = operator.priority();
+            let reduce = operatorPriority>=targetPrio && operator.argumentsTypes!==undefined;
 
-            if(argument.type === 'Ternary' &&
-                operator.type === 'Ternary' &&
+            if(argument.type === NodeTypes.TERNARY &&
+                operator.type === NodeTypes.TERNARY &&
                 targetPrio === 0
             ){
                 reduce = false;
@@ -246,8 +237,8 @@ ParseContext.prototype.parseExpression=function(until){
             this.tryDoubleConstant() || //tested
             this.tryStringConstant() || //tested
             this.tryVariable() ||  //tested
-            this.tryBrackets() ||
-            this.tryTernary() ||
+            this.tryBrackets() || //tested
+            this.tryTernary() || //tested
             this.libScan(this.unaryLib, this.tryUnary) ||
             this.libScan(this.functionLib, this.tryFunction) ||
             this.libScan(this.infixLib, this.tryInfix)){

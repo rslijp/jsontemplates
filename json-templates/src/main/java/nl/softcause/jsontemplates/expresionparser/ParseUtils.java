@@ -1,6 +1,8 @@
 package nl.softcause.jsontemplates.expresionparser;
 
 import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
+import nl.softcause.jsontemplates.types.IExpressionType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -31,6 +33,18 @@ public class ParseUtils {
                 return (IExpression) constructor.newInstance();
             } catch (Exception e2) {
                 throw new RuntimeException("BROKEN");
+            }
+        }
+    }
+
+    static void validateCompletenessOfArguments(IExpression candidate, ParseCursor cursor) {
+        if(candidate instanceof IExpressionWithArguments) {
+            var expr = (IExpressionWithArguments) candidate;
+            IExpressionType[] argumentsTypes = expr.getArgumentsTypes();
+            for (var j = expr.getArguments().size(); j < argumentsTypes.length; j++) {
+                if (!(argumentsTypes[j] instanceof nl.softcause.jsontemplates.types.Optional)) {
+                    throw ParseException.expectedMoreArguments().at(cursor);
+                }
             }
         }
     }

@@ -43,6 +43,7 @@ public class ExpressionParser {
         context.parseExpression(null);
         var result = context.yield();
         if (context.empty()) {
+            ParseUtils.validateCompletenessOfArguments(result, context.getCursor());
             return result;
         }
         throw ParseException.stackNotEmpty(text);

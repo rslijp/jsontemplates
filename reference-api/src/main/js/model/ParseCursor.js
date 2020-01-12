@@ -1,4 +1,3 @@
-import ParseContext from './ParseContext'
 
 export function ParseCursor(text){
     this.cursorIndex=0;
@@ -25,7 +24,6 @@ ParseCursor.prototype.read=function(patternOrInstruction) {
         this.move(patternOrInstruction.length);
     } else {
         const match = patternOrInstruction.exec(this.text);
-        console.log(match,patternOrInstruction);
         if (match.length===0) throw "Expected pattern "+patternOrInstruction;
         var chunk = match[0];//match.group(match[0]);
         // this.move(match.end());

@@ -16,6 +16,16 @@ public class ParseCursor {
         this.full=this.text;
     }
 
+    private ParseCursor(String text, String full, int cursorIndex){
+        this.text=text;
+        this.full=full;
+        this.cursorIndex=cursorIndex;
+    }
+
+    public ParseCursor clone(){
+        return new ParseCursor(text, full, cursorIndex);
+    }
+
     boolean at(Pattern pattern){
         var match = pattern.matcher(text);
         return match.find();

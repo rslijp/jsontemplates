@@ -157,11 +157,7 @@ class ParseContext {
                 parseExpression(separators);
                 expr.getArguments().add(yield());
                 if(cursor.at(BRACKET_CLOSE)){
-                    for (var j = expr.getArguments().size(); j < argumentsTypes.length; j++){
-                        if(!(argumentsTypes[j] instanceof nl.softcause.jsontemplates.types.Optional)){
-                            throw ParseException.expectedMoreArguments().at(cursor);
-                        }
-                    }
+                    ParseUtils.validateCompletenessOfArguments(expr, cursor);
                     cursor.read(BRACKET_CLOSE);
                     break;
                 }
@@ -172,6 +168,14 @@ class ParseContext {
         }
         return false;
     }
+//
+//    private static void validateCompletenessOfArgumetns(IExpressionWithArguments expr, IExpressionType[] argumentsTypes, ParseCursor cursor) {
+//        for (var j = expr.getArguments().size(); j < argumentsTypes.length; j++){
+//            if(!(argumentsTypes[j] instanceof nl.softcause.jsontemplates.types.Optional)){
+//                throw ParseException.expectedMoreArguments().at(cursor);
+//            }
+//        }
+//    }
 
     private boolean tryInfix(String operator) {
         if (cursor.at(operator) && !empty()) {
@@ -251,18 +255,6 @@ class ParseContext {
         parseStack.push(expression);
     }
 
-//    private void reduce()
-//    {
-//        log("END GAME!");
-//        reduce(-1);
-//    }
-//
-//    private void intermediateReduce()
-//    {
-//        log("END GAME!");
-//        reduce(-1);
-//    }
-
     private void reduce(int targetPrio)
     {
         if (parseStack.size() >= 2)
@@ -303,5 +295,8 @@ class ParseContext {
         if(LOG) System.out.println(msg);
     }
 
+    protected ParseCursor getCursor(){
+        return cursor.clone();
+    }
 
 }

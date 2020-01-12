@@ -8,8 +8,19 @@ import java.util.regex.Pattern;
 
 public class ParseException extends RuntimeException {
 
+    private final String baseMessage;
+
     ParseException(String msg) {
+        this(msg,msg);
+    }
+
+    ParseException(String baseMessage, String msg) {
         super(msg);
+        this.baseMessage = baseMessage;
+    }
+
+    public String getBaseMessage(){
+        return baseMessage;
     }
 
     public static PartialParseException expected(Pattern pattern) {
@@ -34,14 +45,15 @@ public class ParseException extends RuntimeException {
 
 
     @Value
-    static class PartialParseException {
+    public static class PartialParseException {
         private String message;
 
         ParseException at(ParseCursor cursor){
             String phrase = cursor.getFull().substring(0,cursor.getIndex());
             phrase+="[ERROR]";
             phrase+=cursor.getFull().substring(cursor.getIndex());
-            return new ParseException(String.format("%s. At index %d %s", message, cursor.getIndex(),phrase));
+            return new ParseException(message,String.format("%s. At index %d %s", message, cursor.getIndex(),phrase));
         }
+
     }
 }

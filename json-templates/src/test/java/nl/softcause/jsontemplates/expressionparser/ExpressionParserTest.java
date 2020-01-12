@@ -3,6 +3,7 @@ package nl.softcause.jsontemplates.expressionparser;
 import lombok.Getter;
 import nl.softcause.jsontemplates.expresionparser.ExpressionFormatter;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
+import nl.softcause.jsontemplates.expresionparser.ParseException;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
@@ -23,6 +24,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ExpressionParserTest {
 
@@ -299,6 +301,19 @@ public class ExpressionParserTest {
         assertThat(actual.evaluate(null), is(2L));
         assertThat(actual, is(expected));
 
+    }
+
+    @Test
+    public void should_not_parse_partial_ternary_expression(){
+        var expected = new Ternary();
+        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L),new Constant(2L)));
+
+        try {
+            new ExpressionParser().parse("false?1:");
+            fail();
+        } catch (ParseException Pe){
+            assertThat(Pe.getBaseMessage(), is(ParseException.expectedMoreArguments().getMessage()));
+        }
     }
 
     public class TernaryTestModel{

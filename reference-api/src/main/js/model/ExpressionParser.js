@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import ParseContext from './ParseContext'
+import {validateCompletenessOfArguments} from "./ParseUtil";
 
 let initialized= false;
 const FUNCTION_LOOKUP = {};
@@ -25,17 +26,20 @@ export function parse(text, throwException){
         .withInfixLib(INFIX_LOOKUP);
     try {
         context.parseExpression(null);
+        console.log("parsed");
+        var result = context.yield();
+        if (context.empty()) {
+            validateCompletenessOfArguments(result);
+            console.log(result);
+            return result;
+        }
     } catch (e){
         if(throwException) throw e;
         console.log(e);
         return false;
         // throw e;
     }
-    console.log("parsed");
-    var result = context.yield();
-    if (context.empty()) {
-        return result;
-    }
+
     if(throwException) {
         throw "Stack is not empty";
     }
