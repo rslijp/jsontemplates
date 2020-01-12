@@ -16,7 +16,7 @@ public class Dialog extends ReflectionBasedNodeWithScopeImpl<Dialog.DialogScope>
 
     @RequiredSlot
     @LimitSlots(allowed={Dialog.Field.class})
-    private INode stepsNode=null;
+    private INode inputNode=null;
 
     @Override
     protected void internalEvaluate(TemplateModel model) {

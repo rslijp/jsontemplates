@@ -76,7 +76,7 @@ export function ParseContext(text){
             !cursor.at(DOUBLE_PATTERN) &&
             cursor.at(LONG_PATTERN)) {
             const txt = cursor.read(LONG_PATTERN);
-            push(new Constant(parseInt(txt, ReturnTypes.INTEGER)));
+            push(new Constant(parseInt(txt), ReturnTypes.INTEGER));
             return true;
         }
         return false;

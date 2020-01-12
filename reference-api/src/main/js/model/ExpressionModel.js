@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
 
-function getReturnType(rawType){
+export function getReturnType(rawType){
     return ReturnTypes[rawType.toUpperCase().replace("?","OPTIONAL")]
 }
 

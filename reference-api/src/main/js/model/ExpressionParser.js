@@ -29,7 +29,7 @@ export function parse(text, throwException){
         var result = context.yield();
         if (context.empty()) {
             validateCompletenessOfArguments(result);
-            return {success:true, result: result};
+            return {success:true, result: result===undefined?null:result};
         }
     } catch (e){
         if(throwException) throw e;

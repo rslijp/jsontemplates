@@ -51,11 +51,12 @@ function Slot({node,path,allNodes,forSlot}) {
         if(!argumentTypes) return null;
         var result = Object.entries(argumentTypes).map(([k,v]) => {
             let value = v;
-            const optional = v.endsWith("?")?<Optional/>:null;
+            const isOptional = v.endsWith("?");
+            const optional = isOptional?<Optional/>:null;
             if(optional){
                 value=value.substr(0,value.length-1);
             }
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression type={value}/></Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression optional={isOptional} type={value}/></Col></Row>);
         });
         return (
             <div>
