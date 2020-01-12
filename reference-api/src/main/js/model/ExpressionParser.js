@@ -26,23 +26,21 @@ export function parse(text, throwException){
         .withInfixLib(INFIX_LOOKUP);
     try {
         context.parseExpression(null);
-        console.log("parsed");
         var result = context.yield();
         if (context.empty()) {
             validateCompletenessOfArguments(result);
-            console.log(result);
-            return result;
+            return {success:true, result: result};
         }
     } catch (e){
         if(throwException) throw e;
         console.log(e);
-        return false;
+        return {success:false, error: e};
         // throw e;
     }
 
     if(throwException) {
         throw "Stack is not empty";
     }
-    return false;
+    return {success:false, error: "Stack is not empty"};;
 
 }

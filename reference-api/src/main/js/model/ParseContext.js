@@ -5,7 +5,7 @@ import {NodeTypes, ReturnTypes} from '../Constants';
 import {validateCompletenessOfArguments} from './ParseUtil';
 
 
-const LOG = true;
+const LOG = false;
 const LONG_PATTERN = /^(-?[0-9]+)/;
 const DOUBLE_PATTERN = /^(-?[0-9]+\.[0-9]+)/;
 const TEXT_PATTERN  = /^'((\S|\s)+)'/;
@@ -102,7 +102,6 @@ export function ParseContext(text){
     };
 
     this.tryFunction=function(functionName) {
-        console.log("tryFunction",functionName);
         if (cursor.at(functionName)) {
             cursor.read(functionName);
             cursor.read(BRACKET_OPEN);
@@ -126,13 +125,12 @@ export function ParseContext(text){
     };
 
     this.tryInfix=function(operator){
-        // console.log("tryInfix",operator);
         if (cursor.at(operator) && !this.empty()) {
             cursor.read(operator);
             const expr = createExpression(this.infixLib[operator]);
             this.reduce(expr.priority());
             const lhs = parseStack.pop();
-            log("POP "+operator(lhs));
+            log("POP "+lhs.type);
             expr.arguments.push(lhs);
             push(expr);
             return true;
@@ -232,14 +230,14 @@ ParseContext.prototype.withInfixLib=function(infixLib){
 ParseContext.prototype.parseExpression=function(until){
     while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
         log("========");
-        if( this.tryLongConstant() || //tested
-            this.tryBooleanConstant() || //tested
-            this.tryDoubleConstant() || //tested
-            this.tryStringConstant() || //tested
-            this.tryVariable() ||  //tested
-            this.tryBrackets() || //tested
-            this.tryTernary() || //tested
-            this.libScan(this.unaryLib, this.tryUnary) || //tested
+        if( this.tryLongConstant() ||
+            this.tryBooleanConstant() ||
+            this.tryDoubleConstant() ||
+            this.tryStringConstant() ||
+            this.tryVariable() ||
+            this.tryBrackets() ||
+            this.tryTernary() ||
+            this.libScan(this.unaryLib, this.tryUnary) ||
             this.libScan(this.functionLib, this.tryFunction) ||
             this.libScan(this.infixLib, this.tryInfix)){
             continue;

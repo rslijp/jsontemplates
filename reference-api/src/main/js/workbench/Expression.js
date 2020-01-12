@@ -11,7 +11,7 @@ function Expression({type}) {
 
     function onChange(e,v){
         e.stopPropagation();
-        setValid(parse(e.target.value||""));
+        setValid(parse(e.target.value||"").success);
     }
 
 
@@ -28,7 +28,7 @@ function Expression({type}) {
                 onChange={onChange}
             />
             <InputGroup.Append>
-                <InputGroup.Text id="basic-addon2"><FontAwesomeIcon style={{width: "24px"}} icon={isValid?faCheck:faTimes} /></InputGroup.Text>
+                <InputGroup.Text id="basic-addon2"><FontAwesomeIcon style={{width: "24px", color: isValid?"green":"red"}} icon={isValid?faCheck:faTimes} /></InputGroup.Text>
             </InputGroup.Append>
         </InputGroup>
 
