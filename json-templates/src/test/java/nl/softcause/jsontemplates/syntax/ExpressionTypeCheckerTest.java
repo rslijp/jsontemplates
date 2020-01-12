@@ -21,6 +21,7 @@ import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -544,5 +545,20 @@ public class ExpressionTypeCheckerTest {
         }
     }
 
+    @Test
+    public void should_determine_return_type_of_formatInteger(){
+        var returnType = new ExpressionTypeChecker(TestDefinition.class)
+                    .getExpressionType(new FormatInteger(Collections.singletonList(new Variable("mentalAge"))));
+
+        System.out.println(returnType);
+    }
+
+    @Test
+    public void should_determine_return_type_of_formatInteger_of_constant(){
+        var returnType = new ExpressionTypeChecker(TestDefinition.class)
+                .getExpressionType(new FormatInteger(Collections.singletonList(new Constant(1L))));
+
+        System.out.println(returnType);
+    }
 
 }

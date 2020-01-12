@@ -51,7 +51,7 @@ export function ParseContext(text){
     this.tryVariable=function() {
         if (cursor.at(VARIABLE_PATTERN)) {
             const txt = cursor.read(VARIABLE_PATTERN);
-            push(new Variable(txt));
+            push(new Variable(txt.substring(1)));
             return true;
         }
         return false;

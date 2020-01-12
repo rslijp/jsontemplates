@@ -36,6 +36,8 @@ public class Wizard extends ReflectionBasedNodeWithScopeImpl<Wizard.WizardScope>
         @LimitSlots(allowed={Dialog.class})
         private INode stepsNode=null;
 
+        private boolean applicable;
+
 
         @Override
         public void registerParent(Wizard parent) {

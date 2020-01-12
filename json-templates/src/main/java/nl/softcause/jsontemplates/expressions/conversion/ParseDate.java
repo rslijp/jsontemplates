@@ -8,6 +8,7 @@ import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
+import nl.softcause.jsontemplates.expressions.ReduceOptionalAnnotation;
 import nl.softcause.jsontemplates.expressions.util.DateFormatterUtils;
 import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
+@ReduceOptionalAnnotation
 public class ParseDate implements IExpressionWithArguments {
     @Getter
     @JsonInclude

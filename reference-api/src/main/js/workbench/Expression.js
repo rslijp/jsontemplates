@@ -3,14 +3,18 @@ import {InputGroup,FormControl} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faTimes, faBolt} from "@fortawesome/free-solid-svg-icons";
 import {parse} from '../model/ExpressionParser';
-import {getReturnType} from '../model/ExpressionModel'
+import {getReturnType} from '../model/ExpressionModel';
+import {checkExpression} from '../model/ExpressionTypeChecker';
+import {getModelDefinition} from '../model/ModelDefinition';
 
 function Expression({type, optional}) {
+    const expectedType = getReturnType(type);
+    const dislpayType=optional?type.substr(0,type.length-1):type;;
     const [isValid, setValid] = useState(
-        optional
+        true
     );
     const [isTypeValid, setTypeValid] = useState(
-        true
+        optional
     );
 
     function onChange(e,v){
@@ -22,10 +26,10 @@ function Expression({type, optional}) {
                 setTypeValid(true);
             } else {
                 setValid(true);
-                const expected = getReturnType(type);
-                const actual = result.result.returnType();
-                console.log(expected, actual);
-                setTypeValid(expected === actual);
+                setTypeValid(checkExpression(result.expression,getModelDefinition(),expectedType,false));
+                // const actualType = result.expression.returnType();
+                // console.log(expectedType, actualType);
+                // setTypeValid(typesMatch(expectedType,actualType));
             }
         } else {
             setValid(false);
@@ -39,7 +43,7 @@ function Expression({type, optional}) {
     return (
         <InputGroup className="mb-3">
             <InputGroup.Prepend>
-                <InputGroup.Text id="basic-addon1"><div style={{minWidth: "100px",color: isTypeValid?"#212529":"red"}}>{type}</div></InputGroup.Text>
+                <InputGroup.Text id="basic-addon1"><div style={{minWidth: "100px",color: isTypeValid?"#212529":"red"}}>{dislpayType}</div></InputGroup.Text>
             </InputGroup.Prepend>
             <FormControl
                 placeholder="expression"

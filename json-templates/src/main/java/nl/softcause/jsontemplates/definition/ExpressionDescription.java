@@ -49,9 +49,15 @@ public class ExpressionDescription {
 
     private String parseType;
 
+    private boolean reduceOptional;
+
     void addArgument(IExpressionType argType) {
         if(argumentTypes==null) argumentTypes = new ArrayList<>();
         argumentTypes.add(argType.getType());
+    }
+
+    public void markReduceOptional(){
+        reduceOptional=true;
     }
 
     public String toString() {

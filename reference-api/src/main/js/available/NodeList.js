@@ -18,7 +18,7 @@ class NodeList extends React.Component {
 
 
     render() {
-        const bundles = _.groupBy(this.state.nodes, 'packageName');
+        const bundles = _.groupBy(_.sortBy(this.state.nodes,'packageName'), 'packageName');
         const groupsList = _.map(bundles, (nodes, bundle) => {
                 const nodesList = nodes.map(node =>
                     <Node key={node.id} node={node} allNodes={this.props.allNodes}/>

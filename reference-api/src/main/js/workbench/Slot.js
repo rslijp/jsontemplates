@@ -14,10 +14,8 @@ import Expression from "./Expression";
 
 function Slot({node,path,allNodes,forSlot}) {
 
-
-
     function onDrop(item,path){
-        var node = item.payload;
+        const node = item.payload;
         setNode(path,node);
     }
 
@@ -49,14 +47,11 @@ function Slot({node,path,allNodes,forSlot}) {
 
     function renderArguments(argumentTypes){
         if(!argumentTypes) return null;
-        var result = Object.entries(argumentTypes).map(([k,v]) => {
-            let value = v;
+        const result = Object.entries(argumentTypes).map(([k,v]) => {
+            // let value = v;
             const isOptional = v.endsWith("?");
             const optional = isOptional?<Optional/>:null;
-            if(optional){
-                value=value.substr(0,value.length-1);
-            }
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression optional={isOptional} type={value}/></Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression optional={isOptional} type={v}/></Col></Row>);
         });
         return (
             <div>
@@ -70,7 +65,7 @@ function Slot({node,path,allNodes,forSlot}) {
 
     function renderNodeSlots(nodeSlots){
         if(!nodeSlots) return null;
-        var result = Object.entries(nodeSlots).map(([k,v]) => {
+        const result = Object.entries(nodeSlots).map(([k,v]) => {
             let value = v;
             const optional = v.endsWith("?");
             const name = k;//.endsWith("Node")?k.substr(0,k.length-4):k
@@ -90,7 +85,7 @@ function Slot({node,path,allNodes,forSlot}) {
                 const currentPath = childPath+"."+i;
                 return (<Slot key={i} forSlot={name} path={currentPath} node={node} allNodes={allNodes}/>);
             });
-            const addSlot =/*dropArea(*/<EmptySlot forSlot={name} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>/*, childPath);*/
+            const addSlot =/*dropArea(*/<EmptySlot forSlot={name} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>;/*, childPath);*/
             return (<Row className="mb-2" key={k}><Col sm>{slots}{addSlot}</Col></Row>);
         });
         return (
@@ -115,7 +110,7 @@ function Slot({node,path,allNodes,forSlot}) {
         setFocus(path, null);
     }
 
-    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null} <div className="float-right remove-container"> <FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div></h3></Card.Header>, path)
+    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null} <div className="float-right remove-container"> <FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div></h3></Card.Header>, path);
     return (
         <Card className={"mb-3 "+(hasFocus(path, null)?"border border-primary":"")} >
             {header}

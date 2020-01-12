@@ -11,6 +11,7 @@ import Backend from 'react-dnd-html5-backend'
 import {Col, Container, Row} from "react-bootstrap";
 import { setAvailableNodes, setGlobalNodes } from './available/AllowedNodes'
 import {initExpressionLibrary} from './model/ExpressionParser'
+import {initModelDefinition} from './model/ModelDefinition'
 
 class App extends React.Component {
 
@@ -26,6 +27,7 @@ class App extends React.Component {
 			// var applicableNodes = _.filter(data.nodeDescriptions, node=>data.mainNodeIds.includes(node.id));
 			setGlobalNodes(data.mainNodeIds);
 			setAvailableNodes(data.nodeDescriptions, data.mainNodeIds);
+			initModelDefinition(data.modelDescriptions[0]);
 			this.setState({
 				mainNodeIds: data.mainNodeIds,
 				mainModelId: data.mainModelId,

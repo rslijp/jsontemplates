@@ -9,7 +9,6 @@ import nl.softcause.jsontemplates.model.ModelException;
 import nl.softcause.jsontemplates.types.*;
 import nl.softcause.jsontemplates.utils.ClassUtil;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

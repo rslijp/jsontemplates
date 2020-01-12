@@ -1,12 +1,15 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
 
+let ID = 0;
+
 export function getReturnType(rawType){
     return ReturnTypes[rawType.toUpperCase().replace("?","OPTIONAL")]
 }
 
 export function Constant(value, type){
     return {
+        id: ID++,
         type: NodeTypes.CONSTANT,
         value: value,
         priority: ()=>OperatorPrecendence.CONSTANTS,
@@ -17,6 +20,7 @@ export function Constant(value, type){
 }
 export function Variable(name){
     return {
+        id: ID++,
         type: NodeTypes.VARIABLE,
         name: name,
         priority: ()=>OperatorPrecendence.VARIABLE,
@@ -24,13 +28,16 @@ export function Variable(name){
             if(model== null){
                 throw "no model";
             }
-            return model.definition[name].decoratedType;
+            var hit = _.findWhere(model.propertyDescriptions, {name: name});
+            if(!hit) throw "No such property "+name;
+            return getReturnType(hit.type); //broken decorateType
         }
     }
 }
 
 export function Brackets(){
     return {
+        id: ID++,
         type: NodeTypes.BRACKETS,
         arguments: [],
         argumentsTypes: [ReturnTypes.GENERIC],
@@ -47,6 +54,7 @@ export function Brackets(){
 export function Ternary(){
     const args = [];
     return {
+        id: ID++,
         type: NodeTypes.TERNARY,
         arguments: args,
         argumentsTypes: [ReturnTypes.BOOLEAN, ReturnTypes.GENERIC, ReturnTypes.GENERIC],
@@ -62,13 +70,15 @@ export function Ternary(){
 
 
 export function createExpression(type){
-    console.log("CREATE OF ",type)
+    // console.log("CREATE OF ",type)
     const args = [];
     const argumentsTypes = _.map(type.argumentTypes, t=>getReturnType(t));
     return {
+        id: ID++,
         type: type.name,
         arguments: args,
         argumentsTypes: argumentsTypes,
+        reduceOptional: type.reduceOptional,
         priority: ()=>type.priority,
         returnType: (model)=>{
             return getReturnType(type.returnType);

@@ -1,10 +1,8 @@
 package nl.softcause.jsontemplates.definition;
 
-import nl.softcause.jsontemplates.expressions.Constant;
-import nl.softcause.jsontemplates.expressions.IExpression;
-import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
-import nl.softcause.jsontemplates.expressions.Variable;
+import nl.softcause.jsontemplates.expressions.*;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
+import nl.softcause.jsontemplates.utils.ClassUtil;
 
 import static nl.softcause.jsontemplates.expresionparser.ParseUtils.createExpression;
 import static nl.softcause.jsontemplates.expresionparser.ParseUtils.operator;
@@ -31,6 +29,8 @@ public class DescribeExpressionHelper {
         if(entry == Variable.class) return ExpressionDescription.VARIABLE;
         IExpression expr = createExpression(entry);
         var description = new ExpressionDescription(template.newExpressionId(), operator(expr), entry.getSimpleName(), expr.priority(), expr.getReturnType(definition), expr.parseType());
+        var reduceOptional = ClassUtil.hasAnnotation(expr, ReduceOptionalAnnotation.class);
+        if(reduceOptional) description.markReduceOptional();
         if(expr instanceof IExpressionWithArguments){
             var expArg = (IExpressionWithArguments) expr;
             for (var argType : expArg.getArgumentsTypes()) {
