@@ -1,5 +1,6 @@
 import _ from "underscore";
 import {ReturnTypes} from "../Constants";
+import {getReturnType} from "./ExpressionModel";
 
 function ExpressionTypeChecker(definition){
     const CACHE = {};
@@ -69,7 +70,6 @@ function ExpressionTypeChecker(definition){
 
     function determineReturnType(expression){
         const argumentExpression = expression.argumentsTypes ? expression : null;
-
         const reduceOptional = expression.reduceOptional||false;
         const type = expression.returnType(definition);
         if(baseType(type)!==ReturnTypes.GENERIC) return removeOptional(reduceOptional,type,argumentExpression);
@@ -80,13 +80,14 @@ function ExpressionTypeChecker(definition){
         throw "Bug!";
     }
 
-    function resolveT(type, resolvedType){
-        console.log(type, resolvedType);
-        throw "Not implemented"
+    function resolveT(genericType, resolvedType){
+        console.log(genericType, resolvedType);
+        const rawResolvedType = genericType.replace("GENERIC", baseType(resolvedType)).toLowerCase();
+        return getReturnType(rawResolvedType);
     }
 
     function findGenericArgument(argumentExpression) {
-        let resolvedType = determineReturnType(argumentExpression[0]);
+        let resolvedType = determineReturnType(argumentExpression.arguments[0]);
         for (let i=0; i<argumentExpression.argumentsTypes.length; i++){
             const candidate = argumentExpression.argumentsTypes[i];
             if(baseType(candidate) === ReturnTypes.GENERIC){
@@ -111,6 +112,7 @@ function ExpressionTypeChecker(definition){
         return eraseAllowed?baseType(type):type;
     }
     function typesMatch(target, candidate){
+        console.log("target",target,"candidate",candidate);
         if(target === candidate) return true;
         if(target === ReturnTypes.DECIMAL && candidate === ReturnTypes.INTEGER) return true;
         if(baseType(target) === ReturnTypes.GENERIC && baseType(candidate) !== ReturnTypes.GENERIC) {
@@ -156,8 +158,9 @@ function ExpressionTypeChecker(definition){
         return type.endsWith("?");
     }
 
-    function resolveGenericType(type, candidate){
-        throw "Not implemented"
+    function resolveGenericType(genericType, candidate){
+        const rawResolvedType = genericType.replace("GENERIC", baseType(candidate)).toLowerCase();
+        return getReturnType(rawResolvedType);
     }
 
     return {
@@ -166,13 +169,18 @@ function ExpressionTypeChecker(definition){
         {
             console.log("---------");
             console.log("EXPRESSION", expression);
-            console.log("RETURN", expression.returnType(definition));
+            try {
+                 console.log("RETURN", expression.returnType(definition));
+            } catch {
+                console.log("RETURN", "????");
+            }
             console.log("---------");
             console.log("EXPECTED", expectedType);
             console.log("---------");
             try {
+                console.log('>>>>>>>>>START')
                 checkTypes(expression);
-                console.log('>>>>>>>>>')
+                console.log('>>>>>>>>>END')
                 matchSingleArgumentExpressionType(expression, expectedType, "expression")
                 return true;
             } catch (e) {

@@ -4,7 +4,8 @@ import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
 let ID = 0;
 
 export function getReturnType(rawType){
-    return ReturnTypes[rawType.toUpperCase().replace("?","OPTIONAL")]
+    //dodgy
+    return ReturnTypes[rawType.replace("T","GENERIC").toUpperCase().replace("?","OPTIONAL")]
 }
 
 export function Constant(value, type){
@@ -30,6 +31,8 @@ export function Variable(name){
             }
             var hit = _.findWhere(model.propertyDescriptions, {name: name});
             if(!hit) throw "No such property "+name;
+            console.log(hit);
+            if(!hit.readable) throw "Can't read property "+name;
             return getReturnType(hit.type); //broken decorateType
         }
     }
@@ -70,7 +73,7 @@ export function Ternary(){
 
 
 export function createExpression(type){
-    // console.log("CREATE OF ",type)
+    console.log("CREATE OF ",type)
     const args = [];
     const argumentsTypes = _.map(type.argumentTypes, t=>getReturnType(t));
     return {
