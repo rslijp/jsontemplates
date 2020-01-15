@@ -51,6 +51,8 @@ public class ExpressionDescription {
 
     private boolean reduceOptional;
 
+    private boolean downCastIfPossible;
+
     void addArgument(IExpressionType argType) {
         if(argumentTypes==null) argumentTypes = new ArrayList<>();
         argumentTypes.add(argType.getType());
@@ -59,7 +61,9 @@ public class ExpressionDescription {
     public void markReduceOptional(){
         reduceOptional=true;
     }
-
+    public void markDownCastIfPossible(){
+        downCastIfPossible=true;
+    }
     public String toString() {
         if (argumentTypes != null) {
             return String.format("%s as %d: (%d) %s -> %s [%s %s]", name, id, priority, String.join(",", argumentTypes), returnType, parseType, operator);

@@ -3,7 +3,6 @@ package nl.softcause.jsontemplates.syntax;
 import nl.softcause.jsontemplates.collections.IntegerList;
 import nl.softcause.jsontemplates.collections.StringList;
 import nl.softcause.jsontemplates.expressions.Constant;
-import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.arithmetic.Add;
 import nl.softcause.jsontemplates.expressions.arithmetic.Minus;
@@ -15,7 +14,6 @@ import nl.softcause.jsontemplates.expressions.logic.And;
 import nl.softcause.jsontemplates.expressions.logic.Ternary;
 import nl.softcause.jsontemplates.expressions.text.Concat;
 import nl.softcause.jsontemplates.model.*;
-import nl.softcause.jsontemplates.types.IntegerType;
 import nl.softcause.jsontemplates.types.TypeException;
 import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
@@ -550,7 +548,7 @@ public class ExpressionTypeCheckerTest {
         var returnType = new ExpressionTypeChecker(TestDefinition.class)
                     .getExpressionType(new FormatInteger(Collections.singletonList(new Variable("mentalAge"))));
 
-        System.out.println(returnType);
+        assertThat(returnType, is(Types.OPTIONAL_TEXT));
     }
 
     @Test
@@ -558,7 +556,61 @@ public class ExpressionTypeCheckerTest {
         var returnType = new ExpressionTypeChecker(TestDefinition.class)
                 .getExpressionType(new FormatInteger(Collections.singletonList(new Constant(1L))));
 
-        System.out.println(returnType);
+        assertThat(returnType, is(Types.TEXT));
     }
 
+    @Test
+    public void should_downcast_if_both_arguments_are_integer(){
+        try {
+            var lhs = new Constant(42);
+            var rhs = new Constant(37);
+            var add = new Add();
+            add.setArguments(Arrays.asList(lhs, rhs));
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(add);
+
+            var returnType = checker.getExpressionType(add);
+
+            assertThat(returnType, is(Types.INTEGER));
+        } catch (TypeCheckException TCe){
+            fail("Should be a valid type");
+        }
+    }
+
+
+    @Test
+    public void should_not_downcast_if_ony_lhs_is_integer(){
+        try {
+            var lhs = new Constant(42);
+            var rhs = new Constant(37.2);
+            var add = new Add();
+            add.setArguments(Arrays.asList(lhs, rhs));
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(add);
+
+            var returnType = checker.getExpressionType(add);
+
+            assertThat(returnType, is(Types.DECIMAL));
+        } catch (TypeCheckException TCe){
+            fail("Should be a valid type");
+        }
+    }
+
+    @Test
+    public void should_not_downcast_if_ony_4hs_is_integer(){
+        try {
+            var lhs = new Constant(42.0);
+            var rhs = new Constant(37);
+            var add = new Add();
+            add.setArguments(Arrays.asList(lhs, rhs));
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(add);
+
+            var returnType = checker.getExpressionType(add);
+
+            assertThat(returnType, is(Types.DECIMAL));
+        } catch (TypeCheckException TCe){
+            fail("Should be a valid type");
+        }
+    }
 }

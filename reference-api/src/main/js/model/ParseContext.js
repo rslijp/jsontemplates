@@ -247,8 +247,8 @@ ParseContext.prototype.parseExpression=function(until){
     this.reduce(until==null?-1:0);
 };
 
-ParseContext.prototype.yield=function(){
-    this.reduce(0);
+ParseContext.prototype.yield=function(prio){
+    this.reduce(prio||0);
     return this.parseStack.pop();
 };
 

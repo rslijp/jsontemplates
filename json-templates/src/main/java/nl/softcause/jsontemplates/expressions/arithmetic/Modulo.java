@@ -2,6 +2,7 @@ package nl.softcause.jsontemplates.expressions.arithmetic;
 
 import lombok.Getter;
 import nl.softcause.jsontemplates.OperatorPrecendence;
+import nl.softcause.jsontemplates.expressions.DownCastIfPossibleAnnotation;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.util.TupleExpression;
 import nl.softcause.jsontemplates.types.IExpressionType;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 import static nl.softcause.jsontemplates.types.Types.DECIMAL;
 
+@DownCastIfPossibleAnnotation
 public class Modulo extends TupleExpression<Double,Double, Double> {
 
     public Modulo() {

@@ -61,7 +61,7 @@ export function Ternary(){
         type: NodeTypes.TERNARY,
         arguments: args,
         argumentsTypes: [ReturnTypes.BOOLEAN, ReturnTypes.GENERIC, ReturnTypes.GENERIC],
-        priority: ()=>args.length>=2?OperatorPrecendence.FUNCTION:OperatorPrecendence.TERNARY,
+        priority: ()=> args.length>=2?OperatorPrecendence.FUNCTION:OperatorPrecendence.TERNARY,
         returnType: (model)=>{
             if(model== null){
                 throw "no model";
@@ -82,6 +82,7 @@ export function createExpression(type){
         arguments: args,
         argumentsTypes: argumentsTypes,
         reduceOptional: type.reduceOptional,
+        downCastIfPossible: type.downCastIfPossible,
         priority: ()=>type.priority,
         returnType: (model)=>{
             return getReturnType(type.returnType);

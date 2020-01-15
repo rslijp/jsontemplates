@@ -1,5 +1,6 @@
 package nl.softcause.jsontemplates.syntax;
 
+import nl.softcause.jsontemplates.expressions.DownCastIfPossibleAnnotation;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.expressions.ReduceOptionalAnnotation;
@@ -93,15 +94,17 @@ public class ExpressionTypeChecker {
     private IExpressionType determineReturnType(IExpression expression) {
         var argumentExpression = expression instanceof IExpressionWithArguments ? (IExpressionWithArguments) expression : null;
 
-        var reduceOptional = ClassUtil.hasAnnotation(expression, ReduceOptionalAnnotation.class);
         var type = expression.getReturnType(definition);
-        if(!type.baseType().equals(Types.GENERIC)) return removeOptional(reduceOptional,type,argumentExpression);
+        if(!type.baseType().equals(Types.GENERIC)) return cleanUp(type,argumentExpression);
+
         if(argumentExpression != null){
             IExpressionType resolvedType = findGenericArgument(argumentExpression);
-            return removeOptional(reduceOptional, GenericType.resolveT(type, resolvedType), argumentExpression);
+            return cleanUp(GenericType.resolveT(type, resolvedType), argumentExpression);
         }
         throw new RuntimeException("Bug!");
     }
+
+
 
     private IExpressionType findGenericArgument(IExpressionWithArguments argumentExpression) {
         var resolvedType = determineReturnType(argumentExpression.getArguments().get(0));
@@ -115,9 +118,33 @@ public class ExpressionTypeChecker {
         return resolvedType;
     }
 
-    private IExpressionType removeOptional(boolean active, IExpressionType type, IExpressionWithArguments argumentExpression){
-        if(!active) return type;
+    private IExpressionType cleanUp(IExpressionType type, IExpressionWithArguments argumentExpression){
+        type = removeOptional(type, argumentExpression);
+        type = downCastIfPossible(type, argumentExpression);
+        return type;
+    }
+
+    private IExpressionType downCastIfPossible(IExpressionType type, IExpressionWithArguments argumentExpression){
+        if(type.baseType()!=Types.DECIMAL) return type;
         if(argumentExpression==null) return type;
+        var active = ClassUtil.hasAnnotation(argumentExpression, DownCastIfPossibleAnnotation.class);
+        if(!active) return type;
+        var eraseAllowed = argumentExpression.getArguments().size()>0;
+        for(var i=0; i<argumentExpression.getArguments().size(); i++){
+            var argumentType = argumentExpression.getArgumentsTypes()[i];
+            var actualType = cachedDetermineReturnType(argumentExpression.getArguments().get(i));
+            if(argumentType.baseType()==Types.DECIMAL && actualType.baseType()!=Types.INTEGER){
+                eraseAllowed = false;
+            }
+        }
+        if(!eraseAllowed) return type;
+        return type instanceof Optional ? Types.OPTIONAL_INTEGER : Types.INTEGER;
+    }
+
+    private IExpressionType removeOptional(IExpressionType type, IExpressionWithArguments argumentExpression){
+        if(argumentExpression==null) return type;
+        var active = ClassUtil.hasAnnotation(argumentExpression, ReduceOptionalAnnotation.class);
+        if(!active) return type;
         var eraseAllowed = argumentExpression.getArguments().size()>0;
         for(var i=0; i<argumentExpression.getArguments().size(); i++){
             var argumentType = argumentExpression.getArgumentsTypes()[i];
@@ -148,7 +175,7 @@ public class ExpressionTypeChecker {
             if(modelType==null) {
                 modelType = currentModelType;
                 modelName = currentModelName;
-            } else if(modelType!=currentModelType){
+            } else if(!Types.primitiveTypesMatch(modelType,currentModelType)){
                 throw TypeCheckException.wrongModel(modelName, currentModelName,i);
             }
         }

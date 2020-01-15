@@ -50,10 +50,6 @@ function ExpressionTypeChecker(definition){
         return actualType;
     }
 
-    // function getRawExpressionType(expression){
-    //     return cachedDetermineReturnType(expression);
-    // }
-
     function checkSingle(expression){
         cachedDetermineReturnType(expression);
     }
@@ -70,12 +66,11 @@ function ExpressionTypeChecker(definition){
 
     function determineReturnType(expression){
         const argumentExpression = expression.argumentsTypes ? expression : null;
-        const reduceOptional = expression.reduceOptional||false;
         const type = expression.returnType(definition);
-        if(baseType(type)!==ReturnTypes.GENERIC) return removeOptional(reduceOptional,type,argumentExpression);
+        if(baseType(type)!==ReturnTypes.GENERIC) return cleanUp(type,argumentExpression);
         if(argumentExpression != null){
             const resolvedType = findGenericArgument(argumentExpression);
-            return removeOptional(reduceOptional, resolveT(type, resolvedType), argumentExpression);
+            return cleanUp(resolveT(type, resolvedType), argumentExpression);
         }
         throw "Bug!";
     }
@@ -98,9 +93,36 @@ function ExpressionTypeChecker(definition){
         return resolvedType;
     }
 
-    function removeOptional(active, type, argumentExpression){
-        if(!active) return type;
+    function cleanUp(type, argumentExpression){
+        type = removeOptional(type, argumentExpression);
+        type = downCastIfPossible(type, argumentExpression);
+        return type;
+    }
+
+    function downCastIfPossible(type, argumentExpression){
+        if(baseType(type)!==ReturnTypes.DECIMAL) return type;
         if(argumentExpression==null) return type;
+        const active = argumentExpression.downCastIfPossible||false;
+        if(!active) return type;
+        var eraseAllowed = argumentExpression.arguments.length>0;
+        for(let i=0; i<argumentExpression.arguments.length; i++){
+            const argumentType = argumentExpression.argumentsTypes[i];
+            const actualType = cachedDetermineReturnType(argumentExpression.arguments[i]);
+            if(baseType(argumentType)===ReturnTypes.DECIMAL && baseType(actualType)!==ReturnTypes.INTEGER){
+                eraseAllowed = false;
+            }
+        }
+        if(!eraseAllowed) return type;
+        return isOptional(type) ? ReturnTypes.INTEGEROPTIONAL : ReturnTypes.INTEGER;
+    }
+
+
+
+    function removeOptional(type, argumentExpression){
+        if(argumentExpression==null) return type;
+        const active = argumentExpression.reduceOptional||false;
+        if(!active) return type;
+
         let eraseAllowed = argumentExpression.arguments.length>0;
         for(let i=0; i<argumentExpression.arguments.length; i++){
             const argumentType = argumentExpression.argumentsTypes[i];
@@ -111,6 +133,7 @@ function ExpressionTypeChecker(definition){
         }
         return eraseAllowed?baseType(type):type;
     }
+
     function typesMatch(target, candidate){
         console.log("target",target,"candidate",candidate);
         if(target === candidate) return true;
@@ -144,10 +167,16 @@ function ExpressionTypeChecker(definition){
             if(modelType==null) {
                 modelType = currentModelType;
                 modelName = currentModelName;
-            } else if(modelType!==currentModelType){
+            } else if(!primitiveTypesMatch(modelType,currentModelType)){
                 throw "Wrong model expected "+modelName+" but found "+currentModelName+" at "+i;
             }
         }
+    }
+
+    function primitiveTypesMatch(target,candidate) {
+        if (target===candidate) return true;
+        if (target===ReturnTypes.DECIMAL && candidate===ReturnTypes.INTEGER) return true;
+        return false;
     }
 
     function baseType(type){

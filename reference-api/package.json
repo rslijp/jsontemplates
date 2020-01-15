@@ -33,7 +33,7 @@
     "underscore": "^1.9.1"
   },
   "scripts": {
-    "watch": "webpack --watch -d"
+    "watch": "webpack --watch -d --env development"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",

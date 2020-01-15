@@ -27,9 +27,6 @@ function Expression({type, optional}) {
             } else {
                 setValid(true);
                 setTypeValid(checkExpression(result.expression,getModelDefinition(),expectedType,false));
-                // const actualType = result.expression.returnType();
-                // console.log(expectedType, actualType);
-                // setTypeValid(typesMatch(expectedType,actualType));
             }
         } else {
             setValid(false);

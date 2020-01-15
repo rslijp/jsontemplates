@@ -1,5 +1,8 @@
 package nl.softcause.jsontemplates.types;
 
+import nl.softcause.jsontemplates.expressions.IExpression;
+
+import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.*;
 
@@ -126,6 +129,12 @@ public class Types {
         return typesMatch(target, candidate);
     }
 
+    public static boolean primitiveTypesMatch(Class target, Class candidate) {
+        if (target.equals(candidate)) return true;
+        if (target.equals(DecimalType.class) && candidate.equals(IntegerType.class)) return true;
+        return false;
+    }
+
     public static boolean typesMatch(IExpressionType target, IExpressionType candidate){
         if(target.equals(candidate)) return true;
         if(target.equals(Types.DECIMAL) && candidate.equals(Types.INTEGER)) return true;
@@ -142,4 +151,5 @@ public class Types {
     public static IExpressionType decorate(IExpressionType<?> type, Class<?> modelType) {
         return new ModelDecoratedType(type, modelType);
     }
+
 }

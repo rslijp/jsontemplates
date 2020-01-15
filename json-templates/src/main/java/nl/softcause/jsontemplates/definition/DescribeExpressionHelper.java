@@ -29,8 +29,8 @@ public class DescribeExpressionHelper {
         if(entry == Variable.class) return ExpressionDescription.VARIABLE;
         IExpression expr = createExpression(entry);
         var description = new ExpressionDescription(template.newExpressionId(), operator(expr), entry.getSimpleName(), expr.priority(), expr.getReturnType(definition), expr.parseType());
-        var reduceOptional = ClassUtil.hasAnnotation(expr, ReduceOptionalAnnotation.class);
-        if(reduceOptional) description.markReduceOptional();
+        if(ClassUtil.hasAnnotation(expr, ReduceOptionalAnnotation.class)) description.markReduceOptional();
+        if(ClassUtil.hasAnnotation(expr, DownCastIfPossibleAnnotation.class)) description.markDownCastIfPossible();
         if(expr instanceof IExpressionWithArguments){
             var expArg = (IExpressionWithArguments) expr;
             for (var argType : expArg.getArgumentsTypes()) {

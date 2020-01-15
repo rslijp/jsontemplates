@@ -1,7 +1,9 @@
 package nl.softcause.jsontemplates.expressions.arithmetic;
 
 import nl.softcause.jsontemplates.OperatorPrecendence;
+import nl.softcause.jsontemplates.expressions.DownCastIfPossibleAnnotation;
 
+@DownCastIfPossibleAnnotation
 public class Minus extends ArithmeticTupleExpression {
 
     @Override
