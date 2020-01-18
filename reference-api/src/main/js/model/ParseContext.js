@@ -157,6 +157,7 @@ export function ParseContext(text){
     this.tryUnary=function(operator){
         if (cursor.at(operator)) {
             cursor.read(operator);
+            addBlock(cursor.getLastBlock(),HighlightTypes.INFIX);
             const expr = createExpression(this.unaryLib[operator]);
             push(expr);
             return true;
@@ -167,12 +168,14 @@ export function ParseContext(text){
     this.tryBrackets=function() {
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
+            addBlock(cursor.getLastBlock(),HighlightTypes.BRACKETS);
             this.parseExpression(BRACKET_CLOSE);
             const inner = this.yield();
             const brackets = Brackets();
             brackets.arguments.push(inner);
             push(brackets, "()");
             cursor.read(BRACKET_CLOSE);
+            addBlock(cursor.getLastBlock(),HighlightTypes.BRACKETS);
             return true;
         }
         return false;
@@ -181,12 +184,14 @@ export function ParseContext(text){
      this.tryTernary=function() {
         if (cursor.at("?") && !this.empty()) {
             cursor.read("?");
+            addBlock(cursor.getLastBlock(),HighlightTypes.TERNARY);
             const ternary = Ternary();
             const condition = this.yield(ternary.priority());
             ternary.arguments.push(condition);
             push(ternary);
             this.parseExpression(":");
             cursor.read(":");
+            addBlock(cursor.getLastBlock(),HighlightTypes.TERNARY);
             return true;
         }
         return false;

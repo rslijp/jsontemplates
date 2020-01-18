@@ -16,7 +16,10 @@ export const HighlightTypes = {
     'VARIABLE': {color: '#AB274F', font: 'bold', type:'VARIABLE'},
     'FUNCTION': {color: '#FFBF00', font: 'italic', type:'FUNCTION'},
     'FUNCTION_SYMBOLS': {color: '#FFBF00', font: 'italic-bold', type:'FUNCTION'},
+    'BRACKETS': {color: '#FFBF00', font: 'bold', type:'BRACKETS'},
     'INFIX':    {color: '#CC5500', font: 'regular', type:'INFIX'},
+    'TERNARY':    {color: '#CC5500', font: 'regular', type:'TERNARY'},
+    'UNARY':    {color: '#CC5500', font: 'regular', type:'UNARY'},
     'UNKNOWN' : {color: 'lightgrey', font: 'regular', type:'UNKNOWN'},
 };
 
