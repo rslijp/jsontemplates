@@ -29,18 +29,18 @@ export function parse(text, throwException){
         var result = context.yield();
         if (context.empty()) {
             validateCompletenessOfArguments(result);
-            return {success:true, expression: result===undefined?null:result};
+            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks()};
         }
     } catch (e){
         if(throwException) throw e;
         console.log(e);
-        return {success:false, error: e};
+        return {success:false, error: e, blocks: context.getBlocks()};
         // throw e;
     }
 
     if(throwException) {
         throw "Stack is not empty";
     }
-    return {success:false, error: "Stack is not empty"};;
+    return {success:false, error: "Stack is not empty", blocks: context.getBlocks()};
 
 }

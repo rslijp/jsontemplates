@@ -1,10 +1,15 @@
 import _ from "underscore";
 import {ReturnTypes} from "../Constants";
 import {getReturnType} from "./ExpressionModel";
+const LOG = true;
+
+function log(){
+    if(LOG) console.log.apply(this,arguments);
+}
 
 function ExpressionTypeChecker(definition){
     const CACHE = {};
-    console.log(definition);
+    log(definition);
     function checkTypes(expression){
         if(expression.argumentsTypes!==undefined){
             var args = expression.arguments;
@@ -35,7 +40,7 @@ function ExpressionTypeChecker(definition){
 
     function matchSingleArgumentExpressionType(argument, expectedType, name) {
         var actualType = getExpressionType(argument);
-        if(name==='expression') console.log("EXPECTED:",expectedType,"ACTUAL:",actualType);
+        if(name==='expression') log("EXPECTED:",expectedType,"ACTUAL:",actualType);
         if(!typesMatch(expectedType, actualType)){
             throw "Type error on "+name
         }
@@ -76,7 +81,7 @@ function ExpressionTypeChecker(definition){
     }
 
     function resolveT(genericType, resolvedType){
-        console.log(genericType, resolvedType);
+        log(genericType, resolvedType);
         const rawResolvedType = genericType.replace("GENERIC", baseType(resolvedType)).toLowerCase();
         return getReturnType(rawResolvedType);
     }
@@ -135,7 +140,7 @@ function ExpressionTypeChecker(definition){
     }
 
     function typesMatch(target, candidate){
-        console.log("target",target,"candidate",candidate);
+        log("target",target,"candidate",candidate);
         if(target === candidate) return true;
         if(target === ReturnTypes.DECIMAL && candidate === ReturnTypes.INTEGER) return true;
         if(baseType(target) === ReturnTypes.GENERIC && baseType(candidate) !== ReturnTypes.GENERIC) {
@@ -196,25 +201,25 @@ function ExpressionTypeChecker(definition){
         isOptional: isOptional,
         test: (expression, expectedType, throwError) =>
         {
-            console.log("---------");
-            console.log("EXPRESSION", expression);
+            log("---------");
+            log("EXPRESSION", expression);
             try {
-                 console.log("RETURN", expression.returnType(definition));
+                 log("RETURN", expression.returnType(definition));
             } catch {
-                console.log("RETURN", "????");
+                 log("RETURN", "????");
             }
-            console.log("---------");
-            console.log("EXPECTED", expectedType);
-            console.log("---------");
+            log("---------");
+            log("EXPECTED", expectedType);
+            log("---------");
             try {
-                console.log('>>>>>>>>>START')
+                log('>>>>>>>>>START')
                 checkTypes(expression);
-                console.log('>>>>>>>>>END')
+                log('>>>>>>>>>END')
                 matchSingleArgumentExpressionType(expression, expectedType, "expression")
                 return true;
             } catch (e) {
                 if (throwError) throw e;
-                console.log(e)
+                log(e)
                 return false;
             }
         }

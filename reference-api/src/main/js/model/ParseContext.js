@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import ParseCursor from "./ParseCursor";
 import {Constant, Variable, Brackets,Ternary, createExpression} from "./ExpressionModel";
-import {NodeTypes, ReturnTypes} from '../Constants';
+import {NodeTypes, ReturnTypes,HighlightTypes} from '../Constants';
 import {validateCompletenessOfArguments} from './ParseUtil';
 
 
@@ -22,6 +22,7 @@ function log(msg){
 export function ParseContext(text){
     const cursor= new ParseCursor(text);
     const parseStack = this.parseStack = [];
+    const blocks = this.blocks = [];
     this.cursor= cursor;
     this.unaryLib={};
     this.infixLib={};
@@ -29,6 +30,10 @@ export function ParseContext(text){
 
     function push(item){
         parseStack.push(item);
+    }
+
+    function addBlock(block, type){
+        blocks.push({start: block.start, end: block.end, type: type});
     }
 
 
@@ -51,7 +56,8 @@ export function ParseContext(text){
     this.tryVariable=function() {
         if (cursor.at(VARIABLE_PATTERN)) {
             const txt = cursor.read(VARIABLE_PATTERN);
-            push(new Variable(txt.substring(1)));
+            push(new Variable(txt.substring(1)),cursor.getLastBlock());
+            addBlock(cursor.getLastBlock(),HighlightTypes.VARIABLE);
             return true;
         }
         return false;
@@ -61,11 +67,13 @@ export function ParseContext(text){
         if (cursor.at("true")){
             cursor.read("true");
             push(new Constant(true, ReturnTypes.BOOLEAN));
+            addBlock(cursor.getLastBlock(),HighlightTypes.CONSTANT);
             return true;
         }
         if (cursor.at("false")){
             cursor.read("false");
             push(new Constant(false, ReturnTypes.BOOLEAN));
+            addBlock(cursor.getLastBlock(),HighlightTypes.CONSTANT);
             return true;
         }
         return false;
@@ -77,6 +85,7 @@ export function ParseContext(text){
             cursor.at(LONG_PATTERN)) {
             const txt = cursor.read(LONG_PATTERN);
             push(new Constant(parseInt(txt), ReturnTypes.INTEGER));
+            addBlock(cursor.getLastBlock(),HighlightTypes.CONSTANT);
             return true;
         }
         return false;
@@ -87,6 +96,7 @@ export function ParseContext(text){
             cursor.at(DOUBLE_PATTERN)) {
             const txt = cursor.read(DOUBLE_PATTERN);
             push(new Constant(parseFloat(txt), ReturnTypes.DECIMAL));
+            addBlock(cursor.getLastBlock(),HighlightTypes.CONSTANT);
             return true;
         }
         return false;
@@ -96,6 +106,7 @@ export function ParseContext(text){
         if (cursor.at(TEXT_PATTERN)) {
             const txt = cursor.read(TEXT_PATTERN);
             push(new Constant(txt, ReturnTypes.TEXT));
+            addBlock(cursor.getLastBlock(),HighlightTypes.CONSTANT);
             return true;
         }
         return false;
@@ -104,7 +115,9 @@ export function ParseContext(text){
     this.tryFunction=function(functionName) {
         if (cursor.at(functionName)) {
             cursor.read(functionName);
+            addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION);
             cursor.read(BRACKET_OPEN);
+            addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             const expr = createExpression(this.functionLib[functionName]);
             const argumentsTypes = expr.argumentsTypes;
             for (let i = 0; i< argumentsTypes.length; i++){
@@ -114,9 +127,11 @@ export function ParseContext(text){
                 if(cursor.at(BRACKET_CLOSE)){
                     validateCompletenessOfArguments(expr);
                     cursor.read(BRACKET_CLOSE);
+                    addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
                     break;
                 }
                 cursor.read(PARAMETER_SEPARATOR);
+                addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             }
             push(expr);
             return true;
@@ -128,6 +143,7 @@ export function ParseContext(text){
         if (cursor.at(operator) && !this.empty()) {
             cursor.read(operator);
             const expr = createExpression(this.infixLib[operator]);
+            addBlock(cursor.getLastBlock(),HighlightTypes.INFIX);
             this.reduce(expr.priority());
             const lhs = parseStack.pop();
             log("POP "+lhs.type);
@@ -245,6 +261,9 @@ ParseContext.prototype.parseExpression=function(until){
         throw "Can't match head"
     }
     this.reduce(until==null?-1:0);
+};
+ParseContext.prototype.getBlocks=function(){
+    return this.blocks;
 };
 
 ParseContext.prototype.yield=function(prio){

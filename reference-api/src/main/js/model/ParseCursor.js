@@ -4,6 +4,7 @@ export function ParseCursor(text){
     this.cursorIndex=0;
     this.text=text;
     this.full=text;
+    this.lastBlock=null;
 
 }
 
@@ -44,9 +45,18 @@ ParseCursor.prototype.read=function(patternOrInstruction) {
 }
 
 ParseCursor.prototype.move=function(length){
+    var start = this.cursorIndex;
     this.text=this.text.substring(length);
     this.cursorIndex+=(length+(this.text.length-this.text.trim().length));
+    this.lastBlock = {
+        start: start,
+        end: this.cursorIndex
+    }
     this.text=this.text.trim();
+}
+
+ParseCursor.prototype.getLastBlock=function(){
+    return this.lastBlock;
 }
 
 ParseCursor.prototype.toString=function(){

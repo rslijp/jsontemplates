@@ -11,6 +11,16 @@ export const NodeTypes = {
     UNARY: 'UNARY'
 };
 
+export const HighlightTypes = {
+    'CONSTANT': {color: '#006A4E', font: 'bold', type:'CONSTANT'},
+    'VARIABLE': {color: '#AB274F', font: 'bold', type:'VARIABLE'},
+    'FUNCTION': {color: '#FFBF00', font: 'italic', type:'FUNCTION'},
+    'FUNCTION_SYMBOLS': {color: '#FFBF00', font: 'italic-bold', type:'FUNCTION'},
+    'INFIX':    {color: '#CC5500', font: 'regular', type:'INFIX'},
+    'UNKNOWN' : {color: 'lightgrey', font: 'regular', type:'UNKNOWN'},
+};
+
+
 export const ReturnTypes = {
     GENERIC: 'GENERIC',
     GENERICOPTIONAL: 'GENERIC?',
