@@ -8,7 +8,7 @@ import {validateCompletenessOfArguments} from './ParseUtil';
 const LOG = false;
 const LONG_PATTERN = /^(-?[0-9]+)/;
 const DOUBLE_PATTERN = /^(-?[0-9]+\.[0-9]+)/;
-const TEXT_PATTERN  = /^'((\S|\s)+)'/;
+const TEXT_PATTERN  = /^'((\S|\s)+?)'/;
 const VARIABLE_PATTERN  = /^\$([0-9A-Za-z\\.]+)/;
 const BRACKET_OPEN = "(";
 const PARAMETER_SEPARATOR = ",";
@@ -22,7 +22,7 @@ function log(msg){
 export function ParseContext(text){
     const cursor= new ParseCursor(text);
     const parseStackStash = this.parseStackStash = [];
-    let parseStack = this.parseStack = [];
+    let parseStack = [];
     const blocks = this.blocks = [];
     this.cursor= cursor;
     this.unaryLib={};

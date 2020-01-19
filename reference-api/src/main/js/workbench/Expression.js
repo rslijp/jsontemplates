@@ -8,9 +8,7 @@ import {checkExpression} from '../model/ExpressionTypeChecker';
 import {getModelDefinition} from '../model/ModelDefinition';
 import CaretPositioning from '../common/EditCaretPositioning'
 import _ from 'underscore';
-import {HighlightTypes} from "../Constants";
-// import {HighlightTypes} from '../Constants';
-
+import {HighlightTypes, ReturnTypes} from "../Constants";
 
 let id = 0;
 class Expression extends React.Component {
@@ -38,7 +36,6 @@ class Expression extends React.Component {
 
      _onChange(text){
          const result = parse(text||"");
-         console.log(result);
          let valid = false;
          let typeValid = false;
          if(result.success){
@@ -47,10 +44,11 @@ class Expression extends React.Component {
                 typeValid=true;
             } else {
                 valid = true;
-                console.log(result.expression);
-                const typeResult = checkExpression(result.expression,getModelDefinition(),this.expectedType,false);
-                typeValid=typeResult.succes;
-                result.error=typeResult.error;
+                // console.log(result.expression);
+                const expectedType = this.expectedType !== ReturnTypes.OBJECT?this.expectedType:ReturnTypes.GENERICOPTIONAL;
+                const typeResult = checkExpression(result.expression, getModelDefinition(), expectedType, false);
+                typeValid = typeResult.succes;
+                result.error = typeResult.error;
             }
         } else {
             valid=false;
@@ -123,10 +121,7 @@ class Expression extends React.Component {
         let errorAlert = null;
         if(this.state.error){
             errorAlert = <Alert variant="danger">
-                <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-                <p>
                     {this.state.error}
-                </p>
             </Alert>
         }
         return (

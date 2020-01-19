@@ -455,6 +455,13 @@ public class ExpressionParserTest {
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(2.0));
     }
 
+    //parseInteger('1')+1+parseInteger('1')
+    @Test
+    public void case3_bug2(){
+
+        var actual = new ExpressionParser().parse("parseInteger('1')+1+parseInteger('1')");
+        assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(3.0));
+    }
 //    @Test
 //    public void benchmark()
 //    {

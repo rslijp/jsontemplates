@@ -1,7 +1,7 @@
 import _ from "underscore";
 import {ReturnTypes} from "../Constants";
 import {getReturnType} from "./ExpressionModel";
-const LOG = true;
+const LOG = false;
 
 function log(){
     if(LOG) console.log.apply(this,arguments);
