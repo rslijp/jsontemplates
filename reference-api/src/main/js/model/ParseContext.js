@@ -22,7 +22,7 @@ function log(msg){
 export function ParseContext(text){
     const cursor= new ParseCursor(text);
     const parseStackStash = this.parseStackStash = [];
-    this.parseStack = [];
+    let parseStack = this.parseStack = [];
     const blocks = this.blocks = [];
     this.cursor= cursor;
     this.unaryLib={};
@@ -30,19 +30,19 @@ export function ParseContext(text){
     this.functionLib={};
 
     function push(item){
-        this.parseStack.push(item);
+        parseStack.push(item);
     }
 
     function popStack() {
-        if(!parseStack.empty()){
-            throw new RuntimeException("Bug");
+        if(parseStack.length!==0){
+            throw "Bug";
         }
-        this.parseStack=parseStackStash.pop();
+        parseStack=parseStackStash.pop();
     }
 
     function stashStack() {
         parseStackStash.push(parseStack);
-        this.parseStack=[];
+        parseStack=[];
 
     }
 
@@ -52,8 +52,8 @@ export function ParseContext(text){
 
 
     function justSawConstant() {
-        if(this.parseStack.length === 0) return false;
-        return _.last(this.parseStack).type === NodeTypes.CONSTANT;
+        if(parseStack.length === 0) return false;
+        return _.last(parseStack).type === NodeTypes.CONSTANT;
     }
 
     this.done=function() {
@@ -138,7 +138,7 @@ export function ParseContext(text){
             for (let i = 0; i< argumentsTypes.length; i++){
                 const separators = [BRACKET_CLOSE, PARAMETER_SEPARATOR];
                 this.parseExpression(separators);
-                expr.arguments.push(this.yield());
+                expr.arguments.push(this.yield(expr.priority()));
                 if(cursor.at(BRACKET_CLOSE)){
                     validateCompletenessOfArguments(expr);
                     cursor.read(BRACKET_CLOSE);
@@ -215,10 +215,10 @@ export function ParseContext(text){
 
     this.reduce=function(targetPrio)
     {
-        if (this.parseStack.length >= 2)
+        if (parseStack.length >= 2)
         {
-            const argument = this.parseStack.pop();
-            const operator = _.last(this.parseStack);
+            const argument = parseStack.pop();
+            const operator = _.last(parseStack);
             let argumentPriority = argument.priority();
             let operatorPriority = operator.priority();
             let reduce = operatorPriority>=targetPrio && operator.argumentsTypes!==undefined;
@@ -243,57 +243,60 @@ export function ParseContext(text){
                 operator.arguments.push(argument);
                 this.reduce(targetPrio);
             } else {
-                this.parseStack.push(argument);
+                parseStack.push(argument);
                 //consume argument
             }
         }
     };
+
+
+    this.withUnaryLib=function(unaryLib){
+        this.unaryLib=unaryLib;
+        return this;
+    };
+    this.withFunctionLib=function(functionLib){
+        this.functionLib=functionLib;
+        return this;
+    };
+
+    this.withInfixLib=function(infixLib){
+        this.infixLib=infixLib;
+        return this;
+    };
+
+    this.parseExpression=function(until){
+        while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
+            log("========");
+            if( this.tryLongConstant() ||
+                this.tryBooleanConstant() ||
+                this.tryDoubleConstant() ||
+                this.tryStringConstant() ||
+                this.tryVariable() ||
+                this.tryBrackets() ||
+                this.tryTernary() ||
+                this.libScan(this.unaryLib, this.tryUnary) ||
+                this.libScan(this.functionLib, this.tryFunction) ||
+                this.libScan(this.infixLib, this.tryInfix)){
+                continue;
+            }
+            throw "Can't match head"
+        }
+        this.reduce(until==null?-1:0);
+    };
+    this.getBlocks=function(){
+        return this.blocks;
+    };
+
+    this.yield=function(prio){
+        this.reduce(prio||0);
+        return parseStack.pop();
+    };
+
+    this.empty=function(){
+        return parseStack.length===0;
+    };
 }
 
-ParseContext.prototype.withUnaryLib=function(unaryLib){
-    this.unaryLib=unaryLib;
-    return this;
-};
-ParseContext.prototype.withFunctionLib=function(functionLib){
-    this.functionLib=functionLib;
-    return this;
-};
 
-ParseContext.prototype.withInfixLib=function(infixLib){
-    this.infixLib=infixLib;
-    return this;
-};
-
-ParseContext.prototype.parseExpression=function(until){
-    while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
-        log("========");
-        if( this.tryLongConstant() ||
-            this.tryBooleanConstant() ||
-            this.tryDoubleConstant() ||
-            this.tryStringConstant() ||
-            this.tryVariable() ||
-            this.tryBrackets() ||
-            this.tryTernary() ||
-            this.libScan(this.unaryLib, this.tryUnary) ||
-            this.libScan(this.functionLib, this.tryFunction) ||
-            this.libScan(this.infixLib, this.tryInfix)){
-            continue;
-        }
-        throw "Can't match head"
-    }
-    this.reduce(until==null?-1:0);
-};
-ParseContext.prototype.getBlocks=function(){
-    return this.blocks;
-};
-
-ParseContext.prototype.yield=function(prio){
-    this.reduce(prio||0);
-    return this.parseStack.pop();
-};
-
-ParseContext.prototype.empty=function(){
-    return this.parseStack.length===0;
-};
 
 export default ParseContext
