@@ -51,7 +51,7 @@ class ParseContext {
         return this;
     }
 
-    void parseExpression(String[] until){
+    void parseExpression(String[] until, boolean reduce){
         while(!done() && (until==null || !cursor.at(until))) {
             log("========");
             if(     tryLongConstant() ||
@@ -68,7 +68,7 @@ class ParseContext {
             }
            throw ParseException.cantMatchHead().at(cursor);
         }
-        reduce(until==null?-1:0);
+        if(reduce) reduce(until==null?-1:0);
     }
 
     private boolean libScan(Map<String, Class> lib, Function<String, Boolean> tryParse){
@@ -151,11 +151,12 @@ class ParseContext {
             cursor.read(functionName);
             cursor.read(BRACKET_OPEN);
             var expr = (IExpressionWithArguments) createExpression(functionLib.get(functionName));
+            push(expr);
             IExpressionType[] argumentsTypes = expr.getArgumentsTypes();
             for (var i = 0; i< argumentsTypes.length; i++){
                 var separators = new String[]{BRACKET_CLOSE, PARAMETER_SEPARATOR};
-                parseExpression(separators);
-                expr.getArguments().add(yield());
+                parseExpression(separators, false);
+                expr.getArguments().add(parseStack.pop());
                 if(cursor.at(BRACKET_CLOSE)){
                     ParseUtils.validateCompletenessOfArguments(expr, cursor);
                     cursor.read(BRACKET_CLOSE);
@@ -163,7 +164,6 @@ class ParseContext {
                 }
                 cursor.read(PARAMETER_SEPARATOR);
             }
-            push(expr);
             return true;
         }
         return false;
@@ -204,7 +204,7 @@ class ParseContext {
     private boolean tryBrackets() {
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
-            parseExpression(new String[]{BRACKET_CLOSE});
+            parseExpression(new String[]{BRACKET_CLOSE},true);
             var inner = yield();
             var brackets = new Brackets();
             brackets.setArguments(Collections.singletonList(
@@ -225,7 +225,7 @@ class ParseContext {
             var condition = yield(ternary.priority());
             ternary.getArguments().add(condition);
             push(ternary);
-            parseExpression(new String[]{":"});
+            parseExpression(new String[]{":"},true);
             cursor.read(":");
             return true;
         }

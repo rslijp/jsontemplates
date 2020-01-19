@@ -25,7 +25,7 @@ export function parse(text, throwException){
         .withFunctionLib(FUNCTION_LOOKUP)
         .withInfixLib(INFIX_LOOKUP);
     try {
-        context.parseExpression(null);
+        context.parseExpression(null, true);
         var result = context.yield();
         if (context.empty()) {
             validateCompletenessOfArguments(result);

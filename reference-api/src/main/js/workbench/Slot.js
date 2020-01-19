@@ -11,6 +11,7 @@ import Optional from "../common/Optional";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 import Expression from "./Expression";
+import ErrorBoundary from "../common/ErrorBoundary";
 
 function Slot({node,path,allNodes,forSlot}) {
 
@@ -51,7 +52,7 @@ function Slot({node,path,allNodes,forSlot}) {
             // let value = v;
             const isOptional = v.endsWith("?");
             const optional = isOptional?<Optional/>:null;
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><Expression optional={isOptional} type={v}/></Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><ErrorBoundary><Expression optional={isOptional} type={v}/></ErrorBoundary></Col></Row>);
         });
         return (
             <div>

@@ -73,6 +73,7 @@ export function Ternary(){
 
 
 export function createExpression(type){
+    console.log("CREATE OF ",type)
     const args = [];
     const argumentsTypes = _.map(type.argumentTypes, t=>getReturnType(t));
     return {

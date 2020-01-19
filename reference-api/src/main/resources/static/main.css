@@ -92,3 +92,8 @@ html, body,#root, #react, #root > .row {
 /*[data-toggle="collapse"]:not(.collapsed) .if-collapsed {*/
 /*    display: none;*/
 /*}*/
+
+
+.errorBlock{
+    border-bottom: 2px dashed red;
+}

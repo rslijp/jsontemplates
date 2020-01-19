@@ -71,7 +71,7 @@ public class ExpressionTypeChecker {
     public void matchSingleArgumentExpressionType(IExpression argument,  IExpressionType expectedType, String name) {
         var actualType = getExpressionType(argument);
         if(!Types.typesMatch(expectedType, actualType)){
-            throw TypeCheckException.typeError(expectedType, actualType, name);
+            throw TypeCheckException.typeError(cleanUpErrorType(expectedType,actualType), actualType, name);
         }
     }
 
@@ -140,6 +140,13 @@ public class ExpressionTypeChecker {
         if(!eraseAllowed) return type;
         return type instanceof Optional ? Types.OPTIONAL_INTEGER : Types.INTEGER;
     }
+
+    private IExpressionType cleanUpErrorType(IExpressionType expected, IExpressionType actual){
+        if(expected.baseType()!=Types.DECIMAL) return expected;
+        if(actual.baseType()!=Types.INTEGER) return expected;
+        return expected instanceof Optional ? Types.OPTIONAL_INTEGER : Types.INTEGER;
+    }
+
 
     private IExpressionType removeOptional(IExpressionType type, IExpressionWithArguments argumentExpression){
         if(argumentExpression==null) return type;

@@ -20,7 +20,7 @@ export const HighlightTypes = {
     'INFIX':    {color: '#CC5500', font: 'regular', type:'INFIX'},
     'TERNARY':    {color: '#CC5500', font: 'regular', type:'TERNARY'},
     'UNARY':    {color: '#CC5500', font: 'regular', type:'UNARY'},
-    'UNKNOWN' : {color: 'lightgrey', font: 'regular', type:'UNKNOWN'},
+    'UNKNOWN' : {color: 'black', font: 'regular', type:'UNKNOWN'},
 };
 
 
@@ -49,6 +49,7 @@ export const ReturnTypes = {
     DATETIMEOPTIONAL: 'DATETIME?',
     LIST_DATETIME: 'DATETIME[]',
     MAP_DATETIME: 'DATETIME{}',
+    OBJECT: 'OBJECT',
     NULL : 'NULL'
 };
 

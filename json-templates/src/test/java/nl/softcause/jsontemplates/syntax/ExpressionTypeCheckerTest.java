@@ -2,6 +2,7 @@ package nl.softcause.jsontemplates.syntax;
 
 import nl.softcause.jsontemplates.collections.IntegerList;
 import nl.softcause.jsontemplates.collections.StringList;
+import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.arithmetic.Add;
@@ -613,4 +614,71 @@ public class ExpressionTypeCheckerTest {
             fail("Should be a valid type");
         }
     }
+
+    @Test
+    public void case1_bug1(){
+        try {
+            var expression = new ExpressionParser().parse("nullOrDefault(parseInteger($name),2)+1+2");
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(expression);
+
+            var returnType = checker.getExpressionType(expression);
+
+            assertThat(returnType, is(Types.INTEGER));
+        } catch (TypeCheckException TCe){
+            fail("Should be a valid type");
+        }
+    }
+
+    @Test
+    public void case1_bug2(){
+        try {
+            var expression = new ExpressionParser().parse("1+2+nullOrDefault(parseInteger($name),2)");
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(expression);
+
+            var returnType = checker.getExpressionType(expression);
+
+            assertThat(returnType, is(Types.INTEGER));
+        } catch (TypeCheckException TCe){
+            fail("Should be a valid type");
+        }
+    }
+
+
+    @Test
+    public void should_not_downcast_optional_if_possible(){
+        try {
+            var expression = new ExpressionParser().parse("1+parseInteger($name)");
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(expression);
+
+            var returnType = checker.getExpressionType(expression);
+
+            fail("Should not be a valid type");
+        } catch (TypeCheckException TCe){
+            System.out.println(TCe.getMessage());
+            assertThat(TCe.getMessage(), is(
+                    TypeCheckException.typeError(Types.INTEGER, Types.OPTIONAL_INTEGER, "2").getMessage()
+            ));
+        }
+    }
+
+    @Test
+    public void case2_bug1(){
+        try {
+            var expression = new ExpressionParser().parse("$age==42");
+            var checker = new ExpressionTypeChecker(TestDefinition.class);
+            checker.checkTypes(expression);
+
+            var returnType = checker.getExpressionType(expression);
+
+            assertThat(returnType, is(Types.BOOLEAN));
+        } catch (TypeCheckException TCe){
+            System.out.println(TCe.getMessage());
+            fail("Should be a valid type");
+        }
+    }
+
+
 }

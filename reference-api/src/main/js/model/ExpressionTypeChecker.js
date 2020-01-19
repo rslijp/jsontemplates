@@ -26,7 +26,6 @@ function ExpressionTypeChecker(definition){
         if(args.length!==argumentTypes.length){
             throw "Wrong number of arguments expected "+argumentTypes.length+" but found "+args.length;
         }
-
         matchArgumentExpressionTypes(argumentTypes, args);
         matchGenericArguments(argumentTypes, args);
     }
@@ -39,10 +38,10 @@ function ExpressionTypeChecker(definition){
     }
 
     function matchSingleArgumentExpressionType(argument, expectedType, name) {
+        log("matchSingleArgumentExpressionType", argument, expectedType,name);
         var actualType = getExpressionType(argument);
-        if(name==='expression') log("EXPECTED:",expectedType,"ACTUAL:",actualType);
         if(!typesMatch(expectedType, actualType)){
-            throw "Type error on "+name
+            throw "Type error on "+name+" expected "+cleanUpErrorType(expectedType, actualType)+" but got "+actualType;
         }
     }
 
@@ -102,6 +101,13 @@ function ExpressionTypeChecker(definition){
         type = removeOptional(type, argumentExpression);
         type = downCastIfPossible(type, argumentExpression);
         return type;
+    }
+
+
+    function cleanUpErrorType(expected, actual){
+        if(baseType(expected)!==ReturnTypes.DECIMAL) return expected;
+        if(baseType(actual)!==ReturnTypes.INTEGER) return expected;
+        return isOptional(expected) ? ReturnTypes.INTEGEROPTIONAL : ReturnTypes.INTEGER;
     }
 
     function downCastIfPossible(type, argumentExpression){
@@ -216,11 +222,11 @@ function ExpressionTypeChecker(definition){
                 checkTypes(expression);
                 log('>>>>>>>>>END')
                 matchSingleArgumentExpressionType(expression, expectedType, "expression")
-                return true;
+                return {succes: true, error: null}
             } catch (e) {
                 if (throwError) throw e;
                 log(e)
-                return false;
+                return {succes: false, error: e};
             }
         }
     }

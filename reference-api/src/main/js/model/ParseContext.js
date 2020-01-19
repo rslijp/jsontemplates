@@ -119,11 +119,13 @@ export function ParseContext(text){
             cursor.read(BRACKET_OPEN);
             addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             const expr = createExpression(this.functionLib[functionName]);
+            push(expr);
             const argumentsTypes = expr.argumentsTypes;
             for (let i = 0; i< argumentsTypes.length; i++){
                 const separators = [BRACKET_CLOSE, PARAMETER_SEPARATOR];
-                this.parseExpression(separators);
-                expr.arguments.push(this.yield());
+                this.parseExpression(separators, false);
+                expr.arguments.push(parseStack.pop());
+                // expr.arguments.push(this.yield());
                 if(cursor.at(BRACKET_CLOSE)){
                     validateCompletenessOfArguments(expr);
                     cursor.read(BRACKET_CLOSE);
@@ -133,7 +135,6 @@ export function ParseContext(text){
                 cursor.read(PARAMETER_SEPARATOR);
                 addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             }
-            push(expr);
             return true;
         }
         return false;
@@ -169,7 +170,7 @@ export function ParseContext(text){
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
             addBlock(cursor.getLastBlock(),HighlightTypes.BRACKETS);
-            this.parseExpression(BRACKET_CLOSE);
+            this.parseExpression(BRACKET_CLOSE, true);
             const inner = this.yield();
             const brackets = Brackets();
             brackets.arguments.push(inner);
@@ -189,7 +190,7 @@ export function ParseContext(text){
             const condition = this.yield(ternary.priority());
             ternary.arguments.push(condition);
             push(ternary);
-            this.parseExpression(":");
+            this.parseExpression(":", true);
             cursor.read(":");
             addBlock(cursor.getLastBlock(),HighlightTypes.TERNARY);
             return true;
@@ -248,7 +249,7 @@ ParseContext.prototype.withInfixLib=function(infixLib){
     return this;
 };
 
-ParseContext.prototype.parseExpression=function(until){
+ParseContext.prototype.parseExpression=function(until, reduce){
     while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
         log("========");
         if( this.tryLongConstant() ||
@@ -265,7 +266,7 @@ ParseContext.prototype.parseExpression=function(until){
         }
         throw "Can't match head"
     }
-    this.reduce(until==null?-1:0);
+    if(reduce) this.reduce(until==null?-1:0);
 };
 ParseContext.prototype.getBlocks=function(){
     return this.blocks;

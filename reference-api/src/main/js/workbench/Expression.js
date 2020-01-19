@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputGroup} from "react-bootstrap";
+import {InputGroup, Alert} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faTimes, faBolt} from "@fortawesome/free-solid-svg-icons";
 import {parse} from '../model/ExpressionParser';
@@ -8,6 +8,7 @@ import {checkExpression} from '../model/ExpressionTypeChecker';
 import {getModelDefinition} from '../model/ModelDefinition';
 import CaretPositioning from '../common/EditCaretPositioning'
 import _ from 'underscore';
+import {HighlightTypes} from "../Constants";
 // import {HighlightTypes} from '../Constants';
 
 
@@ -19,6 +20,7 @@ class Expression extends React.Component {
         this.state = {
             id: "id"+(id++),
             valid: true,
+            error: null,
             typeValid: props.optional,
             text: "",
             blocks: [],
@@ -46,7 +48,9 @@ class Expression extends React.Component {
             } else {
                 valid = true;
                 console.log(result.expression);
-                typeValid=checkExpression(result.expression,getModelDefinition(),this.expectedType,false);
+                const typeResult = checkExpression(result.expression,getModelDefinition(),this.expectedType,false);
+                typeValid=typeResult.succes;
+                result.error=typeResult.error;
             }
         } else {
             valid=false;
@@ -56,7 +60,8 @@ class Expression extends React.Component {
             valid: valid,
             typeValid: typeValid,
             text: text,
-            blocks: result.blocks
+            blocks: result.blocks,
+            error: result.error
         };
     }
 
@@ -76,36 +81,57 @@ class Expression extends React.Component {
         )
     }
 
+    renderBlock(val, type, error){
+        let style = '';
+        if(type.font==='bold'){
+            style = 'font-weight: bold'
+        } else if(type.font==='italic'){
+            style = 'font-style: italic'
+        } else if(type.font==='italic-bold'){
+            style = 'font-style: italic; font-weight: bold'
+        }
+        let className = '';
+        if(error){
+            className="class='errorBlock'";
+        }
+        return "<span "+className+" style='color: "+type.color+"; "+style+"'>"+val+"</span>";
+    }
 
     render() {
         var p = 0;
         var newHTML = [];
         //     // Loop through words
         // console.log(this.state.blocks);
+
+
+
         var end = 0;
         _.forEach(this.state.blocks,(block)=>{
             // console.log(block);
             var val = this.state.text.substr(block.start, block.end-block.start);
-            var type = block.type;
-            // console.log("key", val);
-            let style = '';
-            if(type.font==='bold'){
-                style = 'font-weight: bold'
-            } else if(type.font==='italic'){
-                style = 'font-style: italic'
-            } else if(type.font==='italic-bold'){
-                style = 'font-style: italic; font-weight: bold'
-            }
-            newHTML.push("<span style='color: "+type.color+"; "+style+"'>"+val+"</span>");
+            newHTML.push(this.renderBlock(val, block.type));
             end = block.end;
         });
 
-        const html = newHTML.join("")+this.state.text.substr(end);
-        console.log(html);
+        var unparsed=this.state.text.substr(end);
+        if(unparsed.length>0){
+            newHTML.push(this.renderBlock(unparsed, HighlightTypes['UNKNOWN'],true));
+        }
+        const html = newHTML.join("");
 
         const input = <div id={this.state.id} tabIndex="0" style={{backgroundColor: 'darkgrey'}} suppressContentEditableWarning={true} contentEditable={true} type="text" className="form-control " aria-label="Amount (to the nearest dollar)" onInput={this.onKeyUpWeb} dangerouslySetInnerHTML={{__html: html}}>{}</div>;
-
-        return (<InputGroup className="mb-3">
+        let errorAlert = null;
+        if(this.state.error){
+            errorAlert = <Alert variant="danger">
+                <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+                <p>
+                    {this.state.error}
+                </p>
+            </Alert>
+        }
+        return (
+            <div>
+            <InputGroup className="mb-3">
                     <InputGroup.Prepend>
                         <InputGroup.Text id="basic-addon1"><div style={{minWidth: "100px",color: this.state.typeValid?"#212529":"red"}}>{this.displayType}</div></InputGroup.Text>
                     </InputGroup.Prepend>
@@ -114,6 +140,8 @@ class Expression extends React.Component {
                         <InputGroup.Text id="basic-addon2"><FontAwesomeIcon style={{width: "24px", color: this.state.valid?(this.state.typeValid?"green":"orange"):"red"}} icon={this.state.valid?(this.state.typeValid?faCheck:faBolt):faTimes} /></InputGroup.Text>
                     </InputGroup.Append>
                 </InputGroup>
+                {errorAlert}
+            </div>
         )
     }
 }
