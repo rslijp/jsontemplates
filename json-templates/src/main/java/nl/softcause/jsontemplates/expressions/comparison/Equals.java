@@ -9,8 +9,7 @@ import nl.softcause.jsontemplates.types.Types;
 
 import java.util.ArrayList;
 
-import static nl.softcause.jsontemplates.types.Types.OBJECT;
-import static nl.softcause.jsontemplates.types.Types.BOOLEAN;
+import static nl.softcause.jsontemplates.types.Types.*;
 
 @EqualsAndHashCode(callSuper = false)
 public class Equals extends TupleExpression<java.lang.Boolean, Object, Object> {
@@ -19,7 +18,7 @@ public class Equals extends TupleExpression<java.lang.Boolean, Object, Object> {
     private IExpressionType returnType = BOOLEAN;
 
     public Equals() {
-        super(OBJECT, OBJECT, new ArrayList<>());
+        super(GENERIC, GENERIC, new ArrayList<>());
     }
 
     @Override

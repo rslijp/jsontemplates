@@ -666,7 +666,7 @@ public class ExpressionTypeCheckerTest {
 
     @Test
     public void case2_bug1(){
-        try {
+//        try {
             var expression = new ExpressionParser().parse("$age==42");
             var checker = new ExpressionTypeChecker(TestDefinition.class);
             checker.checkTypes(expression);
@@ -674,10 +674,10 @@ public class ExpressionTypeCheckerTest {
             var returnType = checker.getExpressionType(expression);
 
             assertThat(returnType, is(Types.BOOLEAN));
-        } catch (TypeCheckException TCe){
-            System.out.println(TCe.getMessage());
-            fail("Should be a valid type");
-        }
+//        } catch (TypeCheckException TCe){
+//            System.out.println(TCe.getMessage());
+//            fail("Should be a valid type");
+//        }
     }
 
 
