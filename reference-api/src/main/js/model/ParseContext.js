@@ -21,7 +21,8 @@ function log(msg){
 
 export function ParseContext(text){
     const cursor= new ParseCursor(text);
-    const parseStack = this.parseStack = [];
+    const parseStackStash = this.parseStackStash = [];
+    this.parseStack = [];
     const blocks = this.blocks = [];
     this.cursor= cursor;
     this.unaryLib={};
@@ -29,7 +30,20 @@ export function ParseContext(text){
     this.functionLib={};
 
     function push(item){
-        parseStack.push(item);
+        this.parseStack.push(item);
+    }
+
+    function popStack() {
+        if(!parseStack.empty()){
+            throw new RuntimeException("Bug");
+        }
+        this.parseStack=parseStackStash.pop();
+    }
+
+    function stashStack() {
+        parseStackStash.push(parseStack);
+        this.parseStack=[];
+
     }
 
     function addBlock(block, type){
@@ -38,8 +52,8 @@ export function ParseContext(text){
 
 
     function justSawConstant() {
-        if(parseStack.length === 0) return false;
-        return _.last(parseStack).type === NodeTypes.CONSTANT;
+        if(this.parseStack.length === 0) return false;
+        return _.last(this.parseStack).type === NodeTypes.CONSTANT;
     }
 
     this.done=function() {
@@ -119,13 +133,12 @@ export function ParseContext(text){
             cursor.read(BRACKET_OPEN);
             addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             const expr = createExpression(this.functionLib[functionName]);
-            push(expr);
             const argumentsTypes = expr.argumentsTypes;
+            stashStack();
             for (let i = 0; i< argumentsTypes.length; i++){
                 const separators = [BRACKET_CLOSE, PARAMETER_SEPARATOR];
-                this.parseExpression(separators, false);
-                expr.arguments.push(parseStack.pop());
-                // expr.arguments.push(this.yield());
+                this.parseExpression(separators);
+                expr.arguments.push(this.yield());
                 if(cursor.at(BRACKET_CLOSE)){
                     validateCompletenessOfArguments(expr);
                     cursor.read(BRACKET_CLOSE);
@@ -135,6 +148,8 @@ export function ParseContext(text){
                 cursor.read(PARAMETER_SEPARATOR);
                 addBlock(cursor.getLastBlock(),HighlightTypes.FUNCTION_SYMBOLS);
             }
+            popStack();
+            push(expr);
             return true;
         }
         return false;
@@ -170,7 +185,7 @@ export function ParseContext(text){
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
             addBlock(cursor.getLastBlock(),HighlightTypes.BRACKETS);
-            this.parseExpression(BRACKET_CLOSE, true);
+            this.parseExpression(BRACKET_CLOSE);
             const inner = this.yield();
             const brackets = Brackets();
             brackets.arguments.push(inner);
@@ -190,7 +205,7 @@ export function ParseContext(text){
             const condition = this.yield(ternary.priority());
             ternary.arguments.push(condition);
             push(ternary);
-            this.parseExpression(":", true);
+            this.parseExpression(":");
             cursor.read(":");
             addBlock(cursor.getLastBlock(),HighlightTypes.TERNARY);
             return true;
@@ -200,10 +215,10 @@ export function ParseContext(text){
 
     this.reduce=function(targetPrio)
     {
-        if (parseStack.length >= 2)
+        if (this.parseStack.length >= 2)
         {
-            const argument = parseStack.pop();
-            const operator = _.last(parseStack);
+            const argument = this.parseStack.pop();
+            const operator = _.last(this.parseStack);
             let argumentPriority = argument.priority();
             let operatorPriority = operator.priority();
             let reduce = operatorPriority>=targetPrio && operator.argumentsTypes!==undefined;
@@ -228,7 +243,7 @@ export function ParseContext(text){
                 operator.arguments.push(argument);
                 this.reduce(targetPrio);
             } else {
-                parseStack.push(argument);
+                this.parseStack.push(argument);
                 //consume argument
             }
         }
@@ -249,7 +264,7 @@ ParseContext.prototype.withInfixLib=function(infixLib){
     return this;
 };
 
-ParseContext.prototype.parseExpression=function(until, reduce){
+ParseContext.prototype.parseExpression=function(until){
     while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
         log("========");
         if( this.tryLongConstant() ||
@@ -266,7 +281,7 @@ ParseContext.prototype.parseExpression=function(until, reduce){
         }
         throw "Can't match head"
     }
-    if(reduce) this.reduce(until==null?-1:0);
+    this.reduce(until==null?-1:0);
 };
 ParseContext.prototype.getBlocks=function(){
     return this.blocks;

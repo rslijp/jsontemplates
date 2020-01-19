@@ -40,7 +40,7 @@ public class ExpressionParser {
                 .withUnaryLib(UNARY_LOOKUP)
                 .withFunctionLib(FUNCTION_LOOKUP)
                 .withInfixLib(INFIX_LOOKUP);
-        context.parseExpression(null,true);
+        context.parseExpression(null);
         var result = context.yield();
         if (context.empty()) {
             ParseUtils.validateCompletenessOfArguments(result, context.getCursor());

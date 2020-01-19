@@ -27,6 +27,8 @@ class ParseContext {
     private static final String BRACKET_CLOSE = ")";
 
     private Stack<IExpression> parseStack = new Stack<>();
+    private Stack<Stack<IExpression>> parseStackStash = new Stack<>();
+
     private ParseCursor cursor;
     private Map<String, Class> unaryLib;
     private Map<String, Class> functionLib;
@@ -51,7 +53,7 @@ class ParseContext {
         return this;
     }
 
-    void parseExpression(String[] until, boolean reduce){
+    void parseExpression(String[] until){
         while(!done() && (until==null || !cursor.at(until))) {
             log("========");
             if(     tryLongConstant() ||
@@ -68,7 +70,7 @@ class ParseContext {
             }
            throw ParseException.cantMatchHead().at(cursor);
         }
-        if(reduce) reduce(until==null?-1:0);
+        reduce(until==null?-1:0);
     }
 
     private boolean libScan(Map<String, Class> lib, Function<String, Boolean> tryParse){
@@ -151,12 +153,12 @@ class ParseContext {
             cursor.read(functionName);
             cursor.read(BRACKET_OPEN);
             var expr = (IExpressionWithArguments) createExpression(functionLib.get(functionName));
-            push(expr);
             IExpressionType[] argumentsTypes = expr.getArgumentsTypes();
+            stashStack();
             for (var i = 0; i< argumentsTypes.length; i++){
                 var separators = new String[]{BRACKET_CLOSE, PARAMETER_SEPARATOR};
-                parseExpression(separators, false);
-                expr.getArguments().add(parseStack.pop());
+                parseExpression(separators);
+                expr.getArguments().add(yield(expr.priority()));
                 if(cursor.at(BRACKET_CLOSE)){
                     ParseUtils.validateCompletenessOfArguments(expr, cursor);
                     cursor.read(BRACKET_CLOSE);
@@ -164,9 +166,24 @@ class ParseContext {
                 }
                 cursor.read(PARAMETER_SEPARATOR);
             }
+            popStack();
+            push(expr);
             return true;
         }
         return false;
+    }
+
+    private void popStack() {
+        if(!parseStack.empty()){
+            throw new RuntimeException("Bug");
+        }
+        parseStack=parseStackStash.pop();
+    }
+
+    private void stashStack() {
+        parseStackStash.push(parseStack);
+        parseStack=new Stack<>();
+
     }
 //
 //    private static void validateCompletenessOfArgumetns(IExpressionWithArguments expr, IExpressionType[] argumentsTypes, ParseCursor cursor) {
@@ -204,7 +221,7 @@ class ParseContext {
     private boolean tryBrackets() {
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
-            parseExpression(new String[]{BRACKET_CLOSE},true);
+            parseExpression(new String[]{BRACKET_CLOSE});
             var inner = yield();
             var brackets = new Brackets();
             brackets.setArguments(Collections.singletonList(
@@ -225,7 +242,7 @@ class ParseContext {
             var condition = yield(ternary.priority());
             ternary.getArguments().add(condition);
             push(ternary);
-            parseExpression(new String[]{":"},true);
+            parseExpression(new String[]{":"});
             cursor.read(":");
             return true;
         }
