@@ -28,13 +28,23 @@ export function parse(text, throwException){
         context.parseExpression(null, true);
         var result = context.yield();
         if (context.empty()) {
+            let suggestions = null;
+            console.log(">",result)
+            if(result===undefined){
+                suggestions = {
+                    partialMatch: null,
+                    type: 'constants',
+                    metaOptions: ['number']
+                }
+            }
             validateCompletenessOfArguments(result);
-            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks()};
+            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks(),suggestions: suggestions};
         }
     } catch (e){
         if(throwException) throw e;
         console.log(e);
-        return {success:false, error: e, blocks: context.getBlocks()};
+        var suggestions  = e.getSuggestions?e.getSuggestions():null;
+        return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions};
         // throw e;
     }
 

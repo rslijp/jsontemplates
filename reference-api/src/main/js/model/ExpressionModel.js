@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
+import ExceptionWithSuggestion from './ExceptionWithSuggestion';
 
 let ID = 0;
 
@@ -30,7 +31,7 @@ export function Variable(name){
                 throw "no model";
             }
             var hit = _.findWhere(model.propertyDescriptions, {name: name});
-            if(!hit) throw "No such property "+name;
+            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables', _.pluck(model.propertyDescriptions,"name"));
             if(!hit.readable) throw "Can't read property "+name;
             return getReturnType(hit.type); //broken decorateType
         }

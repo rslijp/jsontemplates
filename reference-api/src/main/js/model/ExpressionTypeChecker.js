@@ -225,8 +225,9 @@ function ExpressionTypeChecker(definition){
                 return {succes: true, error: null}
             } catch (e) {
                 if (throwError) throw e;
-                log(e)
-                return {succes: false, error: e};
+                log(e);
+                var suggestions  = e.getSuggestions?e.getSuggestions():null;
+                return {succes: false, error: e, suggestions: suggestions};
             }
         }
     }

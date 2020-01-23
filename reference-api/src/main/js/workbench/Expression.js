@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputGroup, Alert} from "react-bootstrap";
+import {InputGroup, Alert, ListGroup} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faTimes, faBolt} from "@fortawesome/free-solid-svg-icons";
 import {parse} from '../model/ExpressionParser';
@@ -8,7 +8,9 @@ import {checkExpression} from '../model/ExpressionTypeChecker';
 import {getModelDefinition} from '../model/ModelDefinition';
 import CaretPositioning from '../common/EditCaretPositioning'
 import _ from 'underscore';
-import {HighlightTypes, ReturnTypes} from "../Constants";
+import { ReturnTypes} from "../Constants";
+import highlight from './SyntaxHighlighting';
+import SuggestionBox from './SuggestionBox';
 
 let id = 0;
 class Expression extends React.Component {
@@ -16,15 +18,16 @@ class Expression extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: "id"+(id++),
+            id: "id" + (id++),
             valid: true,
             error: null,
             typeValid: props.optional,
             text: "",
             blocks: [],
-            caretPosition : {
-                start : 0,
-                end : 0
+            suggestions: null,
+            caretPosition: {
+                start: 0,
+                end: 0
             }
         };
         this.expectedType = getReturnType(props.type);
@@ -49,6 +52,7 @@ class Expression extends React.Component {
                 const typeResult = checkExpression(result.expression, getModelDefinition(), expectedType, false);
                 typeValid = typeResult.succes;
                 result.error = typeResult.error;
+                if(typeResult.suggestions) result.suggestions=typeResult.suggestions;
             }
         } else {
             valid=false;
@@ -59,7 +63,8 @@ class Expression extends React.Component {
             typeValid: typeValid,
             text: text,
             blocks: result.blocks,
-            error: result.error
+            error: result.error,
+            suggestions: result.suggestions
         };
     }
 
@@ -79,49 +84,14 @@ class Expression extends React.Component {
         )
     }
 
-    renderBlock(val, type, error){
-        let style = '';
-        if(type.font==='bold'){
-            style = 'font-weight: bold'
-        } else if(type.font==='italic'){
-            style = 'font-style: italic'
-        } else if(type.font==='italic-bold'){
-            style = 'font-style: italic; font-weight: bold'
-        }
-        let className = '';
-        if(error){
-            className="class='errorBlock'";
-        }
-        return "<span "+className+" style='color: "+type.color+"; "+style+"'>"+val+"</span>";
-    }
-
     render() {
-        var p = 0;
-        var newHTML = [];
-        //     // Loop through words
-        // console.log(this.state.blocks);
-
-
-
-        var end = 0;
-        _.forEach(this.state.blocks,(block)=>{
-            // console.log(block);
-            var val = this.state.text.substr(block.start, block.end-block.start);
-            newHTML.push(this.renderBlock(val, block.type));
-            end = block.end;
-        });
-
-        var unparsed=this.state.text.substr(end);
-        if(unparsed.length>0){
-            newHTML.push(this.renderBlock(unparsed, HighlightTypes['UNKNOWN'],true));
-        }
-        const html = newHTML.join("");
+        const html = highlight(this.state.text, this.state.blocks);
 
         const input = <div id={this.state.id} tabIndex="0" style={{backgroundColor: 'darkgrey'}} suppressContentEditableWarning={true} contentEditable={true} type="text" className="form-control " aria-label="Amount (to the nearest dollar)" onInput={this.onKeyUpWeb} dangerouslySetInnerHTML={{__html: html}}>{}</div>;
         let errorAlert = null;
         if(this.state.error){
             errorAlert = <Alert variant="danger">
-                    {this.state.error}
+                    {this.state.error.toString()}
             </Alert>
         }
         return (
@@ -136,6 +106,7 @@ class Expression extends React.Component {
                     </InputGroup.Append>
                 </InputGroup>
                 {errorAlert}
+                <SuggestionBox suggestions={this.state.suggestions}/>
             </div>
         )
     }
