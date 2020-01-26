@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import ParseCursor from "./ParseCursor";
-import {Constant, Variable, Brackets,Ternary, createExpression} from "./ExpressionModel";
+import {Constant, Variable, Brackets,Ternary, createExpression, getReturnType} from "./ExpressionModel";
 import {NodeTypes, ReturnTypes,HighlightTypes} from '../Constants';
 import {validateCompletenessOfArguments} from './ParseUtil';
 
@@ -298,20 +298,20 @@ export function ParseContext(text){
 
     this.functionSuggestions=function(){
         var names = _.sortBy(_.keys(this.functionLib), i=>i);
-        return _.map(names, name=>{ return {name: name, type: this.functionLib[name]}});
+        return _.map(names, name=>{ return {name: name, type: getReturnType(this.functionLib[name].returnType)}});
     };
 
     this.unarySuggestions=function(){
         var names = _.sortBy(_.keys(this.unaryLib), i=>i);
-        return _.map(names, name=>{ return {name: name, type: this.unaryLib[name]}});
+        return _.map(names, name=>{ return {name: name, type: getReturnType(this.unaryLib[name].returnType)}});
     };
 
     this.constantSuggestions=function(){
         return [
-            {name: 'integer', type:'integer', pattern: LONG_PATTERN},
-            {name: 'double', type:'double', pattern: DOUBLE_PATTERN},
-            {name: 'string', type:'string', pattern: TEXT_PATTERN},
-            {name: 'boolean', type:'boolean', pattern: /^(true|false)/}
+            {name: 'integer', type:  ReturnTypes.INTEGER, pattern: LONG_PATTERN},
+            {name: 'decimal', type: ReturnTypes.DECIMAL, pattern: DOUBLE_PATTERN},
+            {name: 'text', type: ReturnTypes.INTEGER, pattern: TEXT_PATTERN},
+            {name: 'boolean', type: ReturnTypes.BOOLEAN, pattern: /^(true|false)/}
         ];
     };
 }

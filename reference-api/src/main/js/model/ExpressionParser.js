@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import ParseContext from './ParseContext'
-import {collectVariableSuggestions} from './ExpressionModel'
+import SugesstionModel from './SugesstionModel';
 import {validateCompletenessOfArguments} from "./ParseUtil";
 
 let initialized= false;
@@ -43,7 +43,7 @@ export function parse(text, model, throwException){
                 },
                 {
                     type: 'variables',
-                    options: collectVariableSuggestions(model)
+                    options: SugesstionModel.collectVariableSuggestions(model)
                 }
             ]}
     }
@@ -53,7 +53,6 @@ export function parse(text, model, throwException){
         var result = context.yield();
         if (context.empty()) {
             let suggestions = null;
-            console.log(">",result)
             if(result===undefined){
                 suggestions = {
                     partialMatch: null,
@@ -66,8 +65,7 @@ export function parse(text, model, throwException){
         }
     } catch (e){
         if(throwException) throw e;
-        console.log(e);
-        var suggestions  = e.getSuggestions?e.getSuggestions():null;
+        const suggestions  = e.getSuggestions?e.getSuggestions():null;
         return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions||[]};
         // throw e;
     }

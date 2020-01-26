@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputGroup, Alert, ListGroup} from "react-bootstrap";
+import {InputGroup, Alert} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faTimes, faBolt} from "@fortawesome/free-solid-svg-icons";
 import {parse} from '../model/ExpressionParser';
@@ -7,7 +7,6 @@ import {getReturnType} from '../model/ExpressionModel';
 import {checkExpression} from '../model/ExpressionTypeChecker';
 import {getModelDefinition} from '../model/ModelDefinition';
 import CaretPositioning from '../common/EditCaretPositioning'
-import _ from 'underscore';
 import { ReturnTypes} from "../Constants";
 import highlight from './SyntaxHighlighting';
 import SuggestionBox from './SuggestionBox';
@@ -34,8 +33,21 @@ class Expression extends React.Component {
         this.displayType= props.optional?props.type.substr(0,props.type.length-1):props.type;
         this.onKeyUpWeb = this._onKeyUpWeb.bind(this);
         this.onChange = this._onChange.bind(this);
+        this.onBlur = this._onBlur.bind(this);
+        this.onKeyDown = this._onKeyDown.bind(this);
     }
 
+    _onBlur(){
+        console.log("BLURRR")
+        this.setState({
+            blocks: [],
+            suggestions: null,
+            caretPosition: {
+                start: 0,
+                end: 0
+            }
+        });
+    }
 
      _onChange(text){
          const result = parse(text||"", getModelDefinition());
@@ -84,10 +96,37 @@ class Expression extends React.Component {
         )
     }
 
+    _onKeyDown(e){
+        if(e.ctrlKey && e.keyCode===32){
+            console.log("Refactor SuggestionModel to multi model by makeing multi object wrapper");
+            const savedCaretPosition = CaretPositioning.saveSelection(e.currentTarget);
+            console.log(savedCaretPosition);
+            const result = this.onChange(this.state.text+"age");
+            savedCaretPosition.start+=3;
+            savedCaretPosition.end+=3;
+            this.setState(
+                {
+                    ...result,
+                    caretPosition: savedCaretPosition
+                },() => {
+                    //restore caret position(s)
+                    CaretPositioning.restoreSelection(document.getElementById(this.state.id), this.state.caretPosition);
+                }
+            )
+        }
+    }
+
     render() {
         const html = highlight(this.state.text, this.state.blocks);
 
-        const input = <div id={this.state.id} tabIndex="0" style={{backgroundColor: 'darkgrey'}} suppressContentEditableWarning={true} contentEditable={true} type="text" className="form-control " aria-label="Amount (to the nearest dollar)" onInput={this.onKeyUpWeb} dangerouslySetInnerHTML={{__html: html}}>{}</div>;
+        const input = <div id={this.state.id}
+                           tabIndex="0" style={{backgroundColor: 'darkgrey'}}
+                           suppressContentEditableWarning={true} contentEditable={true}
+                           type="text" className="form-control " aria-label="Amount (to the nearest dollar)"
+                           onInput={this.onKeyUpWeb}
+                           onKeyDown={this.onKeyDown}
+                           onBlur={this.onBlur}
+                           dangerouslySetInnerHTML={{__html: html}}>{}</div>;
         let errorAlert = null;
         if(this.state.error){
             errorAlert = <Alert variant="danger">
@@ -106,7 +145,7 @@ class Expression extends React.Component {
                     </InputGroup.Append>
                 </InputGroup>
                 {errorAlert}
-                <SuggestionBox suggestions={this.state.suggestions}/>
+                <SuggestionBox suggestions={this.state.suggestions} expectedType={this.expectedType}/>
             </div>
         )
     }

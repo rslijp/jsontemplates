@@ -1,12 +1,13 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
+import SugesstionModel from './SugesstionModel';
 import ExceptionWithSuggestion from './ExceptionWithSuggestion';
 
 let ID = 0;
 
 export function getReturnType(rawType){
-    //dodgy
-    return ReturnTypes[rawType.replace("T","GENERIC").toUpperCase().replace("?","OPTIONAL")]
+    const transformed = rawType.replace("T","GENERIC").toUpperCase().replace("?","OPTIONAL").replace("*","LIST").replace("[]","MAP");
+    return ReturnTypes[transformed];
 }
 
 export function Constant(value, type){
@@ -20,9 +21,7 @@ export function Constant(value, type){
         }
     }
 }
-export function collectVariableSuggestions(model){
-    return _.forEach(_.filter(model.propertyDescriptions, i=>i.readable) ,i=>{return {name: i.name, type: i.type}});
-}
+
 export function Variable(name){
     return {
         id: ID++,
@@ -34,8 +33,8 @@ export function Variable(name){
                 throw "no model";
             }
             var hit = _.findWhere(model.propertyDescriptions, {name: name});
-            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables',collectVariableSuggestions(model));
-            if(!hit.readable) throw new ExceptionWithSuggestion( "Can't read property "+name, name, 'variables',collectVariableSuggestions(model));
+            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables',SugesstionModel.collectVariableSuggestions(model));
+            if(!hit.readable) throw new ExceptionWithSuggestion( "Can't read property "+name, name, 'variables',SugesstionModel.collectVariableSuggestions(model));
             return getReturnType(hit.type); //broken decorateType
         }
     }

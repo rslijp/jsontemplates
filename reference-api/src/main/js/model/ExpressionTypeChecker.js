@@ -81,7 +81,7 @@ function ExpressionTypeChecker(definition){
 
     function resolveT(genericType, resolvedType){
         log(genericType, resolvedType);
-        const rawResolvedType = genericType.replace("GENERIC", baseType(resolvedType)).toLowerCase();
+        const rawResolvedType = genericType.replace(ReturnTypes.GENERIC, baseType(resolvedType)).toLowerCase();
         return getReturnType(rawResolvedType);
     }
 
@@ -191,7 +191,8 @@ function ExpressionTypeChecker(definition){
     }
 
     function baseType(type){
-        return ReturnTypes[type.replace('[]', '').replace('{}', '').replace('?', '')];
+        var transformed = type.replace('[]', '').replace('*', '').replace('?', '');
+        return ReturnTypes[transformed.toUpperCase()];
     }
 
     function isOptional(type){
@@ -199,12 +200,13 @@ function ExpressionTypeChecker(definition){
     }
 
     function resolveGenericType(genericType, candidate){
-        const rawResolvedType = genericType.replace("GENERIC", baseType(candidate)).toLowerCase();
+        const rawResolvedType = genericType.replace(ReturnTypes.GENERIC, baseType(candidate)).toLowerCase();
         return getReturnType(rawResolvedType);
     }
 
     return {
         isOptional: isOptional,
+        typesMatch: typesMatch,
         test: (expression, expectedType, throwError) =>
         {
             log("---------");
@@ -234,7 +236,11 @@ function ExpressionTypeChecker(definition){
 }
 
 export function checkExpression (expression, definition, expectedType, throwError){
-    var checker = new ExpressionTypeChecker(definition);
+    const checker = new ExpressionTypeChecker(definition);
     if(!expression) return checker.isOptional(expectedType);
     return checker.test(expression, expectedType,throwError);
+}
+
+export function typesMatch (actualType, expectedType){
+    return new ExpressionTypeChecker(null).typesMatch(expectedType, actualType);
 }
