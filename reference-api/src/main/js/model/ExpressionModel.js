@@ -20,6 +20,9 @@ export function Constant(value, type){
         }
     }
 }
+export function collectVariableSuggestions(model){
+    return _.forEach(_.filter(model.propertyDescriptions, i=>i.readable) ,i=>{return {name: i.name, type: i.type}});
+}
 export function Variable(name){
     return {
         id: ID++,
@@ -31,8 +34,8 @@ export function Variable(name){
                 throw "no model";
             }
             var hit = _.findWhere(model.propertyDescriptions, {name: name});
-            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables', _.pluck(model.propertyDescriptions,"name"));
-            if(!hit.readable) throw "Can't read property "+name;
+            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables',collectVariableSuggestions(model));
+            if(!hit.readable) throw new ExceptionWithSuggestion( "Can't read property "+name, name, 'variables',collectVariableSuggestions(model));
             return getReturnType(hit.type); //broken decorateType
         }
     }

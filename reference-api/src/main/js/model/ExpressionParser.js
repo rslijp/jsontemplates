@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import ParseContext from './ParseContext'
+import {collectVariableSuggestions} from './ExpressionModel'
 import {validateCompletenessOfArguments} from "./ParseUtil";
 
 let initialized= false;
@@ -18,12 +19,35 @@ export function initExpressionLibrary(availableExpressions){
     initialized=true;
 }
 
-export function parse(text, throwException){
+export function parse(text, model, throwException){
     if(!initialized) throw "Not intialized";
+
     var context = new ParseContext(text)
         .withUnaryLib(UNARY_LOOKUP)
         .withFunctionLib(FUNCTION_LOOKUP)
         .withInfixLib(INFIX_LOOKUP);
+
+    if(text===""){
+        return {success:true, blocks: [], suggestions: [
+                {
+                    type: 'constants',
+                    patternOptions: context.constantSuggestions()
+                },
+                {
+                    type: 'unary',
+                    options: context.unarySuggestions()
+                },
+                {
+                    type: 'functions',
+                    options: context.functionSuggestions()
+                },
+                {
+                    type: 'variables',
+                    options: collectVariableSuggestions(model)
+                }
+            ]}
+    }
+
     try {
         context.parseExpression(null, true);
         var result = context.yield();
@@ -38,19 +62,19 @@ export function parse(text, throwException){
                 }
             }
             validateCompletenessOfArguments(result);
-            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks(),suggestions: suggestions};
+            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks(),suggestions: suggestions||[]};
         }
     } catch (e){
         if(throwException) throw e;
         console.log(e);
         var suggestions  = e.getSuggestions?e.getSuggestions():null;
-        return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions};
+        return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions||[]};
         // throw e;
     }
 
     if(throwException) {
         throw "Stack is not empty";
     }
-    return {success:false, error: "Stack is not empty", blocks: context.getBlocks()};
+    return {success:false, error: "Stack is not empty", blocks: context.getBlocks(), suggestions: []};
 
 }

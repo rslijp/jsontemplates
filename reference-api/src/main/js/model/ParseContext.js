@@ -295,6 +295,25 @@ export function ParseContext(text){
     this.empty=function(){
         return parseStack.length===0;
     };
+
+    this.functionSuggestions=function(){
+        var names = _.sortBy(_.keys(this.functionLib), i=>i);
+        return _.map(names, name=>{ return {name: name, type: this.functionLib[name]}});
+    };
+
+    this.unarySuggestions=function(){
+        var names = _.sortBy(_.keys(this.unaryLib), i=>i);
+        return _.map(names, name=>{ return {name: name, type: this.unaryLib[name]}});
+    };
+
+    this.constantSuggestions=function(){
+        return [
+            {name: 'integer', type:'integer', pattern: LONG_PATTERN},
+            {name: 'double', type:'double', pattern: DOUBLE_PATTERN},
+            {name: 'string', type:'string', pattern: TEXT_PATTERN},
+            {name: 'boolean', type:'boolean', pattern: /^(true|false)/}
+        ];
+    };
 }
 
 

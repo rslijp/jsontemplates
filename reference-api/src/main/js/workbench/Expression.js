@@ -38,7 +38,7 @@ class Expression extends React.Component {
 
 
      _onChange(text){
-         const result = parse(text||"");
+         const result = parse(text||"", getModelDefinition());
          let valid = false;
          let typeValid = false;
          if(result.success){
@@ -52,7 +52,7 @@ class Expression extends React.Component {
                 const typeResult = checkExpression(result.expression, getModelDefinition(), expectedType, false);
                 typeValid = typeResult.succes;
                 result.error = typeResult.error;
-                if(typeResult.suggestions) result.suggestions=typeResult.suggestions;
+                if(typeResult.suggestions) result.suggestions.push(typeResult.suggestions);
             }
         } else {
             valid=false;
