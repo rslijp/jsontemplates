@@ -22,7 +22,6 @@ function convertToHtml(text, blocks){
     var newHTML = [];
     var end = 0;
     _.forEach(blocks,(block)=>{
-        // console.log(block);
         var val = text.substr(block.start, block.end-block.start);
         newHTML.push(renderBlock(val, block.type));
         end = block.end;

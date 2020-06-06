@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import {NodeTypes, ReturnTypes,OperatorPrecendence} from '../Constants';
-import SugesstionModel from './SugesstionModel';
+import SuggestionModelType from './SuggestionModelType';
 import ExceptionWithSuggestion from './ExceptionWithSuggestion';
 
 let ID = 0;
@@ -33,8 +33,8 @@ export function Variable(name){
                 throw "no model";
             }
             var hit = _.findWhere(model.propertyDescriptions, {name: name});
-            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, name, 'variables',SugesstionModel.collectVariableSuggestions(model));
-            if(!hit.readable) throw new ExceptionWithSuggestion( "Can't read property "+name, name, 'variables',SugesstionModel.collectVariableSuggestions(model));
+            if(!hit) throw new ExceptionWithSuggestion("No such property "+name, SuggestionModelType.collectVariableSuggestions(model).filterOnPartial(name));
+            if(!hit.readable) throw new ExceptionWithSuggestion( "Can't read property "+name, SuggestionModelType.collectVariableSuggestions(model).filterOnPartial(name));
             return getReturnType(hit.type); //broken decorateType
         }
     }

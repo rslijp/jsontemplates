@@ -10,6 +10,7 @@ import CaretPositioning from '../common/EditCaretPositioning'
 import { ReturnTypes} from "../Constants";
 import highlight from './SyntaxHighlighting';
 import SuggestionBox from './SuggestionBox';
+import SuggestionModel from "../model/SuggestionModel";
 
 let id = 0;
 class Expression extends React.Component {
@@ -22,6 +23,7 @@ class Expression extends React.Component {
             error: null,
             typeValid: props.optional,
             text: "",
+            partialMatch: "",
             blocks: [],
             suggestions: null,
             caretPosition: {
@@ -34,11 +36,11 @@ class Expression extends React.Component {
         this.onKeyUpWeb = this._onKeyUpWeb.bind(this);
         this.onChange = this._onChange.bind(this);
         this.onBlur = this._onBlur.bind(this);
+        this.onFocus = this._onFocus.bind(this);
         this.onKeyDown = this._onKeyDown.bind(this);
     }
 
     _onBlur(){
-        console.log("BLURRR")
         this.setState({
             blocks: [],
             suggestions: null,
@@ -49,7 +51,18 @@ class Expression extends React.Component {
         });
     }
 
-     _onChange(text){
+    _onFocus(e){
+        const result = this.onChange(e.target.innerText);
+
+        this.setState(
+            {
+                ...result,
+            }
+        )
+    }
+
+
+    _onChange(text){
          const result = parse(text||"", getModelDefinition());
          let valid = false;
          let typeValid = false;
@@ -64,7 +77,7 @@ class Expression extends React.Component {
                 const typeResult = checkExpression(result.expression, getModelDefinition(), expectedType, false);
                 typeValid = typeResult.succes;
                 result.error = typeResult.error;
-                if(typeResult.suggestions) result.suggestions.push(typeResult.suggestions);
+                if(typeResult.suggestions) result.suggestions.add(typeResult.suggestions);
             }
         } else {
             valid=false;
@@ -74,9 +87,10 @@ class Expression extends React.Component {
             valid: valid,
             typeValid: typeValid,
             text: text,
+            partialMath: result.partialMatch,
             blocks: result.blocks,
             error: result.error,
-            suggestions: result.suggestions
+            suggestions: result.suggestions.filterOnReturnType(this.expectedType)
         };
     }
 
@@ -84,10 +98,9 @@ class Expression extends React.Component {
         // e.stopPropagation();
         const savedCaretPosition = CaretPositioning.saveSelection(e.currentTarget);
         const result = this.onChange(e.target.innerText);
-
         this.setState(
             {
-                ...result,
+                    ...result,
                 caretPosition: savedCaretPosition
             },() => {
                 //restore caret position(s)
@@ -97,13 +110,12 @@ class Expression extends React.Component {
     }
 
     _onKeyDown(e){
-        if(e.ctrlKey && e.keyCode===32){
-            console.log("Refactor SuggestionModel to multi model by makeing multi object wrapper");
+        if(e.ctrlKey && e.keyCode===32 && this.state.suggestions.single()){
+            var completion = this.state.suggestions.completion();
             const savedCaretPosition = CaretPositioning.saveSelection(e.currentTarget);
-            console.log(savedCaretPosition);
-            const result = this.onChange(this.state.text+"age");
-            savedCaretPosition.start+=3;
-            savedCaretPosition.end+=3;
+            const result = this.onChange(this.state.text+completion);
+            savedCaretPosition.start+=completion.length;
+            savedCaretPosition.end+=completion.length;
             this.setState(
                 {
                     ...result,
@@ -113,6 +125,7 @@ class Expression extends React.Component {
                     CaretPositioning.restoreSelection(document.getElementById(this.state.id), this.state.caretPosition);
                 }
             )
+            // this.onChange(e.target.innerText);
         }
     }
 
@@ -126,6 +139,7 @@ class Expression extends React.Component {
                            onInput={this.onKeyUpWeb}
                            onKeyDown={this.onKeyDown}
                            onBlur={this.onBlur}
+                           onFocus={this.onFocus}
                            dangerouslySetInnerHTML={{__html: html}}>{}</div>;
         let errorAlert = null;
         if(this.state.error){

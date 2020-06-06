@@ -1,34 +1,26 @@
 import React from 'react';
 import {ListGroup} from "react-bootstrap";
-import SuggestionModel from '../model/SugesstionModel';
+import SuggestionModel from '../model/SuggestionModel';
 
 class SuggestionBox extends React.Component {
 
     constructor(props) {
         super(props);
     }
-    renderList(model){
+    renderList(model, single){
         let suggestions = [];
-        if(model) {
-            const partialMatch=model.partialMatch;
-            model = new SuggestionModel(model.type, model.options, model.patternOptions)
-                .filterOnPartial(partialMatch)
-                .filterOnReturnType(this.props.expectedType);
-            const displayModel = model.asDisplayModel(partialMatch);
-            if(displayModel.hits) {
-                suggestions.push(<ListGroup.Item variant="secondary" key={displayModel.type}>{displayModel.type}</ListGroup.Item>);
-                suggestions=suggestions.concat(displayModel.options.map(item => <ListGroup.Item key={displayModel.type+"-"+item[0]}><span style={{textDecoration: 'underline'}}>{item[1]}</span>{item[2]}</ListGroup.Item>));
-                suggestions=suggestions.concat(displayModel.patternOptions.map(item => <ListGroup.Item key={displayModel.type+"-"+item[0]}><i>{item[2]}</i></ListGroup.Item>));
-            }
-        }
+        suggestions.push(<ListGroup.Item variant="secondary" key={model.type}>{model.type}</ListGroup.Item>);
+        suggestions=suggestions.concat(model.options.map(item => <ListGroup.Item key={model.type+"-"+item[0]} variant={model.single?"primary":null}><span style={{textDecoration: 'underline'}}>{item[1]}</span>{item[2]}</ListGroup.Item>));
+        suggestions=suggestions.concat(model.patternOptions.map(item => <ListGroup.Item key={model.type+"-"+item[0]} variant={model.single?"primary":null}><i>{item[2]}</i></ListGroup.Item>));
         return suggestions;
     }
     render() {
-        const models  = this.props.suggestions||[];
-        if(models.length===0) return null;
-
+        if(!this.props.suggestions) return null;
+        const model  = this.props.suggestions;
+        if(!model.any()) return null;
+        const displayModel = model.asDisplayModel(this.props.partialMatch);
         return (<ListGroup style={{zIndex: 1, position: 'absolute'}}>
-                {models.map(model => this.renderList(model))}
+                {displayModel.models.map(item => this.renderList(item,displayModel.single))}
                 </ListGroup>)
         // if(models[0]) return this.renderList(models[0]);
         // else return null;

@@ -1,4 +1,7 @@
 import _ from 'underscore';
+import ExceptionWithSuggestion from "./ExceptionWithSuggestion";
+import SuggestionModelType from "./SuggestionModelType";
+import {ReturnTypes} from "../Constants";
 
 export function ParseCursor(text){
     this.cursorIndex=0;
@@ -7,7 +10,11 @@ export function ParseCursor(text){
     this.lastBlock=null;
 
 }
-
+function expectInstruction(instruction){
+    return new SuggestionModelType('expected', [
+        {name: instruction}
+    ]);
+}
 ParseCursor.prototype.more=function(){
     return this.text!=="";
 }
@@ -32,7 +39,7 @@ ParseCursor.prototype.read=function(patternOrInstruction) {
             throw "Expected "+patternOrInstruction.join("|");
         }
     } else if(typeof(patternOrInstruction) === 'string') {
-        if(!this.at(patternOrInstruction)) throw "Expected "+patternOrInstruction;
+        if(!this.at(patternOrInstruction)) throw new ExceptionWithSuggestion("Expected "+patternOrInstruction, expectInstruction(patternOrInstruction));
         this.move(patternOrInstruction.length);
     } else {
         const match = patternOrInstruction.exec(this.text);
@@ -44,15 +51,17 @@ ParseCursor.prototype.read=function(patternOrInstruction) {
     }
 }
 
+
+
 ParseCursor.prototype.move=function(length){
     var start = this.cursorIndex;
     this.text=this.text.substring(length);
-    this.cursorIndex+=(length+(this.text.length-this.text.trim().length));
+    this.cursorIndex+=length+(this.text.length-this.text.trimLeft().length);
     this.lastBlock = {
         start: start,
         end: this.cursorIndex
     }
-    this.text=this.text.trim();
+    this.text=this.text.trimLeft();
 }
 
 ParseCursor.prototype.getLastBlock=function(){

@@ -3,6 +3,8 @@ import ParseCursor from "./ParseCursor";
 import {Constant, Variable, Brackets,Ternary, createExpression, getReturnType} from "./ExpressionModel";
 import {NodeTypes, ReturnTypes,HighlightTypes} from '../Constants';
 import {validateCompletenessOfArguments} from './ParseUtil';
+import SuggestionModelType from './SuggestionModelType';
+import SuggestionModel from "./SuggestionModel";
 
 
 const LOG = false;
@@ -24,6 +26,7 @@ export function ParseContext(text){
     const parseStackStash = this.parseStackStash = [];
     let parseStack = [];
     const blocks = this.blocks = [];
+    this.suggestions = new SuggestionModel();
     this.cursor= cursor;
     this.unaryLib={};
     this.infixLib={};
@@ -60,11 +63,13 @@ export function ParseContext(text){
         return !this.cursor.more();
     };
 
-    this.libScan=function(lib, tryParse){
+    this.libScan=function(lib, tryParse, addSuggestions){
         const operators = _.sortBy(_.keys(lib), e => -e.length);
-        return _.any(operators, e=>{
+        const any = _.any(operators, e=>{
             if(tryParse.call(this, e)) return true;
         });
+        this.suggestions.add(addSuggestions.call(this));
+        return any;
     };
 
     this.tryVariable=function() {
@@ -267,6 +272,7 @@ export function ParseContext(text){
     this.parseExpression=function(until){
         while(!this.done() && (until===null ||  until===undefined || !this.cursor.at(until))) {
             log("========");
+            this.suggestions.clear()
             if( this.tryLongConstant() ||
                 this.tryBooleanConstant() ||
                 this.tryDoubleConstant() ||
@@ -274,9 +280,10 @@ export function ParseContext(text){
                 this.tryVariable() ||
                 this.tryBrackets() ||
                 this.tryTernary() ||
-                this.libScan(this.unaryLib, this.tryUnary) ||
-                this.libScan(this.functionLib, this.tryFunction) ||
-                this.libScan(this.infixLib, this.tryInfix)){
+                this.libScan(this.unaryLib, this.tryUnary, this.unarySuggestions) ||
+                this.libScan(this.functionLib, this.tryFunction, this.functionSuggestions) ||
+                this.libScan(this.infixLib, this.tryInfix, this.infixSuggestions)){
+                this.suggestions.clear();
                 continue;
             }
             throw "Can't match head"
@@ -286,7 +293,9 @@ export function ParseContext(text){
     this.getBlocks=function(){
         return this.blocks;
     };
-
+    this.getSuggestions=function(){
+        return this.suggestions;
+    };
     this.yield=function(prio){
         this.reduce(prio||0);
         return parseStack.pop();
@@ -298,21 +307,29 @@ export function ParseContext(text){
 
     this.functionSuggestions=function(){
         var names = _.sortBy(_.keys(this.functionLib), i=>i);
-        return _.map(names, name=>{ return {name: name, type: getReturnType(this.functionLib[name].returnType)}});
+        const suggestions =   _.map(names, name=>{ return {name: name, type: getReturnType(this.functionLib[name].returnType)}});
+        return new SuggestionModelType('functions', suggestions);
+    };
+
+    this.infixSuggestions=function(){
+        var names = _.sortBy(_.keys(this.infixLib), i=>i);
+        const suggestions =   _.map(names, name=>{ return {name: name, type: getReturnType(this.infixLib[name].returnType)}});
+        return new SuggestionModelType('infix', suggestions);
     };
 
     this.unarySuggestions=function(){
-        var names = _.sortBy(_.keys(this.unaryLib), i=>i);
-        return _.map(names, name=>{ return {name: name, type: getReturnType(this.unaryLib[name].returnType)}});
+        const names = _.sortBy(_.keys(this.unaryLib), i=>i);
+        const suggestions =  _.map(names, name=>{ return {name: name, type: getReturnType(this.unaryLib[name].returnType)}});
+        return new SuggestionModelType('unary', suggestions);
     };
 
     this.constantSuggestions=function(){
-        return [
+        return new SuggestionModelType('constants', null, [
             {name: 'integer', type:  ReturnTypes.INTEGER, pattern: LONG_PATTERN},
             {name: 'decimal', type: ReturnTypes.DECIMAL, pattern: DOUBLE_PATTERN},
-            {name: 'text', type: ReturnTypes.INTEGER, pattern: TEXT_PATTERN},
+            {name: 'text', type: ReturnTypes.TEXT, pattern: TEXT_PATTERN},
             {name: 'boolean', type: ReturnTypes.BOOLEAN, pattern: /^(true|false)/}
-        ];
+        ]);
     };
 }
 

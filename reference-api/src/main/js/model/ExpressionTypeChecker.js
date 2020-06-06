@@ -207,6 +207,7 @@ function ExpressionTypeChecker(definition){
     return {
         isOptional: isOptional,
         typesMatch: typesMatch,
+        resolveGenericType: resolveGenericType,
         test: (expression, expectedType, throwError) =>
         {
             log("---------");
@@ -243,4 +244,8 @@ export function checkExpression (expression, definition, expectedType, throwErro
 
 export function typesMatch (actualType, expectedType){
     return new ExpressionTypeChecker(null).typesMatch(expectedType, actualType);
+}
+
+export function resolveGenericType (actualType, expectedType){
+    return new ExpressionTypeChecker(null).resolveGenericType(actualType, expectedType);
 }

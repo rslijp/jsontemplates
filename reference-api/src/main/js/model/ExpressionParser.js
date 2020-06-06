@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import ParseContext from './ParseContext'
-import SugesstionModel from './SugesstionModel';
+import SuggestionModel from './SuggestionModel';
+import SuggestionModelType from './SuggestionModelType';
 import {validateCompletenessOfArguments} from "./ParseUtil";
 
 let initialized= false;
@@ -26,53 +27,42 @@ export function parse(text, model, throwException){
         .withUnaryLib(UNARY_LOOKUP)
         .withFunctionLib(FUNCTION_LOOKUP)
         .withInfixLib(INFIX_LOOKUP);
-
-    if(text===""){
-        return {success:true, blocks: [], suggestions: [
-                {
-                    type: 'constants',
-                    patternOptions: context.constantSuggestions()
-                },
-                {
-                    type: 'unary',
-                    options: context.unarySuggestions()
-                },
-                {
-                    type: 'functions',
-                    options: context.functionSuggestions()
-                },
-                {
-                    type: 'variables',
-                    options: SugesstionModel.collectVariableSuggestions(model)
-                }
-            ]}
+    if(text.trim()===""){
+        return {success:true, blocks: [], suggestions: new SuggestionModel([
+                context.constantSuggestions(),
+                context.unarySuggestions(),
+                context.functionSuggestions(),
+                SuggestionModelType.collectVariableSuggestions(model)
+            ])}
     }
 
     try {
         context.parseExpression(null, true);
         var result = context.yield();
         if (context.empty()) {
-            let suggestions = null;
-            if(result===undefined){
-                suggestions = {
-                    partialMatch: null,
-                    type: 'constants',
-                    metaOptions: ['number']
-                }
-            }
+            let suggestions = new SuggestionModel();
             validateCompletenessOfArguments(result);
-            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks(),suggestions: suggestions||[]};
+            return {success:true, expression: result===undefined?null:result, blocks: context.getBlocks(),suggestions: suggestions};
         }
     } catch (e){
         if(throwException) throw e;
-        const suggestions  = e.getSuggestions?e.getSuggestions():null;
-        return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions||[]};
+        let suggestions =  context.getSuggestions();
+        const blocks = context.getBlocks();
+        var end = 0;
+        _.forEach(blocks,(block)=>{
+            end = block.end;
+        });
+
+        var unparsed=text.substr(end);
+        suggestions=suggestions.filterOnPartial(unparsed);
+        suggestions.add(e.getSuggestions?e.getSuggestions():null);
+        return {success:false, error: e, blocks: context.getBlocks(), suggestions: suggestions};
         // throw e;
     }
 
     if(throwException) {
         throw "Stack is not empty";
     }
-    return {success:false, error: "Stack is not empty", blocks: context.getBlocks(), suggestions: []};
+    return {success:false, error: "Stack is not empty", blocks: context.getBlocks(), suggestions: new SuggestionModel()};
 
 }

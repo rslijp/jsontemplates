@@ -1,17 +1,12 @@
 
-export function ExceptionWithSuggestion(text, partialMatch, suggestionType, suggestions){
+export function ExceptionWithSuggestion(text, suggestions){
 
     this.toString=function () {
         return text;
     }
 
     this.getSuggestions=function(){
-        if(!suggestionType) return null;
-        return {
-            partialMatch: partialMatch,
-            type: suggestionType,
-            options: suggestions
-        }
+        return suggestions;
     }
 }
 export default ExceptionWithSuggestion
