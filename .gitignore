@@ -1,3 +1,7 @@
 .idea
 .metadata
 json-templates/target
+reference-api-frontend/bower_components
+reference-api-frontend/dist/
+reference-api-frontend/node_modules/
+reference-api-frontend/yarn.lock
