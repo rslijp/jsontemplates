@@ -1,0 +1,28 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:import/recommended"
+    ],
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error",4],
+        "semi": [2, "always"],
+        "sort-imports": ["error", {"memberSyntaxSortOrder": ["none", "all", "multiple", "single"] }],
+        "react/display-name": 0
+    },
+    "plugins": [
+        "html"
+    ]
+//    "globals": {
+//        "customElements": true,
+//        "HTMLImports": true
+//    }
+
+}

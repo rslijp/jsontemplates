@@ -20,6 +20,7 @@ public class AnyTest {
         assertThat(Types.OBJECT.isA(new Object()), is(true));
     }
 
+
     @Test
     public void xxx(){
 
