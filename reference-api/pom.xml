@@ -78,39 +78,53 @@
                     </execution>
                 </executions>
             </plugin>
-
-           <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
-                <configuration>
-                    <installDirectory>target</installDirectory>
-                </configuration>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
+                        <id>copy-static-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.11.0</nodeVersion>
-                            <npmVersion>6.4.1</npmVersion>
+                            <outputDirectory>${basedir}/src/main/resources/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../reference-api-frontend/dist</directory>
+                                    <includes>
+                                        <include>**/*.js</include>
+                                        <include>**/*.css</include>
+                                        <include>**/*.html</include>
+                                        <include>**/*.jpg</include>
+                                        <include>**/*.png</include>
+                                        <include>**/*.ico</include>
+                                        <include>**/*.svg</include>
+                                        <exclude>index.html</exclude>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm install</id>
+                        <id>copy-template-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <arguments>install</arguments>
+                            <outputDirectory>${basedir}/src/main/resources/templates</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../reference-api-frontend/dist</directory>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>webpack build</id>
-                        <goals>
-                            <goal>webpack</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

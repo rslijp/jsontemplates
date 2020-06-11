@@ -21,7 +21,7 @@ function renderBlock(val, type, error){
 function convertToHtml(text, blocks){
     const newHTML = [];
     let end = 0;
-    blocks.each((block)=>{
+    blocks.forEach((block)=>{
         const val = text.substr(block.start, block.end - block.start);
         newHTML.push(renderBlock(val, block.type));
         end = block.end;

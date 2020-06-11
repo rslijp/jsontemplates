@@ -10,7 +10,7 @@ const UNARY_LOOKUP = {};
 
 
 export function initExpressionLibrary(availableExpressions){
-    availableExpressions.each(expression=>{
+    availableExpressions.forEach(expression=>{
         const {parseType,operator} = expression;
         if(parseType==="CONSTANT") return;
         if(parseType==="UNARY") UNARY_LOOKUP[operator]=expression;
@@ -49,7 +49,7 @@ export function parse(text, model, throwException){
         let suggestions =  context.getSuggestions();
         const blocks = context.getBlocks();
         let end = 0;
-        blocks.each((block)=>{
+        blocks.forEach((block)=>{
             end = block.end;
         });
 

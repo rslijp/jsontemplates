@@ -1,5 +1,5 @@
 import {any, arrayOf} from "prop-types";
-import {getGlobalNodes, setAvailableNodes} from "../available/AllowedNodes";
+import {getGlobalNodes, setAvailableNodes} from "../available/AllowNodesProvider";
 import {observe, slotNodes} from "../model/JsonTemplate";
 import EmptySlot from "./EmptySlot";
 import React from 'react';
@@ -24,11 +24,11 @@ class WorkBench extends React.Component {
             return (<Slot key={i} path={path} node={node} allNodes={this.props.allNodes}/>);
         });
         return (
-            <div className={"workBench"}>
-                <h2>Workbench</h2>
+            <>
+                <h5>For</h5>
                 {slots}
                 <EmptySlot path="push"/>
-            </div>
+            </>
         );
     }
 

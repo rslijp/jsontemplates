@@ -78,11 +78,6 @@ html, body,#root, #react, #root > .row {
     width: 150px;
 }
 
-.workBench {
-    height: 100%;
-    width: 100%;
-}
-
 .remove-container {
     height: 20px;
 }
@@ -96,4 +91,98 @@ html, body,#root, #react, #root > .row {
 
 .errorBlock{
     border-bottom: 2px dashed red;
+}
+
+.leftmenu {
+    border-right: 1px solid #333;
+    left: -250px;
+    width: 300px;
+    position: absolute;
+    height: 100%;
+    transition: left 1s;
+    z-index: 2;
+    overflow-y: scroll;
+    padding-right: 15px;
+    background-color: #fff;
+}
+
+.leftmenu-expanded {
+    left: 0;
+}
+
+.leftmenu .card-container, .rightmenu .card-container {
+    margin-left: 5px;
+    margin-right: 5px;
+    width: calc(100% - 10px);
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.leftmenu-expanded .card-container, .rightmenu-expanded .card-container {
+    opacity: 1;
+}
+
+
+.leftmenu h2 {
+    width: 100%;
+    padding-left: 5px;
+}
+.leftmenu .expand-button {
+    margin-left: 5px;
+    margin-right: -5px;
+    margin-top: 5px;
+    float: right;
+}
+
+.rightmenu {
+    border-left: 1px solid #333;
+    right: -250px;
+    width: 300px;
+    position: absolute;
+    height: 100%;
+    transition: right 1s;
+    z-index: 2;
+    overflow-y: scroll;
+    padding-left: 0px;
+    background-color: #fff;
+}
+
+.rightmenu h2 {
+    width: 100%;
+    /*text-align: right;*/
+    /*padding-right: 5px;*/
+    padding-left: 10px;
+}
+
+.rightmenu-expanded {
+    right: 0;
+}
+
+.rightmenu .expand-button {
+    margin-left: -5px;
+    margin-right: 10px;
+    margin-top: 5px;
+    float: left;
+}
+
+
+.workbench {
+    height: 100%;
+    width: calc(100% - 140px);
+    margin-left: 50px;
+    position: absolute;
+    transition:  1s;
+}
+
+
+.workbench.workbench-shrink-left {
+    margin-left: 300px;
+    width: calc(100% - 380px);
+
+}
+.workbench.workbench-shrink-right {
+    width: calc(100% - 380px);
+}
+.workbench.workbench-shrink-right.workbench-shrink-left {
+    width: calc(100% - 640px);
 }

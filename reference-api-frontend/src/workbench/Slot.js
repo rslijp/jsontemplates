@@ -10,7 +10,7 @@ import Optional from "../common/Optional";
 import Overlay from '../common/Overlay';
 import React from 'react';
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
-import {getGlobalNodes} from './../available/AllowedNodes';
+import {getGlobalNodes} from '../available/AllowNodesProvider';
 import { useDrop } from 'react-dnd';
 
 function Slot({node,path,allNodes,forSlot}) {
@@ -125,9 +125,9 @@ function Slot({node,path,allNodes,forSlot}) {
 Slot.propTypes = {
     node: shape({
         name: string,
-        argumentTypes: arrayOf(string),
+        argumentTypes: any,
         slotNodes: arrayOf(any),
-        nodeSlotLimits: arrayOf(string)
+        nodeSlotLimits: any
     }),
     nodeSlots: any,
     path: string,

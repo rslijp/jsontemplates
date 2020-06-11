@@ -5,7 +5,7 @@ import {ItemTypes} from "../Constants";
 import Optional from "../common/Optional";
 import Overlay from '../common/Overlay';
 import React from 'react';
-import {getGlobalNodes} from "../available/AllowedNodes";
+import {getGlobalNodes} from "../available/AllowNodesProvider";
 import { useDrop } from 'react-dnd';
 
 function EmptySlot({forSlot, optional, path, parentPath, limit}) {
@@ -52,7 +52,7 @@ EmptySlot.propTypes = {
     path: string,
     parentPath: string,
     allNodes: arrayOf(any),
-    limit: bool,
+    limit: string,
     optional: bool,
     forSlot: string
 };

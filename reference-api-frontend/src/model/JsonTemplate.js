@@ -76,7 +76,7 @@ function innerSetNode(c, path,node) {
 
 function updateFocus(path, node){
     slotWithFocus=null;
-    if( Object.keys(node.nodeSlots).length>0) {
+    if( Object.keys(node.nodeSlots||{}).length>0) {
         pathWithFocus = path;
     }
 }

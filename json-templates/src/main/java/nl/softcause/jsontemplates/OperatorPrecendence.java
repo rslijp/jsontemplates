@@ -1,7 +1,6 @@
 package nl.softcause.jsontemplates;
 
-public class OperatorPrecendence
-{
+public class OperatorPrecendence {
     public static final int Function = 1;
     public static final int Brackets = 12;
     public static final int Ternary = 3;

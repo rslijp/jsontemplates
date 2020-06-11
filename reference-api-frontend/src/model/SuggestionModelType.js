@@ -10,7 +10,7 @@ class SuggestionModelType {
     }
 
     static collectVariableSuggestions(model){
-        const {propertyDescriptions} = model.propertyDescriptions;
+        const {propertyDescriptions} = model;
         return new SuggestionModelType('variable',
             propertyDescriptions
                 .filter(i=>i.readable)
