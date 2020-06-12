@@ -13,7 +13,7 @@ public class DefinitionRegistryEntry {
     private boolean writable;
 
     public IExpressionType getDecoratedType() {
-        if(nested!=null){
+        if (nested != null) {
             return Types.decorate(type, nested.getModelType());
         }
         return type;

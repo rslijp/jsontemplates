@@ -1,17 +1,17 @@
 package nl.softcause.jsontemplates.expressions.logic;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import nl.softcause.jsontemplates.OperatorPrecendence;
-import nl.softcause.jsontemplates.types.IExpressionType;
-import nl.softcause.jsontemplates.expressions.util.TupleExpression;
+import static nl.softcause.jsontemplates.types.Types.BOOLEAN;
 
 import java.util.ArrayList;
 
-import static nl.softcause.jsontemplates.types.Types.BOOLEAN;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import nl.softcause.jsontemplates.expressions.util.TupleExpression;
+import nl.softcause.jsontemplates.types.IExpressionType;
 
 @EqualsAndHashCode(callSuper = false)
-public abstract class BooleanTupleExpression extends TupleExpression<java.lang.Boolean,java.lang.Boolean,java.lang.Boolean> {
+public abstract class BooleanTupleExpression
+        extends TupleExpression<java.lang.Boolean, java.lang.Boolean, java.lang.Boolean> {
 
     @Getter
     private IExpressionType returnType = BOOLEAN;

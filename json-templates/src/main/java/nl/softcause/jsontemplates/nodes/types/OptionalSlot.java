@@ -11,12 +11,14 @@ public class OptionalSlot implements ISlotPattern {
 
     @Override
     public boolean match(Object object) {
-        if(object==null) return true;
+        if (object == null) {
+            return true;
+        }
         return basePattern.match(object);
     }
 
     @Override
     public String getDescription() {
-        return basePattern.getDescription()+"?";
+        return basePattern.getDescription() + "?";
     }
 }

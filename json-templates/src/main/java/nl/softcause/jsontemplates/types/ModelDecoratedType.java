@@ -12,15 +12,17 @@ public class ModelDecoratedType<T> implements IExpressionType<T> {
     @Getter
     private final Class<T> modelType;
 
-    public ModelDecoratedType(@NonNull IExpressionType<T> undecoratedExpressionType, @NonNull Class<T> modelType){
+    public ModelDecoratedType(@NonNull IExpressionType<T> undecoratedExpressionType, @NonNull Class<T> modelType) {
         this.undecoratedExpressionType = undecoratedExpressionType;
         this.modelType = modelType;
     }
 
     @Override
-    public boolean equals(Object rhs){
-        if(rhs==null) return false;
-        if(rhs instanceof ModelDecoratedType){
+    public boolean equals(Object rhs) {
+        if (rhs == null) {
+            return false;
+        }
+        if (rhs instanceof ModelDecoratedType) {
             return undecoratedExpressionType.equals(((ModelDecoratedType) rhs).getUndecoratedExpressionType());
         }
         return undecoratedExpressionType.equals(rhs);

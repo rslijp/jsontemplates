@@ -1,5 +1,9 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
@@ -15,10 +19,6 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 @EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 @ReduceOptionalAnnotation
@@ -31,8 +31,9 @@ public class FormatDate implements IExpressionWithArguments {
     public FormatDate() {
         this(new ArrayList<>());
     }
+
     public FormatDate(List<IExpression> arguments) {
-        this.arguments=arguments;
+        this.arguments = arguments;
     }
 
 
@@ -44,9 +45,9 @@ public class FormatDate implements IExpressionWithArguments {
     @Override
     public Object evaluate(IModel model) {
         var value = getArguments().get(0).evaluate(model);
-        if(value!=null){
-            var patternValue = getArguments().size()>=2 ? getArgument(model, 1) : null;
-            var timeZone = getArguments().size()==3 ? getArgument(model, 2) : null;
+        if (value != null) {
+            var patternValue = getArguments().size() >= 2 ? getArgument(model, 1) : null;
+            var timeZone = getArguments().size() == 3 ? getArgument(model, 2) : null;
             var format = DateFormatterUtils.buildFormatter(patternValue, timeZone, model.getLocale());
             return format.format(Date.from(Types.DATETIME.convert(value)));
         }
@@ -55,14 +56,16 @@ public class FormatDate implements IExpressionWithArguments {
 
     private String getArgument(IModel model, int i) {
         var raw = getArguments().get(i);
-        if(raw==null) return null;
+        if (raw == null) {
+            return null;
+        }
         return Types.OPTIONAL_TEXT.convert(raw.evaluate(model));
     }
 
 
     @Override
     public IExpressionType[] getArgumentsTypes() {
-        return new IExpressionType[]{Types.OPTIONAL_DATETIME, Types.OPTIONAL_TEXT};
+        return new IExpressionType[] {Types.OPTIONAL_DATETIME, Types.OPTIONAL_TEXT};
     }
 
     @Override

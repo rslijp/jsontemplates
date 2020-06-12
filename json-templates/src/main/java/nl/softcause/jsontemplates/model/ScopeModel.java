@@ -1,12 +1,17 @@
 package nl.softcause.jsontemplates.model;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.util.*;
 
 public class ScopeModel implements IModel {
 
@@ -17,72 +22,76 @@ public class ScopeModel implements IModel {
     @Getter
     public Locale locale;
 
-    private Map<String, DefinitionRegistryEntry> DEFINITIONS = new HashMap<>();
+    private Map<String, DefinitionRegistryEntry> definitions = new HashMap<>();
 
-    private Map<String, Object> VALUES = new HashMap<>();
+    private Map<String, Object> values = new HashMap<>();
 
     public ScopeModel(Object owner) {
-        this.owner=owner;
+        this.owner = owner;
     }
 
-    public void addNodeScopeChange(NodeScopeChange change){
-        this.addDefintion(change.getName(), change.getType(), null, true, change.isWritable(), change.getDefaultValue());
+    public void addNodeScopeChange(NodeScopeChange change) {
+        this.addDefintion(change.getName(), change.getType(), null, true, change.isWritable(),
+                change.getDefaultValue());
     }
 
-    public void addDefintion(@NonNull String name, @NonNull IExpressionType type, DefinitionRegistry nested, boolean readable, boolean writable, Object defaultValue) {
+    public void addDefintion(@NonNull String name, @NonNull IExpressionType type, DefinitionRegistry nested,
+                             boolean readable, boolean writable, Object defaultValue) {
         guardNesting(name);
         var defaultType = Types.determineConstant(defaultValue);
         var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable);
-        if (DEFINITIONS.containsKey(name) && !DEFINITIONS.get(name).equals(newDefinition)) {
+        if (definitions.containsKey(name) && !definitions.get(name).equals(newDefinition)) {
             throw ScopeException.alreadyDefined(name);
         }
-        if(!Types.runtimeTypesMatch(type, defaultType)){
-            throw ScopeException.defaultValueTypeError(name,type, defaultType);
+        if (!Types.runtimeTypesMatch(type, defaultType)) {
+            throw ScopeException.defaultValueTypeError(name, type, defaultType);
         }
-        if((type.baseType().equals(Types.OBJECT) || type.baseType().equals(Types.GENERIC)) && defaultValue!=null && nested!=null){
-            if(!nested.getModelType().isInstance(defaultValue)){
-                throw ScopeException.defaultValueTypeError(name,nested.getModelType(), defaultValue.getClass());
+        if ((type.baseType().equals(Types.OBJECT) || type.baseType().equals(Types.GENERIC)) && defaultValue != null &&
+                nested != null) {
+            if (!nested.getModelType().isInstance(defaultValue)) {
+                throw ScopeException.defaultValueTypeError(name, nested.getModelType(), defaultValue.getClass());
 
             }
         }
-        DEFINITIONS.put(name, new DefinitionRegistryEntry(name, type, nested, readable, writable));
-        VALUES.put(name, type.convert(defaultValue));
+        definitions.put(name, new DefinitionRegistryEntry(name, type, nested, readable, writable));
+        values.put(name, type.convert(defaultValue));
     }
 
     public void dropDefintion(String name) {
         guardNesting(name);
-        if (!DEFINITIONS.containsKey(name)) {
+        if (!definitions.containsKey(name)) {
             throw ScopeException.notDefined(name);
         }
-        DEFINITIONS.remove(name);
+        definitions.remove(name);
     }
 
     public boolean hasDefinition(@NonNull String name) {
         var parts = name.split(TemplateModel.SEPARATOR);
         var localName = parts[0];
-        if(!DEFINITIONS.containsKey(localName)){
+        if (!definitions.containsKey(localName)) {
             return false;
         }
-        var def = DEFINITIONS.get(localName);
-        if(parts.length>1){
-            if(def.getNested()==null){
+        var def = definitions.get(localName);
+        if (parts.length > 1) {
+            if (def.getNested() == null) {
                 return false;
             }
             var relativeName = String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
             def = def.getNested().getDefinition(relativeName);
         }
-        return def!=null;
+        return def != null;
     }
+
     @Override
     public DefinitionRegistryEntry getDefinition(@NonNull String name) {
         var parts = name.split(TemplateModel.SEPARATOR);
         var localName = parts[0];
-        if(!DEFINITIONS.containsKey(localName)){
+        if (!definitions.containsKey(localName)) {
             throw ScopeException.notFound(localName);
         }
-        var def = DEFINITIONS.get(localName);
-        if(parts.length>1){
-            if(def.getNested()==null){
+        var def = definitions.get(localName);
+        if (parts.length > 1) {
+            if (def.getNested() == null) {
                 throw ScopeException.nestedDefinitionNotAllowed(name);
             }
             var relativeName = String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
@@ -93,11 +102,12 @@ public class ScopeModel implements IModel {
 
     @Override
     public DefinitionRegistryEntry[] getDefinitions() {
-        return DEFINITIONS.values().stream().sorted(Comparator.comparing(DefinitionRegistryEntry::getName)).toArray(DefinitionRegistryEntry[]::new);
+        return definitions.values().stream().sorted(Comparator.comparing(DefinitionRegistryEntry::getName))
+                .toArray(DefinitionRegistryEntry[]::new);
     }
 
     private void guardNesting(String name) {
-        if(name.contains(TemplateModel.SEPARATOR_CHAR)){
+        if (name.contains(TemplateModel.SEPARATOR_CHAR)) {
             throw ScopeException.nestedDefinitionNotAllowed(name);
         }
     }
@@ -109,13 +119,14 @@ public class ScopeModel implements IModel {
         var localName = parts[0];
 
         var def = getDefinition(localName);
-        if(def.isReadable()) {
-            var value = def.getType().convert(VALUES.get(localName));
-            if(parts.length>1){
-                if(def.getNested()==null){
+        if (def.isReadable()) {
+            var value = def.getType().convert(values.get(localName));
+            if (parts.length > 1) {
+                if (def.getNested() == null) {
                     throw ScopeException.nestedDefinitionNotAllowed(name);
                 }
-                var relativeName = String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
+                var relativeName =
+                        String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
                 value = def.getNested().read(value, relativeName);
             }
             return value;
@@ -126,7 +137,7 @@ public class ScopeModel implements IModel {
 
     public void setLocal(@NonNull String localName, Object value) {
         var def = getDefinition(localName);
-        VALUES.put(localName, def.getType().convert(value));
+        values.put(localName, def.getType().convert(value));
     }
 
     @Override
@@ -135,20 +146,21 @@ public class ScopeModel implements IModel {
         var localName = parts[0];
 
         var def = getDefinition(localName);
-        if(parts.length>1){
-            if(def.isReadable()) {
-                var src = def.getType().convert(VALUES.get(localName));
+        if (parts.length > 1) {
+            if (def.isReadable()) {
+                var src = def.getType().convert(values.get(localName));
                 if (def.getNested() == null) {
                     throw ScopeException.nestedDefinitionNotAllowed(name);
                 }
-                var relativeName = String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
+                var relativeName =
+                        String.join(TemplateModel.SEPARATOR_CHAR, Arrays.copyOfRange(parts, 1, parts.length));
                 def.getNested().write(src, relativeName, value);
             } else {
                 throw ScopeException.notReadable(name);
             }
         } else {
             if (def.isWritable()) {
-                VALUES.put(name, def.getType().convert(value));
+                values.put(name, def.getType().convert(value));
             } else {
                 throw ScopeException.notWritable(name);
             }

@@ -2,7 +2,8 @@ package nl.softcause.jsontemplates.types;
 
 public class IntegerType implements IExpressionType<Long> {
 
-    IntegerType(){}
+    IntegerType() {
+    }
 
     @Override
     public String getType() {
@@ -11,7 +12,9 @@ public class IntegerType implements IExpressionType<Long> {
 
     @Override
     public boolean isA(Object src) {
-        if(src==null) return false;
+        if (src == null) {
+            return false;
+        }
         return isClassOfA(src.getClass());
     }
 
@@ -22,7 +25,9 @@ public class IntegerType implements IExpressionType<Long> {
 
     @Override
     public Long convert(Object src) {
-        if(!isA(src)) throw TypeException.invalidCast(src, this);
+        if (!isA(src)) {
+            throw TypeException.invalidCast(src, this);
+        }
         Long val = null;
         if (src instanceof Number) {
             val = ((Number) src).longValue();
@@ -31,7 +36,9 @@ public class IntegerType implements IExpressionType<Long> {
     }
 
     @Override
-    public IExpressionType baseType() { return this; }
+    public IExpressionType baseType() {
+        return this;
+    }
 
     @Override
     public String toString() {

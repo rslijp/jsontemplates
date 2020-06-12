@@ -1,5 +1,8 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
@@ -14,9 +17,6 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 @ReduceOptionalAnnotation
@@ -30,7 +30,7 @@ public class FormatBoolean implements IExpressionWithArguments {
     }
 
     public FormatBoolean(List<IExpression> arguments) {
-        this.arguments=arguments;
+        this.arguments = arguments;
     }
 
 
@@ -42,8 +42,8 @@ public class FormatBoolean implements IExpressionWithArguments {
     @Override
     public Object evaluate(IModel model) {
         var value = getArguments().get(0).evaluate(model);
-        if(value!=null){
-            return Types.OPTIONAL_BOOLEAN.convert(value)?"Y":"N";
+        if (value != null) {
+            return Types.OPTIONAL_BOOLEAN.convert(value) ? "Y" : "N";
 
         }
         return null;
@@ -51,7 +51,7 @@ public class FormatBoolean implements IExpressionWithArguments {
 
     @Override
     public IExpressionType[] getArgumentsTypes() {
-        return new IExpressionType[]{Types.OPTIONAL_BOOLEAN};
+        return new IExpressionType[] {Types.OPTIONAL_BOOLEAN};
     }
 
 

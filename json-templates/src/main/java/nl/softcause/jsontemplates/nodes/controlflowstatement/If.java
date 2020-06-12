@@ -1,12 +1,12 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import java.util.Map;
+
 import lombok.EqualsAndHashCode;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
-
-import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 public class If extends ReflectionBasedNodeImpl {
@@ -26,9 +26,9 @@ public class If extends ReflectionBasedNodeImpl {
 
     @Override
     protected void internalEvaluate(TemplateModel model) {
-        if(test){
+        if (test) {
             thenNode.evaluate(model);
-        } else if(slots.containsKey("else")){
+        } else if (slots.containsKey("else")) {
             elseNode.evaluate(model);
         }
     }

@@ -1,11 +1,11 @@
 package nl.softcause.jsontemplates.types;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
-import java.io.IOException;
 
 public class TypeDeserializer extends StdDeserializer<IExpressionType> {
 
@@ -19,14 +19,14 @@ public class TypeDeserializer extends StdDeserializer<IExpressionType> {
     }
 
     @Override
-    public IExpressionType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public IExpressionType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+            throws IOException, JsonProcessingException {
         var typeName = jsonParser.getText();
         var type = Types.byName(typeName);
-        if(type==null){
+        if (type == null) {
             throw TypeException.notFound(typeName);
         }
         return type;
     }
-
 
 }

@@ -1,5 +1,10 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
@@ -16,11 +21,6 @@ import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.TypeException;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 @EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 @ReduceOptionalAnnotation
@@ -32,8 +32,9 @@ public class ParseDate implements IExpressionWithArguments {
     public ParseDate() {
         this(new ArrayList<>());
     }
+
     public ParseDate(List<IExpression> arguments) {
-        this.arguments=arguments;
+        this.arguments = arguments;
     }
 
 
@@ -45,14 +46,16 @@ public class ParseDate implements IExpressionWithArguments {
     @Override
     public Object evaluate(IModel model) {
         var value = getArguments().get(0).evaluate(model);
-        if(value!=null){
+        if (value != null) {
             try {
-                var patternValue = getArguments().size()>=2 ? Types.OPTIONAL_TEXT.convert(getArguments().get(1).evaluate(model)) : null;
-                var timeZone = getArguments().size()==3 ? Types.OPTIONAL_TEXT.convert(getArguments().get(2).evaluate(model)) : null;
-                var format = DateFormatterUtils.buildFormatter(patternValue, timeZone,model.getLocale());
+                var patternValue = getArguments().size() >= 2 ?
+                        Types.OPTIONAL_TEXT.convert(getArguments().get(1).evaluate(model)) : null;
+                var timeZone = getArguments().size() == 3 ?
+                        Types.OPTIONAL_TEXT.convert(getArguments().get(2).evaluate(model)) : null;
+                var format = DateFormatterUtils.buildFormatter(patternValue, timeZone, model.getLocale());
                 Date date = format.parse(Types.TEXT.convert(value));
                 return Types.DATETIME.convert(date);
-            } catch (ParseException Pe){
+            } catch (ParseException Pe) {
                 throw TypeException.conversionError(value, getReturnType(model));
             }
         }
@@ -61,7 +64,7 @@ public class ParseDate implements IExpressionWithArguments {
 
     @Override
     public IExpressionType[] getArgumentsTypes() {
-        return new IExpressionType[]{Types.OPTIONAL_TEXT};
+        return new IExpressionType[] {Types.OPTIONAL_TEXT};
     }
 
     @Override

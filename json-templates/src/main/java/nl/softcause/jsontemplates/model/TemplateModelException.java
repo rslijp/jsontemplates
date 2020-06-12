@@ -1,7 +1,5 @@
 package nl.softcause.jsontemplates.model;
 
-import nl.softcause.jsontemplates.types.IExpressionType;
-
 public class TemplateModelException extends RuntimeException {
 
     public TemplateModelException(String msg) {
@@ -9,10 +7,10 @@ public class TemplateModelException extends RuntimeException {
     }
 
     public static TemplateModelException wrongPath(String name) {
-        return new TemplateModelException(String.format("%s isn't valid path",name));
+        return new TemplateModelException(String.format("%s isn't valid path", name));
     }
 
     public static TemplateModelException toManyParents(String name) {
-        return new TemplateModelException(String.format("%s too manyh parents",name));
+        return new TemplateModelException(String.format("%s too manyh parents", name));
     }
 }

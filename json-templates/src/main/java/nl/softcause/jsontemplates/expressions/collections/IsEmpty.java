@@ -46,5 +46,5 @@ public class IsEmpty implements IExpressionWithArguments {
     public ExpressionParseType parseType() {
         return ExpressionParseType.FUNCTION;
     }
-    
+
 }

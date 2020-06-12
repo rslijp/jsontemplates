@@ -1,12 +1,15 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
-import lombok.*;
+import java.util.Collections;
+import java.util.Map;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeWithScopeImpl;
-
-import java.util.Collections;
-import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 public class Try extends ReflectionBasedNodeWithScopeImpl<Try.TryScope> {
@@ -19,21 +22,23 @@ public class Try extends ReflectionBasedNodeWithScopeImpl<Try.TryScope> {
         return node;
     }
 
-    protected Try(){
+    protected Try() {
         super(Try.TryScope.class);
     }
 
     @RequiredSlot
-    private INode bodyNode=null;
-    private INode onErrorNode=null;
+    private INode bodyNode = null;
+    private INode onErrorNode = null;
 
     @Override
     public void internalEvaluate(TemplateModel model) {
         try {
             bodyNode.evaluate(model);
-        } catch (Exception e){
-            pushScopeModel(model, new TryScope( e.getMessage(),e));
-            if(onErrorNode!=null) onErrorNode.evaluate(model);
+        } catch (Exception e) {
+            pushScopeModel(model, new TryScope(e.getMessage(), e));
+            if (onErrorNode != null) {
+                onErrorNode.evaluate(model);
+            }
         }
     }
 

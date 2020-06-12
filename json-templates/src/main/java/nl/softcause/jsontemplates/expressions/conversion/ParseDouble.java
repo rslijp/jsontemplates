@@ -1,5 +1,10 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
@@ -15,11 +20,6 @@ import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.TypeException;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 @EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 @ReduceOptionalAnnotation
@@ -31,8 +31,9 @@ public class ParseDouble implements IExpressionWithArguments {
     public ParseDouble() {
         this(new ArrayList<>());
     }
+
     public ParseDouble(List<IExpression> arguments) {
-        this.arguments=arguments;
+        this.arguments = arguments;
     }
 
     @Override
@@ -43,12 +44,12 @@ public class ParseDouble implements IExpressionWithArguments {
     @Override
     public Object evaluate(IModel model) {
         var value = getArguments().get(0).evaluate(model);
-        if(value!=null){
+        if (value != null) {
             try {
                 NumberFormat format = NumberFormat.getInstance(model.getLocale());
                 Number number = format.parse(Types.TEXT.convert(value));
                 return Types.OPTIONAL_DECIMAL.convert(number.doubleValue());
-            } catch (ParseException Pe){
+            } catch (ParseException Pe) {
                 throw TypeException.conversionError(value, getReturnType(model));
             }
         }
@@ -57,7 +58,7 @@ public class ParseDouble implements IExpressionWithArguments {
 
     @Override
     public IExpressionType[] getArgumentsTypes() {
-        return new IExpressionType[]{Types.OPTIONAL_TEXT};
+        return new IExpressionType[] {Types.OPTIONAL_TEXT};
     }
 
     @Override
