@@ -2,7 +2,6 @@ package nl.softcause.jsontemplates.expressions.comparison;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import nl.softcause.jsontemplates.OperatorPrecendence;
-import nl.softcause.jsontemplates.expressions.arithmetic.ArithmeticTupleExpression;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class GreaterThan extends NumericComparisonTupleExpression {
@@ -21,7 +20,7 @@ public class GreaterThan extends NumericComparisonTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Comparison;
+        return OperatorPrecendence.COMPARISON;
     }
 
 }

@@ -19,6 +19,6 @@ public class LessThan extends NumericComparisonTupleExpression {
 
     @Override
     public Integer priority() {
-        return  OperatorPrecendence.Comparison;
+        return  OperatorPrecendence.COMPARISON;
     }
 }

@@ -2,7 +2,6 @@ package nl.softcause.jsontemplates.expressions.logic;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 
 @EqualsAndHashCode(callSuper = false)
@@ -22,6 +21,6 @@ public class Or extends BooleanTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Or;
+        return OperatorPrecendence.OR;
     }
 }

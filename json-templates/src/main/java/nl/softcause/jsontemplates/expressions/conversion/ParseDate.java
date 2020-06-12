@@ -66,7 +66,7 @@ public class ParseDate implements IExpressionWithArguments {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

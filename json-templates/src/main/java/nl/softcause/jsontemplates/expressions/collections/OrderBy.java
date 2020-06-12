@@ -37,7 +37,7 @@ public class OrderBy extends TupleExpression<List<Object>, List<Object>, String>
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
 

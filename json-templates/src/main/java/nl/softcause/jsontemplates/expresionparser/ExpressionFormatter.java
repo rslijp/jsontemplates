@@ -30,7 +30,7 @@ public class ExpressionFormatter {
             case TERNARY:
                 return formatTernary((Ternary) expression);
             default:
-                throw new RuntimeException("Not implemented formatter for "+pattern);
+                throw new RuntimeException("NOT implemented formatter for "+pattern);
         }
     }
 

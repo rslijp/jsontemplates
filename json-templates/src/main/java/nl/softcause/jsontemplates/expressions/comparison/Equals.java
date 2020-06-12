@@ -43,7 +43,7 @@ public class Equals extends TupleExpression<java.lang.Boolean, Object, Object> {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Equality;
+        return OperatorPrecendence.EQUALITY;
     }
 
 

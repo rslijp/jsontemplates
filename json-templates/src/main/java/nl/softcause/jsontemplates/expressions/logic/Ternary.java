@@ -51,7 +51,7 @@ public class Ternary implements IExpressionWithArguments {
 
     @Override
     public Integer priority() {
-        return arguments!=null && arguments.size()>=2?OperatorPrecendence.Function:OperatorPrecendence.Ternary;
+        return arguments!=null && arguments.size()>=2?OperatorPrecendence.FUNCTION :OperatorPrecendence.TERNARY;
     }
 
     @Override

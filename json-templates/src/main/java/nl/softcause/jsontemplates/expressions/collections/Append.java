@@ -35,7 +35,7 @@ public class Append extends TupleExpression<List<Object>, List<Object>, List<Obj
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

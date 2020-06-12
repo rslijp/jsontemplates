@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.IExpression;
@@ -51,7 +50,7 @@ public class NullOrDefault implements IExpressionWithArguments {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

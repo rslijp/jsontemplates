@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 import nl.softcause.jsontemplates.OperatorPrecendence;
-import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.model.IModel;
@@ -53,7 +51,7 @@ public class Not implements IExpressionWithArguments {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Not;
+        return OperatorPrecendence.NOT;
     }
 
     @Override

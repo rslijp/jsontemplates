@@ -28,7 +28,7 @@ public class Modulo extends TupleExpression<Double,Double, Double> {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Modulo;
+        return OperatorPrecendence.MODULO;
     }
 
     public ExpressionParseType parseType(){

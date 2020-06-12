@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
@@ -48,7 +47,7 @@ public class ToUpper implements IExpressionWithArguments {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

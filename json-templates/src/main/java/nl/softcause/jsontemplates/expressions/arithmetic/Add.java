@@ -19,7 +19,7 @@ public class Add extends ArithmeticTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Add;
+        return OperatorPrecendence.ADD;
     }
 
 }

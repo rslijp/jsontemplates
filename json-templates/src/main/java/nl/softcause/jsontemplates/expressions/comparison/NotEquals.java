@@ -35,7 +35,7 @@ public class NotEquals extends TupleExpression<Boolean, Object, Object> {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Equality;
+        return OperatorPrecendence.EQUALITY;
     }
 
 }

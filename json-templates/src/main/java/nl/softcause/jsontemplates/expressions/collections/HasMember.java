@@ -29,7 +29,7 @@ public class HasMember extends TupleExpression<Boolean, List<Object>, Object>  {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

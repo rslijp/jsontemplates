@@ -18,6 +18,6 @@ public class Minus extends ArithmeticTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Minus;
+        return OperatorPrecendence.MINUS;
     }
 }

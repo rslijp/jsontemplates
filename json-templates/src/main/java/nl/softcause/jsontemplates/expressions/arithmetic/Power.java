@@ -29,7 +29,7 @@ public class Power extends TupleExpression<Double,Double, Double> {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Power;
+        return OperatorPrecendence.POWER;
     }
 
     @Override
