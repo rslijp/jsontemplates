@@ -1,20 +1,19 @@
 package nl.softcause.jsontemplates.expressions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static nl.softcause.jsontemplates.types.Types.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import org.junit.Assert;
+import org.junit.Test;
+
 public class ConstantTest {
 
     @Test
-    public void should_return_value(){
+    public void should_return_value() {
         var c = new Constant("42");
 
         var r = c.evaluate(null);
@@ -23,7 +22,7 @@ public class ConstantTest {
     }
 
     @Test
-    public void should_return_value_of_all_types(){
+    public void should_return_value_of_all_types() {
         assertThat(new Constant(true).evaluate(null), is(true));
         assertThat(new Constant(this).evaluate(null), is(this));
         assertThat(new Constant("42").evaluate(null), is("42"));
@@ -34,7 +33,7 @@ public class ConstantTest {
     }
 
     @Test
-    public void should_guess_return_type(){
+    public void should_guess_return_type() {
         assertThat(new Constant(true).getReturnType(null), is(BOOLEAN));
         assertThat(new Constant(this).getReturnType(null), is(OBJECT));
         assertThat(new Constant("42").getReturnType(null), is(TEXT));

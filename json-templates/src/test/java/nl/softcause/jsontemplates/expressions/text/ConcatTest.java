@@ -1,23 +1,21 @@
 package nl.softcause.jsontemplates.expressions.text;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
-import nl.softcause.jsontemplates.expressions.logic.And;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class ConcatTest {
 
     @Test
-    public void should_apply_concat_string_values(){
+    public void should_apply_concat_string_values() {
         var concat = new Concat();
         concat.setArguments(Arrays.asList(new Constant("a"), new Constant("b")));
 
@@ -27,9 +25,10 @@ public class ConcatTest {
     }
 
     @Test
-    public void should_apply_concat_stringbuffers_values(){
+    public void should_apply_concat_stringbuffers_values() {
         var concat = new Concat();
-        concat.setArguments(Arrays.asList(new Constant(new StringBuffer().append("a")),new Constant(new StringBuffer().append("b"))));
+        concat.setArguments(Arrays.asList(new Constant(new StringBuffer().append("a")),
+                new Constant(new StringBuffer().append("b"))));
 
         var r = concat.evaluate(null);
 
@@ -37,7 +36,7 @@ public class ConcatTest {
     }
 
     @Test
-    public void should_be_null_safe_1st(){
+    public void should_be_null_safe_1st() {
         var concat = new Concat();
         concat.setArguments(Arrays.asList(new Constant(null), new Constant("a")));
 
@@ -47,7 +46,7 @@ public class ConcatTest {
     }
 
     @Test
-    public void should_be_null_safe_2nd(){
+    public void should_be_null_safe_2nd() {
         var concat = new Concat();
         concat.setArguments(Arrays.asList(new Constant("a"), new Constant(null)));
 
@@ -57,10 +56,10 @@ public class ConcatTest {
     }
 
     @Test
-    public void should_consume_variables(){
+    public void should_consume_variables() {
         var concat = new Concat();
         concat.setArguments(Arrays.asList(new Variable("L"), new Variable("R")));
-        var model = new TestModel().put("L", "a").put("R","b");
+        var model = new TestModel().put("L", "a").put("R", "b");
 
         var r = concat.evaluate(model);
 

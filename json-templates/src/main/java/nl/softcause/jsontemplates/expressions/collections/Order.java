@@ -1,5 +1,10 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
@@ -12,11 +17,6 @@ import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.TypeException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import static nl.softcause.jsontemplates.types.Types.LIST_OBJECT;
 

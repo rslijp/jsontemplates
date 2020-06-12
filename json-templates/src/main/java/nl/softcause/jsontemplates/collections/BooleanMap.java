@@ -1,12 +1,14 @@
 package nl.softcause.jsontemplates.collections;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.experimental.Delegate;
 
-import java.util.*;
-
-public class BooleanMap implements Map<String,Boolean> {
+public class BooleanMap implements Map<String, Boolean> {
 
     @Delegate
-    private Map<String,Boolean> base = new HashMap<>();
+    private Map<String, Boolean> base = new HashMap<>();
 
 }

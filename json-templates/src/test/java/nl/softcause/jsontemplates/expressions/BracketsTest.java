@@ -1,26 +1,23 @@
 package nl.softcause.jsontemplates.expressions;
 
+import static nl.softcause.jsontemplates.types.Types.GENERIC;
+import static nl.softcause.jsontemplates.types.Types.INTEGER;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.syntax.ExpressionTypeChecker;
-import nl.softcause.jsontemplates.types.Types;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static nl.softcause.jsontemplates.types.Types.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BracketsTest {
 
     @Test
-    public void should_return_value_of_nested_expression(){
+    public void should_return_value_of_nested_expression() {
         var c = new Brackets();
         c.setArguments(Collections.singletonList(new Constant(42)));
 
@@ -30,7 +27,7 @@ public class BracketsTest {
     }
 
     @Test
-    public void should_take_return_type_of_nested_expression(){
+    public void should_take_return_type_of_nested_expression() {
         var c = new Brackets();
         c.setArguments(Collections.singletonList(new Constant(42)));
 
@@ -40,9 +37,8 @@ public class BracketsTest {
 
 
         assertThat(c.getReturnType(null), is(GENERIC));
-        assertThat(type, is (INTEGER));
+        assertThat(type, is(INTEGER));
     }
-
 
 
     @Test

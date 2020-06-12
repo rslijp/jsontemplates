@@ -1,5 +1,9 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
+import static nl.softcause.jsontemplates.types.Types.LIST_OBJECT;
+
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
@@ -13,10 +17,6 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Types;
 
-import java.util.List;
-
-import static nl.softcause.jsontemplates.types.Types.LIST_OBJECT;
-
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class IsEmpty implements IExpressionWithArguments {
@@ -24,7 +24,7 @@ public class IsEmpty implements IExpressionWithArguments {
     private List<IExpression> arguments;
 
     @JsonIgnore
-    private final IExpressionType[] argumentsTypes = new IExpressionType[]{LIST_OBJECT};
+    private final IExpressionType[] argumentsTypes = new IExpressionType[] {LIST_OBJECT};
 
     @Override
     public IExpressionType getReturnType(IModelDefinition model) {
@@ -46,6 +46,5 @@ public class IsEmpty implements IExpressionWithArguments {
     public ExpressionParseType parseType() {
         return ExpressionParseType.FUNCTION;
     }
-
-
+    
 }

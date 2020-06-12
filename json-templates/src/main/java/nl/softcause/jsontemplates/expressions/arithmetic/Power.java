@@ -1,5 +1,9 @@
 package nl.softcause.jsontemplates.expressions.arithmetic;
 
+import static nl.softcause.jsontemplates.types.Types.DECIMAL;
+
+import java.util.ArrayList;
+
 import lombok.Getter;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.DownCastIfPossibleAnnotation;
@@ -7,12 +11,8 @@ import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.util.TupleExpression;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
-import java.util.ArrayList;
-
-import static nl.softcause.jsontemplates.types.Types.DECIMAL;
-
 @DownCastIfPossibleAnnotation
-public class Power extends TupleExpression<Double,Double, Double> {
+public class Power extends TupleExpression<Double, Double, Double> {
 
     Power() {
         super(DECIMAL, DECIMAL, new ArrayList<>());
@@ -37,9 +37,8 @@ public class Power extends TupleExpression<Double,Double, Double> {
         return ExpressionParseType.INFIX;
     }
 
-    public String operator(){
+    public String operator() {
         return "pow";
     }
-
 
 }

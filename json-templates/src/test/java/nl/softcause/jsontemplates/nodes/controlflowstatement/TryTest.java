@@ -1,6 +1,13 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.nodes.AssertionNode;
@@ -9,19 +16,11 @@ import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 public class TryTest {
 
     @Test
-    public void should_collect_correct_arguments(){
-        var tryNode =  new Try();
+    public void should_collect_correct_arguments() {
+        var tryNode = new Try();
 
         var argumentTypes = tryNode.getArgumentsTypes();
 
@@ -29,8 +28,8 @@ public class TryTest {
     }
 
     @Test
-    public void should_collect_correct_slots(){
-        var tryNode =  new Try();
+    public void should_collect_correct_slots() {
+        var tryNode = new Try();
 
         var argumentTypes = tryNode.getSlotTypes();
 
@@ -40,12 +39,12 @@ public class TryTest {
     }
 
     @Test
-    public void should_not_execute_errorNode_when_no_error(){
+    public void should_not_execute_errorNode_when_no_error() {
         var regularNode = new AssertionNode();
         var errorNode = new AssertionNode();
-        var tryNode =  Try.create(
-                Map.of("body", new INode[]{regularNode},
-                        "onError", new INode[]{errorNode})
+        var tryNode = Try.create(
+                Map.of("body", new INode[] {regularNode},
+                        "onError", new INode[] {errorNode})
         );
 
         tryNode.evaluate(new TemplateModel<>(new TestDefinition()));
@@ -54,7 +53,7 @@ public class TryTest {
     }
 
     @Test
-    public void should_execute_errorNode_when_errors(){
+    public void should_execute_errorNode_when_errors() {
         var regularNode = new AssertionNode().throwErrorOnEvaluate("Oops");
         var errorNode = new AssertionNode().validate(
                 model -> {
@@ -63,8 +62,8 @@ public class TryTest {
                     return null;
                 }
         );
-        var tryNode =  Try.create(
-                Map.of("body", new INode[]{regularNode},"onError", new INode[]{errorNode})
+        var tryNode = Try.create(
+                Map.of("body", new INode[] {regularNode}, "onError", new INode[] {errorNode})
         );
 
         tryNode.evaluate(new TemplateModel<>(new TestDefinition()));
@@ -76,8 +75,8 @@ public class TryTest {
     public void should_serialize_to_json() throws IOException {
         var regularNode = new AssertionNode();
         var errorNode = new AssertionNode();
-        var tryNode =  Try.create(
-                Map.of("body", new INode[]{regularNode},"onError", new INode[]{errorNode})
+        var tryNode = Try.create(
+                Map.of("body", new INode[] {regularNode}, "onError", new INode[] {errorNode})
         );
 
         var json = new ObjectMapper().writeValueAsString(tryNode);

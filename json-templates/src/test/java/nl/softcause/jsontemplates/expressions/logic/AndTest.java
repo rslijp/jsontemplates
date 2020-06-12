@@ -1,22 +1,21 @@
 package nl.softcause.jsontemplates.expressions.logic;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class AndTest {
 
     @Test
-    public void should_apply_boolean_and_to_values_t_t(){
+    public void should_apply_boolean_and_to_values_t_t() {
         var and = new And();
         and.setArguments(Arrays.asList(new Constant(true), new Constant(true)));
 
@@ -26,7 +25,7 @@ public class AndTest {
     }
 
     @Test
-    public void should_apply_boolean_and_to_values_t_f(){
+    public void should_apply_boolean_and_to_values_t_f() {
         var and = new And();
         and.setArguments(Arrays.asList(new Constant(true), new Constant(false)));
 
@@ -36,7 +35,7 @@ public class AndTest {
     }
 
     @Test
-    public void should_apply_boolean_and_to_values_f_t(){
+    public void should_apply_boolean_and_to_values_f_t() {
         var and = new And();
         and.setArguments(Arrays.asList(new Constant(false), new Constant(true)));
 
@@ -46,7 +45,7 @@ public class AndTest {
     }
 
     @Test
-    public void should_apply_boolean_and_to_values_f_f(){
+    public void should_apply_boolean_and_to_values_f_f() {
         var and = new And();
         and.setArguments(Arrays.asList(new Constant(false), new Constant(false)));
 
@@ -56,10 +55,10 @@ public class AndTest {
     }
 
     @Test
-    public void should_consume_variables(){
+    public void should_consume_variables() {
         var and = new And();
         and.setArguments(Arrays.asList(new Variable("L"), new Variable("R")));
-        var model = new TestModel().put("L", true).put("R",true);
+        var model = new TestModel().put("L", true).put("R", true);
 
         var r = and.evaluate(model);
 

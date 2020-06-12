@@ -1,6 +1,14 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
@@ -11,19 +19,10 @@ import nl.softcause.jsontemplates.types.TypeException;
 import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Locale;
-
-import static junit.framework.TestCase.fail;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 public class ParseDoubleTest {
 
     @Test
-    public void should_parse_constant_whole_number(){
+    public void should_parse_constant_whole_number() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant("37")));
 
         var r = parseNumber.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
@@ -32,7 +31,7 @@ public class ParseDoubleTest {
     }
 
     @Test
-    public void should_parse_constant_fraction(){
+    public void should_parse_constant_fraction() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant("37.323")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.ENGLISH);
@@ -42,7 +41,7 @@ public class ParseDoubleTest {
     }
 
     @Test
-    public void should_parse_constant_using_locale(){
+    public void should_parse_constant_using_locale() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant("37.323")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
@@ -52,7 +51,7 @@ public class ParseDoubleTest {
     }
 
     @Test
-    public void should_parse_constant_wrong_fraction_and_ignore_faulthy_input(){
+    public void should_parse_constant_wrong_fraction_and_ignore_faulthy_input() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant("37.32.9")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.ENGLISH);
@@ -63,7 +62,7 @@ public class ParseDoubleTest {
 
 
     @Test
-    public void should_accept_null(){
+    public void should_accept_null() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant(null)));
 
         var r = parseNumber.evaluate(null);
@@ -72,7 +71,7 @@ public class ParseDoubleTest {
     }
 
     @Test
-    public void should_parse_variable(){
+    public void should_parse_variable() {
         var td = new TestDefinition();
         td.setName("37");
         var parseNumber = new ParseDouble(Arrays.asList(new Variable("name")));
@@ -83,13 +82,13 @@ public class ParseDoubleTest {
     }
 
     @Test
-    public void should_report_conversion_error(){
+    public void should_report_conversion_error() {
         var parseNumber = new ParseDouble(Arrays.asList(new Constant("aap")));
         try {
             var r = parseNumber.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
             fail();
-        } catch (TypeException Te){
-             assertThat(Te.getMessage(), is(TypeException.conversionError("aap", Types.OPTIONAL_DECIMAL).getMessage()));
+        } catch (TypeException Te) {
+            assertThat(Te.getMessage(), is(TypeException.conversionError("aap", Types.OPTIONAL_DECIMAL).getMessage()));
         }
     }
 

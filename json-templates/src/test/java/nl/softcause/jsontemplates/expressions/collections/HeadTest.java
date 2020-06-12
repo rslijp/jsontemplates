@@ -1,30 +1,27 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.softcause.jsontemplates.collections.IntegerList;
-import nl.softcause.jsontemplates.expressions.Constant;
-import nl.softcause.jsontemplates.expressions.IExpression;
-import nl.softcause.jsontemplates.expressions.TestModel;
-import nl.softcause.jsontemplates.expressions.Variable;
-import nl.softcause.jsontemplates.model.ModelDefinition;
-import nl.softcause.jsontemplates.model.TestDefinition;
-import nl.softcause.jsontemplates.model.TestNestedDefinition;
-import nl.softcause.jsontemplates.syntax.ExpressionTypeChecker;
-import nl.softcause.jsontemplates.types.Types;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import nl.softcause.jsontemplates.collections.IntegerList;
+import nl.softcause.jsontemplates.expressions.Constant;
+import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.Variable;
+import nl.softcause.jsontemplates.model.ModelDefinition;
+import nl.softcause.jsontemplates.model.TestDefinition;
+import nl.softcause.jsontemplates.syntax.ExpressionTypeChecker;
+import nl.softcause.jsontemplates.types.Types;
+import org.junit.Test;
+
 public class HeadTest {
 
     @Test
-    public void should_return_first_element(){
-        var head = new Head(Arrays.asList(new Constant(new int[]{1,2,3})));
+    public void should_return_first_element() {
+        var head = new Head(Arrays.asList(new Constant(new int[] {1, 2, 3})));
 
         var r = head.evaluate(null);
 
@@ -32,8 +29,8 @@ public class HeadTest {
     }
 
     @Test
-    public void should_return_first_element_from_list(){
-        var head = new Head(Arrays.asList(new Constant(new IntegerList(1,2,3))));
+    public void should_return_first_element_from_list() {
+        var head = new Head(Arrays.asList(new Constant(new IntegerList(1, 2, 3))));
 
         var r = head.evaluate(null);
 
@@ -41,8 +38,8 @@ public class HeadTest {
     }
 
     @Test
-    public void resolve_generic_type_on_ints(){
-        var head = new Head(Arrays.asList(new Constant(new IntegerList(1,2,3))));
+    public void resolve_generic_type_on_ints() {
+        var head = new Head(Arrays.asList(new Constant(new IntegerList(1, 2, 3))));
 
         var checker = new ExpressionTypeChecker(new ModelDefinition<>(TestDefinition.class));
 
@@ -53,7 +50,7 @@ public class HeadTest {
     }
 
     @Test
-    public void resolve_generic_type_on_object_list(){
+    public void resolve_generic_type_on_object_list() {
         var head = new Head(Arrays.asList(new Constant(new TestDefinition.TestNestedDefinitionList())));
 
         var checker = new ExpressionTypeChecker(new ModelDefinition<>(TestDefinition.class));
@@ -65,16 +62,14 @@ public class HeadTest {
     }
 
     @Test
-    public void should_return_null_on_empty_list(){
-        var head = new Head(Arrays.asList(new Constant(new int[]{})));
+    public void should_return_null_on_empty_list() {
+        var head = new Head(Arrays.asList(new Constant(new int[] {})));
 
         var r = head.evaluate(null);
 
         assertThat(r, nullValue());
     }
 
-
-    
 
     @Test
     public void should_serialize_to_json() throws IOException {

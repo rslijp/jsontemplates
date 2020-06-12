@@ -1,22 +1,21 @@
 package nl.softcause.jsontemplates.expressions.comparison;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class NotEqualsTest {
 
     @Test
-    public void should_return_false_for_same_string(){
+    public void should_return_false_for_same_string() {
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Constant("a"), new Constant("a")));
 
@@ -26,7 +25,7 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_true_for_different_string(){
+    public void should_return_true_for_different_string() {
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Constant("a"), new Constant("b")));
 
@@ -36,7 +35,7 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_false_for_same_number(){
+    public void should_return_false_for_same_number() {
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Constant(42), new Constant(42)));
 
@@ -46,7 +45,7 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_true_for_different_numbers(){
+    public void should_return_true_for_different_numbers() {
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Constant(42), new Constant(37)));
 
@@ -56,7 +55,7 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_false_for_same_object_reference(){
+    public void should_return_false_for_same_object_reference() {
         var v = new Object();
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Constant(v), new Constant(v)));
@@ -67,7 +66,7 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_true_for_different_object_references(){
+    public void should_return_true_for_different_object_references() {
         var v = new Object();
         var v2 = new Object();
         var eq = new NotEquals();
@@ -79,8 +78,8 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_false_for_same_variables(){
-        var model = new TestModel().put("V1",   "a").put("V2",   "a");
+    public void should_return_false_for_same_variables() {
+        var model = new TestModel().put("V1", "a").put("V2", "a");
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Variable("V1"), new Variable("V2")));
 
@@ -90,8 +89,8 @@ public class NotEqualsTest {
     }
 
     @Test
-    public void should_return_true_for_different_variables(){
-        var model = new TestModel().put("V1",   "a").put("V2",   "b");
+    public void should_return_true_for_different_variables() {
+        var model = new TestModel().put("V1", "a").put("V2", "b");
         var eq = new NotEquals();
         eq.setArguments(Arrays.asList(new Variable("V1"), new Variable("V2")));
 

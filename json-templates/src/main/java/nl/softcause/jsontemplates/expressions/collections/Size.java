@@ -1,5 +1,7 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Value;
@@ -10,8 +12,6 @@ import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
-
-import java.util.List;
 
 import static nl.softcause.jsontemplates.types.Types.LIST_OBJECT;
 

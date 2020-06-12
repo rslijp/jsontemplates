@@ -1,14 +1,14 @@
 package nl.softcause.jsontemplates.expresionparser;
 
-import nl.softcause.jsontemplates.expressions.*;
+import static nl.softcause.jsontemplates.expresionparser.ParseUtils.operator;
+
+import nl.softcause.jsontemplates.expressions.Brackets;
+import nl.softcause.jsontemplates.expressions.Constant;
+import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
+import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.logic.Ternary;
 import nl.softcause.jsontemplates.expressions.util.TupleExpression;
-import org.apache.commons.text.CaseUtils;
-import org.apache.commons.text.WordUtils;
-
-import java.lang.reflect.InvocationTargetException;
-
-import static nl.softcause.jsontemplates.expresionparser.ParseUtils.operator;
 
 public class ExpressionFormatter {
 
@@ -30,13 +30,14 @@ public class ExpressionFormatter {
             case TERNARY:
                 return formatTernary((Ternary) expression);
             default:
-                throw new RuntimeException("NOT implemented formatter for "+pattern);
+                throw new RuntimeException("NOT implemented formatter for " + pattern);
         }
     }
 
     private String formatTernary(Ternary expression) {
         var arguments = expression.getArguments();
-        return String.format("%s ? %s : %s", format(arguments.get(0)),format(arguments.get(1)),format(arguments.get(2)));
+        return String
+                .format("%s ? %s : %s", format(arguments.get(0)), format(arguments.get(1)), format(arguments.get(2)));
     }
 
 
@@ -57,24 +58,23 @@ public class ExpressionFormatter {
     }
 
 
-
     private String formatInfix(TupleExpression expression) {
         var lhs = (IExpression) expression.getArguments().get(0);
-        var rhs =  (IExpression) expression.getArguments().get(1);
+        var rhs = (IExpression) expression.getArguments().get(1);
         var operator = operator(expression);
         var builder = new StringBuilder();
-        if(lhs.priority()!=null && lhs.priority() <= expression.priority()){
+        if (lhs.priority() != null && lhs.priority() <= expression.priority()) {
             builder.append(String.format("(%s)", format(lhs)));
         } else {
-            builder.append( format(lhs));
+            builder.append(format(lhs));
         }
         builder.append(" ");
         builder.append(operator);
         builder.append(" ");
-        if(rhs.priority()!=null && rhs.priority() <= expression.priority()){
+        if (rhs.priority() != null && rhs.priority() <= expression.priority()) {
             builder.append(String.format("(%s)", format(rhs)));
         } else {
-            builder.append( format(rhs));
+            builder.append(format(rhs));
         }
         return builder.toString();
     }
@@ -83,12 +83,14 @@ public class ExpressionFormatter {
         var builder = new StringBuilder();
         builder.append(operator(expression));
         builder.append("(");
-        if(expression instanceof  IExpressionWithArguments) {
+        if (expression instanceof IExpressionWithArguments) {
             var withArguments = (IExpressionWithArguments) expression;
             var first = true;
             for (var i = 0; i < withArguments.getArguments().size(); i++) {
                 var argument = (IExpression) withArguments.getArguments().get(i);
-                if (!first) builder.append(",");
+                if (!first) {
+                    builder.append(",");
+                }
                 builder.append(format(argument));
                 first = false;
             }

@@ -1,74 +1,73 @@
 package nl.softcause.jsontemplates.types;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
 import nl.softcause.jsontemplates.collections.StringList;
 import nl.softcause.jsontemplates.collections.StringMap;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
 public class TextTest {
 
     @Test
-    public void should_detect_string_as_text(){
+    public void should_detect_string_as_text() {
         assertThat(Types.TEXT.isA("a"), is(true));
     }
 
     @Test
-    public void should_detect_stringbuffer_as_text(){
+    public void should_detect_stringbuffer_as_text() {
         assertThat(Types.TEXT.isA(new StringBuffer()), is(true));
     }
 
     @Test
-    public void should_reject_other(){
+    public void should_reject_other() {
         assertThat(Types.TEXT.isA(1.0), is(false));
         assertThat(Types.TEXT.isA(null), is(false));
     }
 
     @Test
-    public void should_accept_null_when_nullable(){
+    public void should_accept_null_when_nullable() {
         assertThat(Types.OPTIONAL_TEXT.isA("a"), is(true));
         assertThat(Types.OPTIONAL_TEXT.isA(null), is(true));
     }
 
     @Test
-    public void should_accept_list_and_array_when_list(){
-        assertThat(Types.LIST_TEXT.isA(new String[]{"a"}), is(true));
+    public void should_accept_list_and_array_when_list() {
+        assertThat(Types.LIST_TEXT.isA(new String[] {"a"}), is(true));
         assertThat(Types.LIST_TEXT.isA(new StringList("a")), is(true));
         assertThat(Types.LIST_TEXT.isA(null), is(true));
     }
 
     @Test
-    public void should_accept_map_as_map(){
+    public void should_accept_map_as_map() {
         assertThat(Types.MAP_TEXT.isA(new StringMap()), is(true));
     }
 
 
     @Test
-    public void should_convert_string_to_string(){
+    public void should_convert_string_to_string() {
         assertThat(Types.TEXT.convert("hello"), is("hello"));
     }
 
     @Test
-    public void should_convert_buffer_to_string(){
+    public void should_convert_buffer_to_string() {
         assertThat(Types.TEXT.convert(new StringBuffer().append("hello")), is("hello"));
     }
 
     @Test
-    public void should_convert_nullables_to_string(){
+    public void should_convert_nullables_to_string() {
         assertThat(Types.OPTIONAL_TEXT.convert(null), nullValue());
         assertThat(Types.OPTIONAL_TEXT.convert("world"), is("world"));
     }
 
 
     @Test
-    public void should_convert_list_and_array_to_list_of_string(){
+    public void should_convert_list_and_array_to_list_of_string() {
         assertThat(Types.LIST_TEXT.convert(null), nullValue());
-        assertThat(Types.LIST_TEXT.convert(new String[]{"world"}), is(Collections.singletonList("world")));
+        assertThat(Types.LIST_TEXT.convert(new String[] {"world"}), is(Collections.singletonList("world")));
         assertThat(Types.LIST_TEXT.convert(new StringList("world")), is(Collections.singletonList("world")));
     }
 

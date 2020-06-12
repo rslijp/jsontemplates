@@ -1,12 +1,14 @@
 package nl.softcause.jsontemplates.collections;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.experimental.Delegate;
 
-import java.util.*;
-
-public class DateMap implements Map<String,Date> {
+public class DateMap implements Map<String, Date> {
 
     @Delegate
-    private Map<String,Date> base = new HashMap<>();
+    private Map<String, Date> base = new HashMap<>();
 
 }
