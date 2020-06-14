@@ -1,6 +1,7 @@
 import {Alert, InputGroup} from "react-bootstrap";
 import {bool, string} from "prop-types";
 import {faBolt, faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {getNode, updateExpression} from "../model/JsonTemplate";
 import CaretPositioning from '../common/EditCaretPositioning';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import React from 'react';
@@ -17,12 +18,13 @@ class Expression extends React.Component {
 
     constructor(props) {
         super(props);
+        const node = getNode(this.props.path);
         this.state = {
             id: "id" + (id++),
             valid: true,
             error: null,
             typeValid: props.optional,
-            text: "",
+            text: (node?node.arguments[props.argumentName]:null)||"",
             partialMatch: "",
             blocks: [],
             suggestions: null,
@@ -67,6 +69,7 @@ class Expression extends React.Component {
         let valid = false;
         let typeValid = false;
         if(result.success){
+            updateExpression(this.props.path, this.props.argumentName, text);
             if(result.result===null) {
                 valid=this.props.optional;
                 typeValid=true;
@@ -82,6 +85,7 @@ class Expression extends React.Component {
         } else {
             valid=false;
             typeValid=true;
+            updateExpression(this.props.path, this.props.argumentName, null);
         }
         return {
             valid: valid,
@@ -166,6 +170,8 @@ class Expression extends React.Component {
 }
 Expression.propTypes = {
     optional: bool,
-    type: string
+    type: string,
+    path: string,
+    argumentName: string
 };
 export default Expression;

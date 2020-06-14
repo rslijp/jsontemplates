@@ -1,6 +1,6 @@
 import {any, arrayOf} from "prop-types";
 import {getGlobalNodes, setAvailableNodes} from "../available/AllowNodesProvider";
-import {observe, slotNodes} from "../model/JsonTemplate";
+import {getSlots, observe, slotNodes} from "../model/JsonTemplate";
 import EmptySlot from "./EmptySlot";
 import React from 'react';
 import Slot from "./Slot";
@@ -9,7 +9,7 @@ class WorkBench extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {slots: []};
+        this.state = {slots: getSlots()};
         observe(this.updateState.bind(this));
     }
 

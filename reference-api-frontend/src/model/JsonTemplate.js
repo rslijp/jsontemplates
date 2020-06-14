@@ -167,3 +167,52 @@ export function slotNodes(parentPath, slot){
 export function displayName(slot){
     return slot.endsWith("Node")?slot.substr(0,slot.length-4):slot;
 }
+
+function toDTO(slot){
+    const dto =  {
+        name: slot.name,
+        arguments: slot.arguments,
+        slots: {
+
+        }
+    };
+    if(slot.nodeSlots) {
+        Object.keys(slot.nodeSlots).forEach(slotName => {
+            dto.slots[slotName] = (slot[slotName] || []).map(toDTO);
+        });
+    }
+    return dto;
+}
+
+function fromDTO(nodeDTO,library){
+    const nodeTemplate=library.find(c=>c.name===nodeDTO.name);
+    const node =  {...nodeTemplate};
+    node.arguments={};
+    Object.keys(node.argumentTypes||{}).forEach(argumentName=>{
+        node.arguments[argumentName]=nodeDTO.arguments[argumentName];
+    });
+    Object.keys(node.nodeSlots||{}).forEach(slotName=>{
+        node[slotName]=[];
+    });
+    return node;
+}
+
+export function updateExpression(path, argument, expression){
+    const slot = getNode(path);
+    if(!slot) return;
+    if(!slot.arguments) slot.arguments={};
+    slot.arguments[argument]=expression;
+}
+
+export function getSlots(){
+    return slots;
+}
+
+
+export function getSlotsAsDto(){
+    return slots.map(toDTO);
+}
+
+export function setSlots(template, library){
+    slots=template.slots.map(slot=>fromDTO(slot,library));
+}

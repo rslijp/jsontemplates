@@ -68,7 +68,6 @@ public class SetTest {
 
 
         var json = new ObjectMapper().writeValueAsString(setNode);
-
         var obj = new ObjectMapper().readValue(json, INode.class);
 
         assertThat(setNode, is(obj));

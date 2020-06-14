@@ -22,7 +22,7 @@ public class Try extends ReflectionBasedNodeWithScopeImpl<Try.TryScope> {
         return node;
     }
 
-    protected Try() {
+    public Try() {
         super(Try.TryScope.class);
     }
 

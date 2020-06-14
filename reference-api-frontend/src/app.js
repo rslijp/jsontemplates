@@ -5,10 +5,11 @@ import { AllowNodesProvider, setAvailableNodes, setGlobalNodes } from './availab
 import { VariablesProvider, setVariables } from './variables/VariableProvider'
 import React from "react";
 import ReactDOM from "react-dom";
-import client from './client';
+import {get} from './client';
 import {initExpressionLibrary} from './model/ExpressionParser'
 import {initModelDefinition} from './model/ModelDefinition'
 import MainApp from "./MainApp";
+import {setSlots} from "./model/JsonTemplate";
 
 class App extends React.Component {
 
@@ -19,19 +20,21 @@ class App extends React.Component {
 	}
 
 	loadFromServer() {
-		client("/api/node/main",null,data => {
-			initExpressionLibrary(data.expressionDescriptions);
-			setGlobalNodes(data.mainNodeIds);
-			setAvailableNodes(data.nodeDescriptions, data.mainNodeIds);
-			setVariables(data.modelDescriptions);
-			initModelDefinition(data.modelDescriptions[0]);
+		get(document.location.hash.substring(1),null,data => {
+			const description = data.description;
+			initExpressionLibrary(description.expressionDescriptions);
+			setGlobalNodes(description.mainNodeIds);
+			setAvailableNodes(description.nodeDescriptions, description.mainNodeIds);
+			setVariables(description.modelDescriptions);
+			initModelDefinition(description.modelDescriptions[0]);
+            setSlots(data.template,description.nodeDescriptions)
 			this.setState({
 				initialized: true,
-				mainNodeIds: data.mainNodeIds,
-				mainModelId: data.mainModelId,
-				modelDescriptions: data.modelDescriptions,
-				expressionDescriptions: data.expressionDescriptions,
-				nodeDescriptions: data.nodeDescriptions,
+				mainNodeIds: description.mainNodeIds,
+				mainModelId: description.mainModelId,
+				modelDescriptions: description.modelDescriptions,
+				expressionDescriptions: description.expressionDescriptions,
+				nodeDescriptions: description.nodeDescriptions,
 			});
 
 		});

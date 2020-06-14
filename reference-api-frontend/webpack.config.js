@@ -57,7 +57,7 @@ module.exports = env => {
             compress: true,
             port: 9000,
             proxy: {
-                '/api': {
+                '/workbench-api': {
                     target: 'http://localhost:8080',
                 }
             },

@@ -22,7 +22,7 @@ public class Switch extends ReflectionBasedNodeWithScopeImpl<Switch.SwitchScope>
         return node;
     }
 
-    Switch() {
+    public Switch() {
         super(SwitchScope.class);
     }
 

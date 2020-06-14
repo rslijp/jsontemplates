@@ -31,8 +31,8 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
 
     private final Class nodeClass;
-    protected Map<String, IExpression> arguments;
-    protected Map<String, INode[]> slots;
+    protected Map<String, IExpression> arguments = new HashMap<>();
+    protected Map<String, INode[]> slots = new HashMap<>();
 
     @JsonIgnore
     private final Map<String, ArgumentDefinition> argumentsTypes = new HashMap<>();

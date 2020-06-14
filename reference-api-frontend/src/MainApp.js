@@ -9,6 +9,7 @@ import {any} from "prop-types";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleLeft, faAngleRight, faExchangeAlt, faCompressAlt } from "@fortawesome/free-solid-svg-icons";
 import VariablesList from "./variables/VariablesList";
+import EditorControl from "./EditorControl";
 
 function MainApp({nodeDescriptions}){
     const [leftExpanded, setLeftExpanded] = useState(true);
@@ -41,7 +42,9 @@ function MainApp({nodeDescriptions}){
                 </div>
             </div>
             <div className={"workbench"+benchClasses}>
-                <h2>Workbench <Button variant="light" className={"expand-button"} onClick={toggleSticky}><FontAwesomeIcon title={sticky?"shrink":"expand"} icon={sticky?faExchangeAlt:faCompressAlt}/></Button></h2>
+                <h2>Workbench <Button variant="light" className={"expand-button"} onClick={toggleSticky}><FontAwesomeIcon title={sticky?"shrink":"expand"} icon={sticky?faExchangeAlt:faCompressAlt}/></Button>
+                    <EditorControl/>
+                </h2>
                 <WorkBench allNodes={nodeDescriptions} />
             </div>
             <div className={"rightmenu "+(rightExpanded?"rightmenu-expanded":"")}>

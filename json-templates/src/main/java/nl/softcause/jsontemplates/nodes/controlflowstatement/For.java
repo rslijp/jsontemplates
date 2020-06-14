@@ -23,7 +23,7 @@ public class For extends ReflectionBasedNodeWithScopeImpl<For.ForScope> {
         return node;
     }
 
-    For() {
+    public For() {
         super(ForScope.class);
     }
 

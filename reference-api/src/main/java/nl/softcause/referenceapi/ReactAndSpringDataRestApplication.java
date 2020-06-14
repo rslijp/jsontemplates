@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ReactAndSpringDataRestApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ReactAndSpringDataRestApplication.class, args);
+        SpringApplication.run(new Class[] {
+                ReactAndSpringDataRestApplication.class,
+                DatabaseLoader.class
+        }, args);
     }
 }

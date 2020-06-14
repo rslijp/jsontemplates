@@ -19,7 +19,6 @@ function Slot({node,path,allNodes,forSlot}) {
         const node = item.payload;
         setNode(path,node);
     }
-
     let acceptTypes = slotNodes(path,forSlot)||getGlobalNodes();
 
     function dropArea(children, path){
@@ -52,7 +51,7 @@ function Slot({node,path,allNodes,forSlot}) {
             // let value = v;
             const isOptional = v.endsWith("?");
             const optional = isOptional?<Optional/>:null;
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><ErrorBoundary><Expression optional={isOptional} type={v}/></ErrorBoundary></Col></Row>);
+            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><ErrorBoundary><Expression optional={isOptional} path={path} argumentName={k} type={v}/></ErrorBoundary></Col></Row>);
         });
         return (
             <div>

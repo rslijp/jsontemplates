@@ -5,11 +5,12 @@ import static nl.softcause.jsontemplates.utils.ClassUtil.listAllExpressions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.*;
 
-public class DescribeTemplateLibrary {
+public class DescribeTemplateLibrary implements ILibrary {
 
     private static final boolean LOG = true;
 
@@ -32,7 +33,10 @@ public class DescribeTemplateLibrary {
     public DescribeTemplateLibrary addMainNodes(Class... nodes) {
         mainNodes.addAll(Arrays.asList(nodes));
         return this;
+    }
 
+    public Optional<Class> getNodeClass(String name) {
+        return Arrays.stream(MAIN_NODES).filter(c->c.getSimpleName().equals(name)).findFirst();
     }
 
     private void log(String line) {
@@ -40,5 +44,4 @@ public class DescribeTemplateLibrary {
             System.out.println(line);
         }
     }
-
 }
