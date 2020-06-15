@@ -20,7 +20,7 @@ class App extends React.Component {
 	}
 
 	loadFromServer() {
-		get(document.location.hash.substring(1),null,data => {
+		get(document.location.hash.substring(1),data => {
 			const description = data.description;
 			initExpressionLibrary(description.expressionDescriptions);
 			setGlobalNodes(description.mainNodeIds);

@@ -15,6 +15,7 @@ function MainApp({nodeDescriptions}){
     const [leftExpanded, setLeftExpanded] = useState(true);
     const [sticky, setSticky] = useState(true);
     const [rightExpanded, setRightExpanded] = useState(false);
+    const [workBenchAvailable, setWorkBenchAvailable] = useState(true);
     const toggleLeftExpand = ()=>{
         const update = !leftExpanded;
         setLeftExpanded(update);
@@ -27,11 +28,14 @@ function MainApp({nodeDescriptions}){
         const update = !sticky;
         setSticky(update);
     };
-    var benchClasses = "";
+    let benchClasses = "";
     if(sticky){
         benchClasses+= (leftExpanded?" workbench-shrink-left":"");
         benchClasses+= (rightExpanded?" workbench-shrink-right":"");
 
+    }
+    const updateWorkBenchAvailable=(state)=>{
+        setWorkBenchAvailable(state);
     }
     const workbench = (
         <Container id="root" fluid={true}>
@@ -43,9 +47,9 @@ function MainApp({nodeDescriptions}){
             </div>
             <div className={"workbench"+benchClasses}>
                 <h2>Workbench <Button variant="light" className={"expand-button"} onClick={toggleSticky}><FontAwesomeIcon title={sticky?"shrink":"expand"} icon={sticky?faExchangeAlt:faCompressAlt}/></Button>
-                    <EditorControl/>
+                    <EditorControl allNodes={nodeDescriptions} onWorkBenchAvailable={updateWorkBenchAvailable}/>
                 </h2>
-                <WorkBench allNodes={nodeDescriptions} />
+                {workBenchAvailable?<WorkBench allNodes={nodeDescriptions} />:null}
             </div>
             <div className={"rightmenu "+(rightExpanded?"rightmenu-expanded":"")}>
                 <h2><Button variant="light" className={"expand-button"} onClick={toggleRightExpand}><FontAwesomeIcon title={rightExpanded?"expand":"hide"} icon={rightExpanded?faAngleRight:faAngleLeft}/></Button> Model</h2>

@@ -1,20 +1,25 @@
-import React from 'react';
+import {post,revert} from './client';
 import {Button} from "react-bootstrap";
-import {getSlotsAsDto} from "./model/JsonTemplate";
-import {post} from './client';
+import React from 'react';
+import {any, arrayOf, func} from "prop-types";
+import {getSlotsAsDto, setSlots} from "./model/JsonTemplate";
 
-function EditorControl({}){
+function EditorControl({allNodes,onWorkBenchAvailable}){
     const onCommit = ()=>{
         const slots = getSlotsAsDto();
         post(document.location.hash.substring(1),{slots: slots},data => {
-            console.log(data);
+            if(!data) alert('Save failed');
         });
     };
     const onClose = ()=>{
         window.close();
     };
     const onRevert = ()=>{
-        window.close();
+        if(onWorkBenchAvailable) onWorkBenchAvailable(false);
+        revert(document.location.hash.substring(1),data => {
+            setSlots(data,allNodes);
+            if(onWorkBenchAvailable) onWorkBenchAvailable(true);
+        });
     };
     return <div className={"editControls"}>
         <Button variant="primary" onClick={onCommit}>Commit</Button>{' '}
@@ -23,4 +28,8 @@ function EditorControl({}){
     </div>
 
 }
+EditorControl.propTypes = {
+    allNodes: arrayOf(any),
+    onWorkBenchAvailable: func
+};
 export default EditorControl;
