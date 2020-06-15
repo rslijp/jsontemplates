@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +33,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
     private final Class nodeClass;
     protected Map<String, IExpression> arguments = new HashMap<>();
-    protected Map<String, INode[]> slots = new HashMap<>();
+    protected Map<String, INode[]> slots;
 
     @JsonIgnore
     private final Map<String, ArgumentDefinition> argumentsTypes = new HashMap<>();
@@ -43,7 +44,18 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     public ReflectionBasedNodeImpl() {
         this.nodeClass = this.getClass();
         reflectOnNode();
+
+        setSlots(new LinkedHashMap<>());
+
     }
+//
+//    public void setSlots(Map<String, INode[]> slots){
+//        var listeningSlots =new ListenerMap<>(slots);
+//        PropertyChangeListener propertyChangeListener = evt -> {
+//        };
+//        listeningSlots.addPropertyChangeListener(propertyChangeListener);
+//        this.slots=listeningSlots;
+//    }
 
     private void reflectOnNode() {
         var fields = nodeClass.getDeclaredFields();

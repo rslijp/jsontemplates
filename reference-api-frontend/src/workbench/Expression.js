@@ -19,12 +19,13 @@ class Expression extends React.Component {
     constructor(props) {
         super(props);
         const node = getNode(this.props.path);
+        const nodeArguments = (node?node.arguments:null)||{};
         this.state = {
             id: "id" + (id++),
             valid: true,
             error: null,
             typeValid: props.optional,
-            text: (node?node.arguments[props.argumentName]:null)||"",
+            text: nodeArguments[props.argumentName]||"",
             partialMatch: "",
             blocks: [],
             suggestions: null,

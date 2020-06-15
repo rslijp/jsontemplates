@@ -192,7 +192,8 @@ function fromDTO(nodeDTO,library){
         node.arguments[argumentName]=nodeDTO.arguments[argumentName];
     });
     Object.keys(node.nodeSlots||{}).forEach(slotName=>{
-        node[slotName]=[];
+        const slotsDTO=nodeDTO.slots[slotName]||[];
+        node[slotName]=slotsDTO.map(slot=>fromDTO(slot,library));
     });
     return node;
 }

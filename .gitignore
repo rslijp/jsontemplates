@@ -5,3 +5,7 @@ reference-api-frontend/bower_components
 reference-api-frontend/dist/
 reference-api-frontend/node_modules/
 reference-api-frontend/yarn.lock
+reference-api/gs-spring-boot.iml
+reference-api/node_modules/
+reference-api/target/
+reference-api/src/main/resources/static/

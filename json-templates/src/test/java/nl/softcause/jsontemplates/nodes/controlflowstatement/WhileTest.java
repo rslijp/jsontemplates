@@ -63,6 +63,26 @@ public class WhileTest {
     }
 
     @Test
+    public void should_execute_then_node_when_test_is_true_XXX() {
+        var lt = new LessThan();
+        lt.setArguments(Arrays.asList(new Variable("age"), new Constant(3)));
+        var add = new Add();
+        add.setArguments(Arrays.asList(new Variable("age"), new Constant(1)));
+        var assertionNode = Set.create(
+                Map.of("path", new Constant("age"), "value", add)
+        );
+        var forNode = While.create(
+                Collections.singletonMap("test", lt),
+                Collections.singletonMap("body", new INode[] {assertionNode})
+        );
+        var model = new TestDefinition();
+        forNode.evaluate(new TemplateModel<>(model));
+
+        assertThat(model.getAge(), is(3));
+    }
+
+
+    @Test
     public void should_serialize_to_json() throws IOException {
         var assertionNode = new AssertionNode();
         var forNode = While.create(
