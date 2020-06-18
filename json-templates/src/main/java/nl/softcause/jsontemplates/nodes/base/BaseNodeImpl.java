@@ -1,5 +1,8 @@
 package nl.softcause.jsontemplates.nodes.base;
 
+import java.util.Map;
+import java.util.function.Function;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
@@ -9,10 +12,6 @@ import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
-
-import java.util.Map;
-import java.util.function.Function;
-
 
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
@@ -30,8 +29,8 @@ public abstract class BaseNodeImpl implements INode {
     @JsonIgnore
     private final Map<String, ISlotPattern> slotTypes;
 
-    protected <T> Function<TemplateModel,T> argumentFunction(String argumentName) {
-        return (Function<TemplateModel,T>) argumentsTypes.get(argumentName).bind(arguments.get(argumentName));
+    protected <T> Function<TemplateModel, T> argumentFunction(String argumentName) {
+        return (Function<TemplateModel, T>) argumentsTypes.get(argumentName).bind(arguments.get(argumentName));
     }
 
     protected <T> T argumentValue(String argumentName, TemplateModel model) {

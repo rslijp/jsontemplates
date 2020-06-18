@@ -1,17 +1,18 @@
 package nl.softcause.jsontemplates.collections;
 
-import lombok.experimental.Delegate;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
-import java.util.*;
+import lombok.experimental.Delegate;
 
 public class CalendarList implements List<Calendar> {
 
     @Delegate
     private List<Calendar> base = new ArrayList<>();
 
-    public CalendarList(Calendar...values){
+    public CalendarList(Calendar...values) {
         base.addAll(Arrays.asList(values));
     }
 }

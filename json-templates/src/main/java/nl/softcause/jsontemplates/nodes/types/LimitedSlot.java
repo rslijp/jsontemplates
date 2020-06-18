@@ -1,8 +1,8 @@
 package nl.softcause.jsontemplates.nodes.types;
 
-import lombok.Value;
-
 import java.util.Arrays;
+
+import lombok.Value;
 
 @Value
 public class LimitedSlot implements ISlotPattern {
@@ -11,7 +11,9 @@ public class LimitedSlot implements ISlotPattern {
 
     @Override
     public boolean match(Object object) {
-        if(object==null) return false;
+        if (object == null) {
+            return false;
+        }
         return Arrays.asList(limit).contains(object.getClass());
     }
 

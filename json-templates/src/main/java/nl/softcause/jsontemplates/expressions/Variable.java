@@ -1,5 +1,7 @@
 package nl.softcause.jsontemplates.expressions;
 
+import java.beans.ConstructorProperties;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Value;
@@ -8,17 +10,17 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.TypeException;
 
-import java.beans.ConstructorProperties;
-
 @Value
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class Variable implements IExpression {
 
-    private Variable(){this(null);}
+    private Variable() {
+        this(null);
+    }
 
     @ConstructorProperties({"name"})
-    public Variable(String name){
-        this.name=name;
+    public Variable(String name) {
+        this.name = name;
     }
 
     @JsonInclude
@@ -26,7 +28,7 @@ public class Variable implements IExpression {
 
     @Override
     public IExpressionType getReturnType(IModelDefinition model) {
-        if(model== null){
+        if (model == null) {
             throw TypeException.noModelDefinition(name);
         }
         return model.getDefinition(name).getDecoratedType();
@@ -47,11 +49,11 @@ public class Variable implements IExpression {
         return ExpressionParseType.VARIABLE;
     }
 
-    public String operator(){
+    public String operator() {
         return "$";
     }
 
-    public String toString(){
+    public String toString() {
         return name;
     }
 }

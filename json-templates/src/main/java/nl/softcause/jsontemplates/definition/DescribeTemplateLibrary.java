@@ -1,39 +1,47 @@
 package nl.softcause.jsontemplates.definition;
 
-import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
-import nl.softcause.jsontemplates.nodes.controlflowstatement.*;
+import static nl.softcause.jsontemplates.utils.ClassUtil.listAllExpressions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static nl.softcause.jsontemplates.utils.ClassUtil.listAllExpressions;
+import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.*;
 
-public class DescribeTemplateLibrary {
+public class DescribeTemplateLibrary implements ILibrary {
 
-    private static  final boolean LOG= true;
+    private static final boolean LOG = true;
 
-    private static final Class[] MAIN_NODES = new Class[]{For.class, If.class, Set.class, Switch.class, Try.class, While.class};
+    private static final Class[] MAIN_NODES =
+            new Class[] {For.class, If.class, Set.class, Switch.class, Try.class, While.class};
     private static final Class[] MAIN_EXPRESIONS = listAllExpressions();
 
     private List<Class> mainNodes = new ArrayList<>(Arrays.asList(MAIN_NODES));
     private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(MAIN_EXPRESIONS));
 
-    public TemplateDescription describe(ITemplateModelDefinition definition){
+    public TemplateDescription describe(ITemplateModelDefinition definition) {
         var description = new TemplateDescription();
         new DescribeNodeHelper(mainNodes.toArray(new Class[mainNodes.size()])).describe(description);
-        new DescribeExpressionHelper(mainExpressions.toArray(new Class[mainExpressions.size()])).describe(definition,description);
+        new DescribeExpressionHelper(mainExpressions.toArray(new Class[mainExpressions.size()]))
+                .describe(definition, description);
         new DescribeModelHelper(definition).describe(description);
         return description;
     }
 
-    public DescribeTemplateLibrary addMainNodes(Class... nodes){
+    public DescribeTemplateLibrary addMainNodes(Class... nodes) {
         mainNodes.addAll(Arrays.asList(nodes));
         return this;
-
     }
+
+    public Optional<Class> getNodeClass(String name) {
+        return Arrays.stream(MAIN_NODES).filter(c->c.getSimpleName().equals(name)).findFirst();
+    }
+
     private void log(String line) {
-        if(LOG) System.out.println(line);
+        if (LOG) {
+            System.out.println(line);
+        }
     }
-
 }

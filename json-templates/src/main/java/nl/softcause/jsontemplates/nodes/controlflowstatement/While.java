@@ -1,12 +1,12 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import java.util.Map;
+
 import lombok.EqualsAndHashCode;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeWithDefaultScopeImpl;
-
-import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 public class While extends ReflectionBasedNodeWithDefaultScopeImpl {
@@ -20,19 +20,18 @@ public class While extends ReflectionBasedNodeWithDefaultScopeImpl {
     }
 
     @RequiredArgument
-    private boolean test=false;
+    private boolean test = false;
     @RequiredSlot
-    private INode bodyNode=null;
+    private INode bodyNode = null;
 
 
     @Override
     public void internalEvaluate(TemplateModel model) {
-        while(test){
+        while (test) {
             bodyNode.evaluate(model);
             populateField(model, "test");
         }
     }
-
 
 
 }

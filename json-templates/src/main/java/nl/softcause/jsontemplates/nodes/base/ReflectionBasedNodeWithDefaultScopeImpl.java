@@ -1,13 +1,14 @@
 package nl.softcause.jsontemplates.nodes.base;
 
-public abstract class ReflectionBasedNodeWithDefaultScopeImpl extends ReflectionBasedNodeWithScopeImpl<ReflectionBasedNodeWithDefaultScopeImpl.DefaultScope> {
+public abstract class ReflectionBasedNodeWithDefaultScopeImpl
+        extends ReflectionBasedNodeWithScopeImpl<ReflectionBasedNodeWithDefaultScopeImpl.DefaultScope> {
 
-    protected ReflectionBasedNodeWithDefaultScopeImpl(){
+    protected ReflectionBasedNodeWithDefaultScopeImpl() {
         super(DefaultScope.class);
     }
 
-    static class DefaultScope{}
-
+    static class DefaultScope {
+    }
 
 
 }

@@ -1,10 +1,13 @@
 package nl.softcause.jsontemplates.expressionparser;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.Collections;
 import nl.softcause.jsontemplates.expresionparser.ExpressionFormatter;
-import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.expressions.Brackets;
 import nl.softcause.jsontemplates.expressions.Constant;
-import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.arithmetic.*;
 import nl.softcause.jsontemplates.expressions.conversion.FormatInteger;
@@ -12,16 +15,10 @@ import nl.softcause.jsontemplates.expressions.logic.Ternary;
 import nl.softcause.jsontemplates.expressions.text.Concat;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class ExpressionFormatterTest {
 
     @Test
-    public void should_format_constant_string(){
+    public void should_format_constant_string() {
         var e = new Constant("42");
 
         var s = new ExpressionFormatter().format(e);
@@ -31,7 +28,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_constant_int(){
+    public void should_format_constant_int() {
         var e = new Constant(42);
 
         var s = new ExpressionFormatter().format(e);
@@ -41,7 +38,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_constant_decimal(){
+    public void should_format_constant_decimal() {
         var e = new Constant(4.2);
 
         var s = new ExpressionFormatter().format(e);
@@ -51,7 +48,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_brackets(){
+    public void should_format_brackets() {
         var e = new Brackets();
         e.setArguments(Collections.singletonList(new Constant(42)));
 
@@ -62,7 +59,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_variable(){
+    public void should_format_variable() {
         var e = new Variable("some.value");
 
         var s = new ExpressionFormatter().format(e);
@@ -72,7 +69,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_simple_expression(){
+    public void should_format_simple_expression() {
         var e = new Add();
         e.setArguments(Arrays.asList(new Constant(3), new Constant(7)));
 
@@ -82,7 +79,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_function_expression(){
+    public void should_format_function_expression() {
         var e = new Modulo();
         e.setArguments(Arrays.asList(new Constant(3), new Constant(7)));
 
@@ -93,7 +90,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_function_expression_but_exclude_non_set_optionals(){
+    public void should_format_function_expression_but_exclude_non_set_optionals() {
         var e = new Round(Arrays.asList(new Constant(3.6533)));
 
         var s = new ExpressionFormatter().format(e);
@@ -102,16 +99,17 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_function_expression_but_include_set_optionals(){
-        var e = new Round(Arrays.asList(new Constant(3.6533),new Constant(2)));
+    public void should_format_function_expression_but_include_set_optionals() {
+        var e = new Round(Arrays.asList(new Constant(3.6533), new Constant(2)));
 
         var s = new ExpressionFormatter().format(e);
 
         assertThat(s, is("round(3.6533,2)"));
 
     }
+
     @Test
-    public void should_format_nested_arithmetic_expression(){
+    public void should_format_nested_arithmetic_expression() {
         var add1 = new Add();
         add1.setArguments(Arrays.asList(new Constant(3.2), new Constant(7.1)));
 
@@ -122,7 +120,6 @@ public class ExpressionFormatterTest {
         multiply.setArguments(Arrays.asList(add1, add2));
 
 
-
         var s = new ExpressionFormatter().format(multiply);
 
         assertThat(s, is("(3.2 + 7.1) * (8 + 9)"));
@@ -130,7 +127,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_complex_expression(){
+    public void should_format_complex_expression() {
         var add = new Add();
         add.setArguments(Arrays.asList(new Constant(3.2), new Constant(7.1)));
 
@@ -149,7 +146,7 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_add_brackets_to_prevent_ambiguity(){
+    public void should_add_brackets_to_prevent_ambiguity() {
         var nested = new Add();
         nested.setArguments(Arrays.asList(new Constant(7L), new Constant(2L)));
         var m = new Multiply();
@@ -162,11 +159,11 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_not_add_brackets_when_not_ambigues_prevent_ambiguity(){
+    public void should_not_add_brackets_when_not_ambigues_prevent_ambiguity() {
         var nested = new Add();
         nested.setArguments(Arrays.asList(new Constant(7L), new Constant(2L)));
         var m = new Multiply();
-        m.setArguments(Arrays.asList(nested,new Constant(3L)));
+        m.setArguments(Arrays.asList(nested, new Constant(3L)));
 
         var s = new ExpressionFormatter().format(m);
 
@@ -175,13 +172,13 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_not_add_brackets_when_not_ambigues_prevent_ambiguityX(){
+    public void should_not_add_brackets_when_not_ambigues_prevent_ambiguityX() {
         var nested = new Add();
         nested.setArguments(Arrays.asList(new Constant(7L), new Constant(2L)));
         var brackets = new Brackets();
         brackets.setArguments(Collections.singletonList(nested));
         var m = new Multiply();
-        m.setArguments(Arrays.asList(brackets,new Constant(3L)));
+        m.setArguments(Arrays.asList(brackets, new Constant(3L)));
 
         var s = new ExpressionFormatter().format(m);
 
@@ -190,9 +187,9 @@ public class ExpressionFormatterTest {
     }
 
     @Test
-    public void should_format_ternary_expression(){
+    public void should_format_ternary_expression() {
         var ternary = new Ternary();
-        ternary.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L),new Constant(2L)));
+        ternary.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L), new Constant(2L)));
 
         var s = new ExpressionFormatter().format(ternary);
 

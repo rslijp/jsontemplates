@@ -1,32 +1,32 @@
 package nl.softcause.jsontemplates.expresionparser;
 
-import lombok.NonNull;
-
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import lombok.NonNull;
+
 public class ParseCursor {
 
-    private int cursorIndex=0;
+    private int cursorIndex = 0;
     private String text;
     private String full;
 
-    ParseCursor(@NonNull String text){
-        this.text=text.trim();
-        this.full=this.text;
+    ParseCursor(@NonNull String text) {
+        this.text = text.trim();
+        this.full = this.text;
     }
 
-    private ParseCursor(String text, String full, int cursorIndex){
-        this.text=text;
-        this.full=full;
-        this.cursorIndex=cursorIndex;
+    private ParseCursor(String text, String full, int cursorIndex) {
+        this.text = text;
+        this.full = full;
+        this.cursorIndex = cursorIndex;
     }
 
-    public ParseCursor clone(){
+    public ParseCursor clone() {
         return new ParseCursor(text, full, cursorIndex);
     }
 
-    boolean at(Pattern pattern){
+    boolean at(Pattern pattern) {
         var match = pattern.matcher(text);
         return match.find();
     }
@@ -37,24 +37,28 @@ public class ParseCursor {
 
     String read(Pattern pattern) {
         var match = pattern.matcher(text);
-        if(!match.find()) throw ParseException.expected(pattern).at(this);
+        if (!match.find()) {
+            throw ParseException.expected(pattern).at(this);
+        }
         var chunk = match.group(1);
         move(match.end());
         return chunk;
     }
 
     void read(String instruction) {
-         if(!at(instruction)) throw ParseException.expected(instruction).at(this);
+        if (!at(instruction)) {
+            throw ParseException.expected(instruction).at(this);
+        }
         move(instruction.length());
     }
 
     private void move(int length) {
-        text=text.substring(length);
-        cursorIndex+=(length+(text.length()-text.trim().length()));
-        text=text.trim();
+        text = text.substring(length);
+        cursorIndex += (length + (text.length() - text.trim().length()));
+        text = text.trim();
     }
 
-    boolean more(){
+    boolean more() {
         return !text.isEmpty();
     }
 
@@ -64,7 +68,7 @@ public class ParseCursor {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return text;
     }
 

@@ -1,11 +1,15 @@
 package nl.softcause.jsontemplates.expressionparser;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+import java.util.Collections;
 import lombok.Getter;
-import nl.softcause.jsontemplates.expresionparser.ExpressionFormatter;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.expresionparser.ParseException;
 import nl.softcause.jsontemplates.expressions.Constant;
-import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.arithmetic.Add;
 import nl.softcause.jsontemplates.expressions.arithmetic.Minus;
@@ -19,17 +23,10 @@ import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.syntax.ExpressionTypeChecker;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 public class ExpressionParserTest {
 
     @Test
-    public void should_parse_true_constant(){
+    public void should_parse_true_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("true");
         //Then
@@ -37,14 +34,15 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_false_constant(){
+    public void should_parse_false_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("false");
         //Then
         assertThat(constant.getValue(), is(false));
     }
+
     @Test
-    public void should_parse_simple_int_constant(){
+    public void should_parse_simple_int_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("3");
         //Then
@@ -52,7 +50,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_negative_int_constant(){
+    public void should_parse_simple_negative_int_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("-3");
         //Then
@@ -60,7 +58,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_double_constant(){
+    public void should_parse_simple_double_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("3.42");
         //Then
@@ -68,7 +66,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_negativ_double_constant(){
+    public void should_parse_simple_negativ_double_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("-3.42");
         //Then
@@ -76,7 +74,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_string_constant(){
+    public void should_parse_simple_string_constant() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("'Hello world'");
         //Then
@@ -84,7 +82,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_trim_start(){
+    public void should_trim_start() {
         //Given
         var constant = (Constant) new ExpressionParser().parse(" 'Hello world'");
         //Then
@@ -92,7 +90,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_trim_end(){
+    public void should_trim_end() {
         //Given
         var constant = (Constant) new ExpressionParser().parse("'Hello world' ");
         //Then
@@ -101,7 +99,7 @@ public class ExpressionParserTest {
 
 
     @Test
-    public void should_both_start_and_end(){
+    public void should_both_start_and_end() {
         //Given
         var constant = (Constant) new ExpressionParser().parse(" 'Hello world' ");
         //Then
@@ -109,7 +107,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_string_variable(){
+    public void should_parse_simple_string_variable() {
         //Given
         var constant = (Variable) new ExpressionParser().parse("$bla");
         //Then
@@ -117,7 +115,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_simple_string_variable_with_dots(){
+    public void should_parse_simple_string_variable_with_dots() {
         //Given
         var constant = (Variable) new ExpressionParser().parse("$bla.bla");
         //Then
@@ -125,7 +123,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_add_expression(){
+    public void should_parse_add_expression() {
         var expected = new Add();
         expected.setArguments(Arrays.asList(new Constant(3L), new Constant(7L)));
 
@@ -136,7 +134,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nested_add_expression(){
+    public void should_parse_nested_add_expression() {
         var nested = new Add();
         nested.setArguments(Arrays.asList(new Constant(3L), new Constant(7L)));
         var expected = new Add();
@@ -150,7 +148,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_expression_with_spaces(){
+    public void should_parse_expression_with_spaces() {
         var nested = new Add();
         nested.setArguments(Arrays.asList(new Constant(3L), new Constant(7L)));
         var expected = new Add();
@@ -164,7 +162,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_function_expression(){
+    public void should_parse_function_expression() {
         var expected = new Round(Arrays.asList(new Constant(3.2), new Constant(1L)));
 
         //When
@@ -174,7 +172,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_function_with_optional_argument_expression(){
+    public void should_parse_function_with_optional_argument_expression() {
         var expected = new Round(Collections.singletonList(new Constant(3.2)));
 
         //When
@@ -185,7 +183,7 @@ public class ExpressionParserTest {
 
 
     @Test
-    public void should_parse_function_nested_expression(){
+    public void should_parse_function_nested_expression() {
         var nested = new Minus();
         nested.setArguments(Arrays.asList(new Constant(3.3), new Constant(0.1)));
         var expected = new Round(Arrays.asList(nested, new Constant(1L)));
@@ -198,7 +196,7 @@ public class ExpressionParserTest {
 
 
     @Test
-    public void should_parse_nested_priority_expression(){
+    public void should_parse_nested_priority_expression() {
         var nested = new Multiply();
         nested.setArguments(Arrays.asList(new Constant(3L), new Constant(7L)));
         var expected = new Add();
@@ -212,7 +210,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nested_honor_priority_expression(){
+    public void should_parse_nested_honor_priority_expression() {
         var nested = new Multiply();
         nested.setArguments(Arrays.asList(new Constant(2L), new Constant(3L)));
         var expected = new Add();
@@ -228,7 +226,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nested_honor_priority_expression_2(){
+    public void should_parse_nested_honor_priority_expression_2() {
         var nestedLhs = new Multiply();
         nestedLhs.setArguments(Arrays.asList(new Constant(4L), new Constant(7L)));
         var nestedRhs = new Multiply();
@@ -246,7 +244,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nested_honor_priority_expression_reversed_argument_order(){
+    public void should_parse_nested_honor_priority_expression_reversed_argument_order() {
         var nested = new Multiply();
         nested.setArguments(Arrays.asList(new Constant(3L), new Constant(7L)));
         var expected = new Add();
@@ -262,7 +260,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_unary_expression(){
+    public void should_parse_unary_expression() {
         var nested = new Constant(false);
 
         var expected = new Not(Collections.singletonList(nested));
@@ -274,7 +272,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nested_unary_expression(){
+    public void should_parse_nested_unary_expression() {
         var nested = new Constant(false);
 
         var not = new Not(Collections.singletonList(nested));
@@ -290,12 +288,10 @@ public class ExpressionParserTest {
     }
 
 
-
-
     @Test
-    public void should_parse_ternary_expression(){
+    public void should_parse_ternary_expression() {
         var expected = new Ternary();
-        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L),new Constant(2L)));
+        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L), new Constant(2L)));
 
 
         var actual = new ExpressionParser().parse("false?1:2");
@@ -306,33 +302,24 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_not_parse_partial_ternary_expression(){
+    public void should_not_parse_partial_ternary_expression() {
         var expected = new Ternary();
-        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L),new Constant(2L)));
+        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1L), new Constant(2L)));
 
         try {
             new ExpressionParser().parse("false?1:");
             fail();
-        } catch (ParseException Pe){
+        } catch (ParseException Pe) {
             assertThat(Pe.getBaseMessage(), is(ParseException.expectedMoreArguments().getMessage()));
         }
     }
 
-    public class TernaryTestModel{
-        public boolean isTest(){
-            return false;
-        }
-        public boolean isOther(){
-            return false;
-        }
-    }
-
     @Test
-    public void should_parse_nesting_in_ternary_expression(){
+    public void should_parse_nesting_in_ternary_expression() {
         var nested = new Ternary();
-        nested.getArguments().addAll(Arrays.asList(new Variable("other"),new Constant(true),new Constant(false)));
+        nested.getArguments().addAll(Arrays.asList(new Variable("other"), new Constant(true), new Constant(false)));
         var expected = new Ternary();
-        expected.getArguments().addAll(Arrays.asList(new Variable("test"),new Constant(true),nested));
+        expected.getArguments().addAll(Arrays.asList(new Variable("test"), new Constant(true), nested));
         var actual = new ExpressionParser().parse("$test?true:$other?true:false");
 
         assertThat(actual.evaluate(new TemplateModel<>(new TernaryTestModel())), is(false));
@@ -340,7 +327,7 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void should_parse_nesting_in_ternary_expression2(){
+    public void should_parse_nesting_in_ternary_expression2() {
         var condition = new Not();
         condition.getArguments().add(new Constant(false));
         var lhs = new Multiply();
@@ -352,7 +339,7 @@ public class ExpressionParserTest {
         var nested = new Ternary();
         nested.getArguments().addAll(Arrays.asList(condition, lhs, rhs));
         var expected = new Ternary();
-        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1.0),nested));
+        expected.getArguments().addAll(Arrays.asList(new Constant(false), new Constant(1.0), nested));
 
 
         var actual = new ExpressionParser().parse("false?1.0:!false?6*7:9-5");
@@ -368,88 +355,71 @@ public class ExpressionParserTest {
     }
 
     @Test
-    public void operator_precedence_1()
-    {
+    public void operator_precedence_1() {
         var actual = new ExpressionParser().parse("2+3 pow 2*2+2");
 
         assertThat(actual.evaluate(null), is(22.0));
     }
 
     @Test
-    public void operator_precedence_2()
-    {
+    public void operator_precedence_2() {
         var actual = new ExpressionParser().parse("2+3*2+2pow2");
 
         assertThat(actual.evaluate(null), is(12.0));
     }
 
-    public class TestModel {
-        @Getter
-        public int firstInt = 42;
-        @Getter
-        public int secondInt = 37;
-    }
-
     @Test
-    public void operator_precedence_3()
-    {
+    public void operator_precedence_3() {
         var actual = new ExpressionParser().parse("(6+$firstInt*3 pow (2 mod 1))<(9+$secondInt pow (4/2))");
 
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(true));
     }
 
     @Test
-    public void operator_precedence_4()
-    {
-        var actual = new ExpressionParser().parse("13 + $firstInt / 2 >= $secondInt - $secondInt mod 8 && 7.0 == $firstInt / 6");
+    public void operator_precedence_4() {
+        var actual = new ExpressionParser()
+                .parse("13 + $firstInt / 2 >= $secondInt - $secondInt mod 8 && 7.0 == $firstInt / 6");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(true));
     }
 
     @Test
-    public void operator_precedence_4b()
-    {
+    public void operator_precedence_4b() {
         var actual = new ExpressionParser().parse("7 == $firstInt / 6");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(true));
     }
 
     @Test
-    public void operator_precedence_4c()
-    {
+    public void operator_precedence_4c() {
         var actual = new ExpressionParser().parse("$firstInt / 6 == 7");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(true));
     }
 
-
     @Test
-    public void operator_precedence_5()
-    {
+    public void operator_precedence_5() {
         var actual = new ExpressionParser().parse("false||!true");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(false));
     }
 
     @Test
-    public void operator_precedence_6()
-    {
+    public void operator_precedence_6() {
         var actual = new ExpressionParser().parse("!false && !false");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(true));
     }
 
     @Test
-    public void operator_precedence_7()
-    {
+    public void operator_precedence_7() {
         var actual = new ExpressionParser().parse("!!false && !false");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(false));
     }
 
     @Test
-    public void operator_precedence_8()
-    {
+    public void operator_precedence_8() {
         var actual = new ExpressionParser().parse("!(!false && !false)");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(false));
     }
 
     @Test
-    public void case3_bug1(){
+    public void case3_bug1() {
 
         var actual = new ExpressionParser().parse("1+parseInteger('1')");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(2.0));
@@ -457,10 +427,27 @@ public class ExpressionParserTest {
 
     //parseInteger('1')+1+parseInteger('1')
     @Test
-    public void case3_bug2(){
+    public void case3_bug2() {
 
         var actual = new ExpressionParser().parse("parseInteger('1')+1+parseInteger('1')");
         assertThat(actual.evaluate(new TemplateModel<>(new TestModel())), is(3.0));
+    }
+
+    public class TernaryTestModel {
+        public boolean isTest() {
+            return false;
+        }
+
+        public boolean isOther() {
+            return false;
+        }
+    }
+
+    public class TestModel {
+        @Getter
+        public int firstInt = 42;
+        @Getter
+        public int secondInt = 37;
     }
 //    @Test
 //    public void benchmark()

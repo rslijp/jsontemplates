@@ -1,5 +1,10 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
+import static nl.softcause.jsontemplates.types.Types.LIST_GENERIC;
+import static nl.softcause.jsontemplates.types.Types.OPTIONAL_GENERIC;
+
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
@@ -12,10 +17,6 @@ import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
-import java.util.List;
-
-import static nl.softcause.jsontemplates.types.Types.*;
-
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class Head implements IExpressionWithArguments {
@@ -23,7 +24,7 @@ public class Head implements IExpressionWithArguments {
     private List<IExpression> arguments;
 
     @JsonIgnore
-    private final IExpressionType[] argumentsTypes = new IExpressionType[]{LIST_GENERIC};
+    private final IExpressionType[] argumentsTypes = new IExpressionType[] {LIST_GENERIC};
 
     @Override
     public IExpressionType getReturnType(IModelDefinition model) {
@@ -33,19 +34,20 @@ public class Head implements IExpressionWithArguments {
     @Override
     public Object evaluate(IModel model) {
         var value = LIST_GENERIC.convert(getArguments().get(0).evaluate(model));
-        if(value==null || value.isEmpty()) return null;
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
         return value.get(0);
     }
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override
     public ExpressionParseType parseType() {
         return ExpressionParseType.FUNCTION;
     }
-
 
 }

@@ -18,6 +18,6 @@ public class Multiply extends ArithmeticTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Multiply;
+        return OperatorPrecendence.MULTIPLY;
     }
 }

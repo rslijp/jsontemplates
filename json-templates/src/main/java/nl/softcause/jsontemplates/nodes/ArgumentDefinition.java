@@ -1,12 +1,11 @@
 package nl.softcause.jsontemplates.nodes;
 
-import lombok.AllArgsConstructor;
+import java.util.function.Function;
+
 import lombok.Value;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.types.IExpressionType;
-
-import java.util.function.Function;
 
 //@AllArgsConstructor
 @Value
@@ -19,11 +18,15 @@ public class ArgumentDefinition<T> {
 //        this(type, defaultValue, null);
 //    }
 
-    public Function<IModel,T> bind(IExpression expression) {
-        return (m)->{
-            if(expression==null) return defaultValue;
+    public Function<IModel, T> bind(IExpression expression) {
+        return (m) -> {
+            if (expression == null) {
+                return defaultValue;
+            }
             var value = type.convert(expression.evaluate(m));
-            if(value==null) return defaultValue;
+            if (value == null) {
+                return defaultValue;
+            }
             return value;
         };
     }

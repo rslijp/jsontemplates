@@ -5,7 +5,8 @@ import java.math.BigInteger;
 
 public class DecimalType implements IExpressionType<Double> {
 
-    DecimalType(){}
+    DecimalType() {
+    }
 
     @Override
     public String getType() {
@@ -14,24 +15,28 @@ public class DecimalType implements IExpressionType<Double> {
 
     @Override
     public boolean isA(Object src) {
-        if(src==null) return false;
+        if (src == null) {
+            return false;
+        }
         return isClassOfA(src.getClass());
     }
 
     @Override
     public boolean isClassOfA(Class<?> src) {
-        return (src!=BigDecimal.class &&
-               src!=BigInteger.class) &&
-               Number.class.isAssignableFrom(src) ||
+        return (src != BigDecimal.class &&
+                src != BigInteger.class) &&
+                Number.class.isAssignableFrom(src) ||
                 (src == double.class ||
-               src == float.class ||
-                src == int.class ||
-                src == long.class);
+                        src == float.class ||
+                        src == int.class ||
+                        src == long.class);
     }
 
     @Override
     public Double convert(Object src) {
-        if(!isA(src)) throw TypeException.invalidCast(src, this);
+        if (!isA(src)) {
+            throw TypeException.invalidCast(src, this);
+        }
         Double val = null;
         if (src instanceof Number) {
             val = ((Number) src).doubleValue();
@@ -40,7 +45,9 @@ public class DecimalType implements IExpressionType<Double> {
     }
 
     @Override
-    public IExpressionType baseType() { return this; }
+    public IExpressionType baseType() {
+        return this;
+    }
 
     @Override
     public String toString() {

@@ -16,6 +16,6 @@ public class Divide extends ArithmeticTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Divide;
+        return OperatorPrecendence.DIVIDE;
     }
 }

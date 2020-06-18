@@ -1,14 +1,14 @@
 package nl.softcause.jsontemplates.model;
 
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Stack;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;
 import nl.softcause.jsontemplates.types.IExpressionType;
-
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Stack;
 
 public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
@@ -16,7 +16,7 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
     private static final String SCOPE = "scope";
     private static final String PARENT = "parent";
     public static final String SEPARATOR_CHAR = ".";
-    public static final String SEPARATOR = "\\"+SEPARATOR_CHAR;
+    public static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
 
     private final DefinedModel<T> model;
     private final Stack<ScopeModel> scopes = new Stack<>();
@@ -26,18 +26,18 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
     private Locale locale;
 
     public TemplateModel(T model) {
-        this.model=new DefinedModel<>(model);
-        this.locale=Locale.ENGLISH;
+        this.model = new DefinedModel<>(model);
+        this.locale = Locale.ENGLISH;
         pushScope(this);
     }
 
     public TemplateModel(DefinedModel<T> model) {
-        this.model=model;
-        this.locale=Locale.ENGLISH;
+        this.model = model;
+        this.locale = Locale.ENGLISH;
         pushScope(this);
     }
 
-    public void load(T subject){
+    public void load(T subject) {
         this.model.load(subject);
     }
 
@@ -58,7 +58,7 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
         return scopes.peek();
     }
 
-    public int scopeDepth(){
+    public int scopeDepth() {
         return scopes.size();
     }
 
@@ -73,7 +73,8 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
     }
 
 
-    public void addDefinition(String name, IExpressionType type, DefinitionRegistry nested, boolean readeable, boolean writerable, Object defaultValue) {
+    public void addDefinition(String name, IExpressionType type, DefinitionRegistry nested, boolean readeable,
+                              boolean writerable, Object defaultValue) {
         scopes.peek().addDefintion(name, type, nested, readeable, writerable, defaultValue);
     }
 
@@ -91,34 +92,40 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
         resolve(name, false).set(value);
     }
 
-    private ResolvedModel resolve(@NonNull  String path, boolean parentsAllowed){
+    private ResolvedModel resolve(@NonNull String path, boolean parentsAllowed) {
         var parts = path.split(SEPARATOR);
         var localName = parts[0];
-        if(!(localName.equals(SCOPE) || localName.equals(PARENT))) return new ResolvedModel(model, path);
+        if (!(localName.equals(SCOPE) || localName.equals(PARENT))) {
+            return new ResolvedModel(model, path);
+        }
         var c = new Stack<ScopeModel>();
         c.addAll(scopes);
 
         var scopeIndex = 0;
-        while(parts[scopeIndex].equals(PARENT)){
-            if(!parentsAllowed) throw ScopeException.writingInParentScopesNotAllowed(path);
+        while (parts[scopeIndex].equals(PARENT)) {
+            if (!parentsAllowed) {
+                throw ScopeException.writingInParentScopesNotAllowed(path);
+            }
             c.pop();
             scopeIndex++;
-            if(c.isEmpty() ||  parts.length==scopeIndex){
+            if (c.isEmpty() || parts.length == scopeIndex) {
                 throw TemplateModelException.toManyParents(path);
             }
         }
 
-        if(parts[scopeIndex].equals(SCOPE)){
-            var relativeName = String.join(SEPARATOR_CHAR, Arrays.copyOfRange(parts, scopeIndex+1, parts.length));
+        if (parts[scopeIndex].equals(SCOPE)) {
+            var relativeName = String.join(SEPARATOR_CHAR, Arrays.copyOfRange(parts, scopeIndex + 1, parts.length));
             var base = c.peek();
             ScopeModel resolved = null;
-            if(scopeIndex==0 && parentsAllowed) while(resolved==null && !c.isEmpty()){
-                if(c.peek().hasDefinition(relativeName)){
-                    resolved=c.peek();
+            if (scopeIndex == 0 && parentsAllowed) {
+                while (resolved == null && !c.isEmpty()) {
+                    if (c.peek().hasDefinition(relativeName)) {
+                        resolved = c.peek();
+                    }
+                    c.pop();
                 }
-                c.pop();
             }
-            return new ResolvedModel(resolved!=null?resolved:base, relativeName);
+            return new ResolvedModel(resolved != null ? resolved : base, relativeName);
         } else {
             throw TemplateModelException.wrongPath(path);
         }

@@ -1,10 +1,12 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.ExpressionParseType;
 import nl.softcause.jsontemplates.expressions.IExpression;
@@ -13,9 +15,6 @@ import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Types;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EqualsAndHashCode
 public class NullOrDefault implements IExpressionWithArguments {
@@ -26,8 +25,9 @@ public class NullOrDefault implements IExpressionWithArguments {
     public NullOrDefault() {
         this(new ArrayList<>());
     }
+
     public NullOrDefault(List<IExpression> arguments) {
-        this.arguments=arguments;
+        this.arguments = arguments;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class NullOrDefault implements IExpressionWithArguments {
     @Override
     public Object evaluate(@NonNull IModel model) {
         var value = getArguments().get(0).evaluate(model);
-        if(value==null){
+        if (value == null) {
             return getArguments().get(1).evaluate(model);
         }
         return value;
@@ -46,12 +46,12 @@ public class NullOrDefault implements IExpressionWithArguments {
 
     @Override
     public IExpressionType[] getArgumentsTypes() {
-        return new IExpressionType[]{Types.OPTIONAL_GENERIC, Types.GENERIC};
+        return new IExpressionType[] {Types.OPTIONAL_GENERIC, Types.GENERIC};
     }
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

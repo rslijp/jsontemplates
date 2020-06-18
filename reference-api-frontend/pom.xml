@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <groupId>nl.softcause</groupId>
+    <artifactId>reference-api</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>nl.softcause</groupId>
+        <artifactId>json-templates-bundle</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+
+    <properties>
+        <yarn.helper>yarn-helper.sh</yarn.helper>
+    </properties>
+
+    <name>Reference API : Frontend</name>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution><!-- Run our eslint script -->
+                        <id>Eslinting</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/${yarn.helper}</executable>
+                            <arguments>eslint</arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>Build dist bundle</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/yarn-helper.sh</executable>
+                            <arguments>build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <basedir>${basedir}</basedir>
+                    <includes>
+                        <include>dist/index.html</include>
+                        <include>dist/404.html</include>
+                        <include>dist/50x.html</include>
+                    </includes>
+                    <regex>false</regex>
+                    <token>$BUILD_NUMBER$</token>
+                    <value>Teas ${project.version}</value>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>

@@ -1,16 +1,16 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import nl.softcause.jsontemplates.OperatorPrecendence;
-import nl.softcause.jsontemplates.expressions.ExpressionParseType;
-import nl.softcause.jsontemplates.types.IExpressionType;
-import nl.softcause.jsontemplates.expressions.util.TupleExpression;
+import static nl.softcause.jsontemplates.types.Types.LIST_GENERIC;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.softcause.jsontemplates.types.Types.LIST_GENERIC;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import nl.softcause.jsontemplates.OperatorPrecendence;
+import nl.softcause.jsontemplates.expressions.ExpressionParseType;
+import nl.softcause.jsontemplates.expressions.util.TupleExpression;
+import nl.softcause.jsontemplates.types.IExpressionType;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -35,7 +35,7 @@ public class Append extends TupleExpression<List<Object>, List<Object>, List<Obj
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Function;
+        return OperatorPrecendence.FUNCTION;
     }
 
     @Override

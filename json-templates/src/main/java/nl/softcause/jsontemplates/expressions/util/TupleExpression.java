@@ -1,35 +1,37 @@
 package nl.softcause.jsontemplates.expressions.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import nl.softcause.jsontemplates.expressions.ExpressionParseType;
-import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
-import nl.softcause.jsontemplates.model.IModel;
-import nl.softcause.jsontemplates.expressions.IExpression;
-import nl.softcause.jsontemplates.types.IExpressionType;
-import nl.softcause.jsontemplates.model.IModelDefinition;
-
 import java.util.List;
 
-@EqualsAndHashCode
-public abstract class TupleExpression<R, F,S> implements IExpressionWithArguments {
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import nl.softcause.jsontemplates.expressions.ExpressionParseType;
+import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
+import nl.softcause.jsontemplates.model.IModel;
+import nl.softcause.jsontemplates.model.IModelDefinition;
+import nl.softcause.jsontemplates.types.IExpressionType;
 
-//    @JsonIgnore
+@EqualsAndHashCode
+public abstract class TupleExpression<R, F, S> implements IExpressionWithArguments {
+
+    //    @JsonIgnore
     private final IExpressionType<S> rhs;
-//    @JsonIgnore
+    //    @JsonIgnore
     private final IExpressionType<F> lhs;
 
     @Getter
     private final IExpressionType[] argumentsTypes;
 
-    protected TupleExpression(@NonNull IExpressionType<F> lhs, @NonNull IExpressionType<S> rhs, @NonNull List<IExpression> arguments){
-        this.lhs=lhs;
-        this.rhs=rhs;
-        this.argumentsTypes = new IExpressionType[]{lhs,rhs};
-        this.arguments=arguments;
+    protected TupleExpression(@NonNull IExpressionType<F> lhs, @NonNull IExpressionType<S> rhs,
+                              @NonNull List<IExpression> arguments) {
+        this.lhs = lhs;
+        this.rhs = rhs;
+        this.argumentsTypes = new IExpressionType[] {lhs, rhs};
+        this.arguments = arguments;
     }
-
 
 
     @Getter
@@ -39,7 +41,7 @@ public abstract class TupleExpression<R, F,S> implements IExpressionWithArgument
 
     @Override
     public Object evaluate(IModel model) {
-        if(getArguments().size() != 2){
+        if (getArguments().size() != 2) {
             throw TupleExpressionException.notATuple(getArguments().size());
         }
         return innerEvaluate(
@@ -52,11 +54,11 @@ public abstract class TupleExpression<R, F,S> implements IExpressionWithArgument
 
     protected abstract IExpressionType getReturnType();
 
-    public  IExpressionType getReturnType(IModelDefinition model){
+    public IExpressionType getReturnType(IModelDefinition model) {
         return getReturnType();
     }
 
-    public ExpressionParseType parseType(){
+    public ExpressionParseType parseType() {
         return ExpressionParseType.INFIX;
     }
 

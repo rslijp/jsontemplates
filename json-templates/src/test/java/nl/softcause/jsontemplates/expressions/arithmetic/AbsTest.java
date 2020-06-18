@@ -1,22 +1,21 @@
 package nl.softcause.jsontemplates.expressions.arithmetic;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class AbsTest {
 
     @Test
-    public void should_make_value_absolute(){
+    public void should_make_value_absolute() {
         var abs = new Abs(Arrays.asList(new Constant(3)));
 
         var r = abs.evaluate(null);
@@ -25,7 +24,7 @@ public class AbsTest {
     }
 
     @Test
-    public void should_make_value_absolute_negative_case(){
+    public void should_make_value_absolute_negative_case() {
         var abs = new Abs(Arrays.asList(new Constant(-3)));
 
         var r = abs.evaluate(null);
@@ -34,7 +33,7 @@ public class AbsTest {
     }
 
     @Test
-    public void should_consume_variables(){
+    public void should_consume_variables() {
         var abs = new Abs(Arrays.asList(new Variable("V")));
 
         var model = new TestModel().put("V", -3);

@@ -6,7 +6,6 @@ import nl.softcause.jsontemplates.expressions.DownCastIfPossibleAnnotation;
 @DownCastIfPossibleAnnotation
 public class Add extends ArithmeticTupleExpression {
 
-
     @Override
     protected Double innerEvaluate(Double lhs, Double rhs) {
         return lhs + rhs;
@@ -19,7 +18,7 @@ public class Add extends ArithmeticTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Add;
+        return OperatorPrecendence.ADD;
     }
 
 }

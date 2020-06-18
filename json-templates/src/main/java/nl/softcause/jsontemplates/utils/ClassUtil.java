@@ -1,15 +1,12 @@
 package nl.softcause.jsontemplates.utils;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
+
 import nl.softcause.jsontemplates.expressions.IExpression;
-import nl.softcause.jsontemplates.nodes.INode;
-import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
 
 public class ClassUtil {
     public static boolean hasAnnotation(final Object bean, final Class annotationClass) {
@@ -32,10 +29,9 @@ public class ClassUtil {
         );
         return reflections.getSubTypesOf(IExpression.class)
                 .stream()
-                .filter(c-> !Modifier.isAbstract( c.getModifiers()))
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
                 .toArray(Class[]::new);
     }
-
 
 
 }

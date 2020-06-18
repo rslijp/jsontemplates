@@ -6,7 +6,8 @@ import java.util.Date;
 
 public class DateTimeType implements IExpressionType<Instant> {
 
-    DateTimeType(){}
+    DateTimeType() {
+    }
 
     @Override
     public String getType() {
@@ -15,13 +16,15 @@ public class DateTimeType implements IExpressionType<Instant> {
 
     @Override
     public boolean isA(Object src) {
-        if(src==null) return false;
+        if (src == null) {
+            return false;
+        }
         return isClassOfA(src.getClass());
     }
 
     @Override
     public boolean isClassOfA(Class<?> src) {
-        return  Date.class.isAssignableFrom(src) ||
+        return Date.class.isAssignableFrom(src) ||
                 Instant.class.isAssignableFrom(src) ||
                 Calendar.class.isAssignableFrom(src);
 
@@ -29,7 +32,9 @@ public class DateTimeType implements IExpressionType<Instant> {
 
     @Override
     public Instant convert(Object src) {
-        if(!isA(src)) throw TypeException.invalidCast(src, this);
+        if (!isA(src)) {
+            throw TypeException.invalidCast(src, this);
+        }
         Instant val = null;
         if (src instanceof Instant) {
             val = ((Instant) src);
@@ -44,7 +49,9 @@ public class DateTimeType implements IExpressionType<Instant> {
     }
 
     @Override
-    public IExpressionType baseType() { return this; }
+    public IExpressionType baseType() {
+        return this;
+    }
 
     @Override
     public String toString() {

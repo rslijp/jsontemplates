@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <suppress files="nl/softcause/jsontemplates/definition/DescribeExpressionHelper\.java" checks="Regexp"/>
+    <suppress files="nl/softcause/jsontemplates/definition/DescribeModelHelper\.java" checks="Regexp"/>
+    <suppress files="nl/softcause/jsontemplates/definition/DescribeNodeHelper\.java" checks="Regexp"/>
+    <suppress files="nl/softcause/jsontemplates/definition/DescribeTemplateLibrary\.java" checks="Regexp"/>
+    <suppress files="nl/softcause/jsontemplates/expresionparser/ParseContext\.java" checks="Regexp"/>
+
+</suppressions>

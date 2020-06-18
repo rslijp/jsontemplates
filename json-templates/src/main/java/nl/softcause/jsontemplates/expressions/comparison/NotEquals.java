@@ -1,15 +1,15 @@
 package nl.softcause.jsontemplates.expressions.comparison;
 
+import static nl.softcause.jsontemplates.types.Types.BOOLEAN;
+import static nl.softcause.jsontemplates.types.Types.OBJECT;
+
+import java.util.ArrayList;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import nl.softcause.jsontemplates.OperatorPrecendence;
 import nl.softcause.jsontemplates.expressions.util.TupleExpression;
 import nl.softcause.jsontemplates.types.IExpressionType;
-
-import java.util.ArrayList;
-
-import static nl.softcause.jsontemplates.types.Types.BOOLEAN;
-import static nl.softcause.jsontemplates.types.Types.OBJECT;
 
 @EqualsAndHashCode(callSuper = false)
 public class NotEquals extends TupleExpression<Boolean, Object, Object> {
@@ -23,10 +23,10 @@ public class NotEquals extends TupleExpression<Boolean, Object, Object> {
 
     @Override
     protected Boolean innerEvaluate(Object lhs, Object rhs) {
-        if(lhs!=null){
+        if (lhs != null) {
             return !lhs.equals(rhs);
         }
-        return rhs!=null;
+        return rhs != null;
     }
 
     public String operator() {
@@ -35,7 +35,7 @@ public class NotEquals extends TupleExpression<Boolean, Object, Object> {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Equality;
+        return OperatorPrecendence.EQUALITY;
     }
 
 }

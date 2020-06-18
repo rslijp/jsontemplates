@@ -1,9 +1,7 @@
 package nl.softcause.jsontemplates.expresionparser;
 
-import lombok.NonNull;
-import nl.softcause.jsontemplates.expressions.*;
-import nl.softcause.jsontemplates.expressions.logic.Ternary;
-import nl.softcause.jsontemplates.types.IExpressionType;
+import static nl.softcause.jsontemplates.expresionparser.ParseUtils.createExpression;
+import static nl.softcause.jsontemplates.expresionparser.ParseUtils.operator;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,16 +10,18 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static nl.softcause.jsontemplates.expresionparser.ParseUtils.createExpression;
-import static nl.softcause.jsontemplates.expresionparser.ParseUtils.operator;
+import lombok.NonNull;
+import nl.softcause.jsontemplates.expressions.*;
+import nl.softcause.jsontemplates.expressions.logic.Ternary;
+import nl.softcause.jsontemplates.types.IExpressionType;
 
 class ParseContext {
 
     private static final boolean LOG = false;
     private static final Pattern LONG_PATTERN = Pattern.compile("^(-?[0-9]+)");
     private static final Pattern DOUBLE_PATTERN = Pattern.compile("^(-?[0-9]+\\.[0-9]+)");
-    private static final Pattern TEXT_PATTERN  = Pattern.compile("^'((\\w|\\s)+)'");
-    private static final Pattern VARIABLE_PATTERN  = Pattern.compile("^\\$([0-9A-Za-z\\.]+)");
+    private static final Pattern TEXT_PATTERN = Pattern.compile("^'((\\w|\\s)+)'");
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("^\\$([0-9A-Za-z\\.]+)");
     private static final String BRACKET_OPEN = "(";
     private static final String PARAMETER_SEPARATOR = ",";
     private static final String BRACKET_CLOSE = ")";
@@ -34,29 +34,29 @@ class ParseContext {
     private Map<String, Class> functionLib;
     private Map<String, Class> infixLib;
 
-    ParseContext(@NonNull String text){
+    ParseContext(@NonNull String text) {
         cursor = new ParseCursor(text);
     }
 
-    ParseContext withFunctionLib(Map<String, Class> lib){
-        this.functionLib=lib;
+    ParseContext withFunctionLib(Map<String, Class> lib) {
+        this.functionLib = lib;
         return this;
     }
 
-    ParseContext withInfixLib(Map<String, Class> lib){
-        this.infixLib=lib;
+    ParseContext withInfixLib(Map<String, Class> lib) {
+        this.infixLib = lib;
         return this;
     }
 
     public ParseContext withUnaryLib(Map<String, Class> lib) {
-        this.unaryLib=lib;
+        this.unaryLib = lib;
         return this;
     }
 
-    void parseExpression(String[] until){
-        while(!done() && (until==null || !cursor.at(until))) {
+    void parseExpression(String[] until) {
+        while (!done() && (until == null || !cursor.at(until))) {
             log("========");
-            if(     tryLongConstant() ||
+            if (tryLongConstant() ||
                     tryBooleanConstant() ||
                     tryDoubleConstant() ||
                     tryStringConstant() ||
@@ -65,23 +65,25 @@ class ParseContext {
                     tryTernary() ||
                     libScan(unaryLib, this::tryUnary) ||
                     libScan(functionLib, this::tryFunction) ||
-                    libScan(infixLib, this::tryInfix)){
+                    libScan(infixLib, this::tryInfix)) {
                 continue;
             }
-           throw ParseException.cantMatchHead().at(cursor);
+            throw ParseException.cantMatchHead().at(cursor);
         }
-        reduce(until==null?-1:0);
+        reduce(until == null ? -1 : 0);
     }
 
-    private boolean libScan(Map<String, Class> lib, Function<String, Boolean> tryParse){
+    private boolean libScan(Map<String, Class> lib, Function<String, Boolean> tryParse) {
         var operators = lib
                 .keySet()
                 .stream()
                 .sorted(Comparator.comparingInt(e -> -e.length()))
                 .toArray(String[]::new);
 
-        for (var e : operators){
-            if(tryParse.apply(e)) return true;
+        for (var e : operators) {
+            if (tryParse.apply(e)) {
+                return true;
+            }
         }
         return false;
     }
@@ -96,12 +98,12 @@ class ParseContext {
     }
 
     private boolean tryBooleanConstant() {
-        if (cursor.at("true")){
+        if (cursor.at("true")) {
             cursor.read("true");
             push(new Constant(true));
             return true;
         }
-        if (cursor.at("false")){
+        if (cursor.at("false")) {
             cursor.read("false");
             push(new Constant(false));
             return true;
@@ -111,8 +113,8 @@ class ParseContext {
 
     private boolean tryLongConstant() {
         if (!justSawConstant() &&
-            !cursor.at(DOUBLE_PATTERN) &&
-             cursor.at(LONG_PATTERN)) {
+                !cursor.at(DOUBLE_PATTERN) &&
+                cursor.at(LONG_PATTERN)) {
             var txt = cursor.read(LONG_PATTERN);
             push(new Constant(Long.parseLong(txt)));
             return true;
@@ -121,14 +123,16 @@ class ParseContext {
     }
 
     private boolean justSawConstant() {
-        if(parseStack.empty()) return false;
+        if (parseStack.empty()) {
+            return false;
+        }
         return parseStack.peek() instanceof Constant;
     }
 
 
     private boolean tryDoubleConstant() {
         if (!justSawConstant() &&
-            cursor.at(DOUBLE_PATTERN)) {
+                cursor.at(DOUBLE_PATTERN)) {
             var txt = cursor.read(DOUBLE_PATTERN);
             push(new Constant(Double.parseDouble(txt)));
             return true;
@@ -147,7 +151,6 @@ class ParseContext {
     }
 
 
-
     private boolean tryFunction(String functionName) {
         if (cursor.at(functionName)) {
             cursor.read(functionName);
@@ -155,11 +158,11 @@ class ParseContext {
             var expr = (IExpressionWithArguments) createExpression(functionLib.get(functionName));
             IExpressionType[] argumentsTypes = expr.getArgumentsTypes();
             stashStack();
-            for (var i = 0; i< argumentsTypes.length; i++){
-                var separators = new String[]{BRACKET_CLOSE, PARAMETER_SEPARATOR};
+            for (var i = 0; i < argumentsTypes.length; i++) {
+                var separators = new String[] {BRACKET_CLOSE, PARAMETER_SEPARATOR};
                 parseExpression(separators);
                 expr.getArguments().add(yield(expr.priority()));
-                if(cursor.at(BRACKET_CLOSE)){
+                if (cursor.at(BRACKET_CLOSE)) {
                     ParseUtils.validateCompletenessOfArguments(expr, cursor);
                     cursor.read(BRACKET_CLOSE);
                     break;
@@ -174,15 +177,15 @@ class ParseContext {
     }
 
     private void popStack() {
-        if(!parseStack.empty()){
+        if (!parseStack.empty()) {
             throw new RuntimeException("Bug");
         }
-        parseStack=parseStackStash.pop();
+        parseStack = parseStackStash.pop();
     }
 
     private void stashStack() {
         parseStackStash.push(parseStack);
-        parseStack=new Stack<>();
+        parseStack = new Stack<>();
 
     }
 //
@@ -200,7 +203,7 @@ class ParseContext {
             var expr = (IExpressionWithArguments) createExpression(infixLib.get(operator));
             reduce(expr.priority());
             var lhs = parseStack.pop();
-            log("POP "+operator(lhs));
+            log("POP " + operator(lhs));
             expr.getArguments().add(lhs);
             push(expr);
             return true;
@@ -221,7 +224,7 @@ class ParseContext {
     private boolean tryBrackets() {
         if (cursor.at(BRACKET_OPEN)) {
             cursor.read(BRACKET_OPEN);
-            parseExpression(new String[]{BRACKET_CLOSE});
+            parseExpression(new String[] {BRACKET_CLOSE});
             var inner = yield();
             var brackets = new Brackets();
             brackets.setArguments(Collections.singletonList(
@@ -242,7 +245,7 @@ class ParseContext {
             var condition = yield(ternary.priority());
             ternary.getArguments().add(condition);
             push(ternary);
-            parseExpression(new String[]{":"});
+            parseExpression(new String[] {":"});
             cursor.read(":");
             return true;
         }
@@ -267,38 +270,38 @@ class ParseContext {
         return parseStack.isEmpty();
     }
 
-    private void push(IExpression expression){
-        log("PUSH "+operator(expression)+" "+cursor);
+    private void push(IExpression expression) {
+        log("PUSH " + operator(expression) + " " + cursor);
         parseStack.push(expression);
     }
 
-    private void reduce(int targetPrio)
-    {
-        if (parseStack.size() >= 2)
-        {
+    private void reduce(int targetPrio) {
+        if (parseStack.size() >= 2) {
             IExpression argument = parseStack.pop();
             IExpression operator = parseStack.peek();
             var argumentPriority = argument.priority();
             var operatorPriority = operator.priority();
-            var reduce = operatorPriority>=targetPrio && operator instanceof IExpressionWithArguments;
+            var reduce = operatorPriority >= targetPrio && operator instanceof IExpressionWithArguments;
 
-            if(argument instanceof Ternary &&
-               operator instanceof Ternary &&
+            if (argument instanceof Ternary &&
+                    operator instanceof Ternary &&
                     targetPrio == 0
-            ){
+            ) {
                 reduce = false;
             }
 
-            if(LOG) {
+            if (LOG) {
                 System.out.println(">>>>>>>>>");
-                System.out.println("NEW: prio " + targetPrio+"");
-                System.out.println("ARG:" + operator(argument) + "(prio " + argumentPriority+")");
-                System.out.println("OPR:" + operator(operator) + "(prio " + operatorPriority+")");
-                if(reduce) System.out.println("REDUCE");
+                System.out.println("NEW: prio " + targetPrio + "");
+                System.out.println("ARG:" + operator(argument) + "(prio " + argumentPriority + ")");
+                System.out.println("OPR:" + operator(operator) + "(prio " + operatorPriority + ")");
+                if (reduce) {
+                    System.out.println("REDUCE");
+                }
                 System.out.println("<<<<<<<<");
 
             }
-            if(reduce){
+            if (reduce) {
                 ((IExpressionWithArguments) operator).getArguments().add(argument);
                 reduce(targetPrio);
             } else {
@@ -308,11 +311,13 @@ class ParseContext {
         }
     }
 
-    private void log(String msg){
-        if(LOG) System.out.println(msg);
+    private void log(String msg) {
+        if (LOG) {
+            System.out.println(msg);
+        }
     }
 
-    protected ParseCursor getCursor(){
+    protected ParseCursor getCursor() {
         return cursor.clone();
     }
 

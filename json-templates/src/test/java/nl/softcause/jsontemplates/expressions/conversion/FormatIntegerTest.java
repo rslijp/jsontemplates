@@ -1,37 +1,33 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
-import nl.softcause.jsontemplates.types.TypeException;
-import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Locale;
-
-import static junit.framework.TestCase.fail;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 public class FormatIntegerTest {
 
     @Test
-    public void should_format_constant(){
+    public void should_format_constant() {
         var formatNumber = new FormatInteger(Arrays.asList(new Constant(37)));
-        var r = formatNumber.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var r = formatNumber.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("37"));
     }
 
     @Test
-    public void should_format_big_integer(){
+    public void should_format_big_integer() {
         var formatNumber = new FormatInteger(Arrays.asList(new Constant(371312321321312L)));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.ENGLISH);
@@ -42,7 +38,7 @@ public class FormatIntegerTest {
     }
 
     @Test
-    public void should_format_big_integer_using_model_locale(){
+    public void should_format_big_integer_using_model_locale() {
         var formatNumber = new FormatInteger(Arrays.asList(new Constant(371312321321312L)));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.GERMANY);
@@ -53,7 +49,7 @@ public class FormatIntegerTest {
     }
 
     @Test
-    public void should_accept_null(){
+    public void should_accept_null() {
         var formatNumber = new FormatInteger(Arrays.asList(new Constant(null)));
 
         var r = formatNumber.evaluate(null);
@@ -62,7 +58,7 @@ public class FormatIntegerTest {
     }
 
     @Test
-    public void should_format_variable(){
+    public void should_format_variable() {
         var td = new TestDefinition();
         td.setAge(37);
         var formatNumber = new FormatInteger(Arrays.asList(new Variable("age")));
@@ -73,7 +69,7 @@ public class FormatIntegerTest {
     }
 
     @Test
-    public void should_format_optional_number(){
+    public void should_format_optional_number() {
         var td = new TestDefinition();
         td.setMentalAge(37);
         var formatNumber = new FormatInteger(Arrays.asList(new Variable("mentalAge")));

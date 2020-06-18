@@ -7,7 +7,7 @@ public class WildCardSlot implements ISlotPattern {
 
     @Override
     public boolean match(Object object) {
-        return object!=null;
+        return object != null;
     }
 
     @Override

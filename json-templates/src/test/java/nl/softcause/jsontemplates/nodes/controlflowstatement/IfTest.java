@@ -1,6 +1,12 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.TemplateModel;
@@ -13,18 +19,11 @@ import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
 import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class IfTest {
 
     @Test
-    public void should_collect_correct_arguments(){
-        var ifNode =  new If();
+    public void should_collect_correct_arguments() {
+        var ifNode = new If();
 
         var argumentTypes = ifNode.getArgumentsTypes();
 
@@ -32,8 +31,8 @@ public class IfTest {
     }
 
     @Test
-    public void should_collect_correct_slots(){
-        var ifNode =  new If();
+    public void should_collect_correct_slots() {
+        var ifNode = new If();
 
         var argumentTypes = ifNode.getSlotTypes();
 
@@ -43,11 +42,11 @@ public class IfTest {
     }
 
     @Test
-    public void should_execute_then_node_when_test_is_true(){
+    public void should_execute_then_node_when_test_is_true() {
         var assertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Constant(true)),
-                Collections.singletonMap("then", new INode[]{assertionNode})
+                Collections.singletonMap("then", new INode[] {assertionNode})
         );
 
         ifNode.evaluate(new TemplateModel<>(new TestDefinition()));
@@ -56,13 +55,13 @@ public class IfTest {
     }
 
     @Test
-    public void should_execute_then_node_when_test_is_true_but_not_else_node(){
+    public void should_execute_then_node_when_test_is_true_but_not_else_node() {
         var thenAssertionNode = new AssertionNode();
         var elseAssertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Constant(true)),
-                Map.of("then", new INode[]{thenAssertionNode},
-                       "else", new INode[]{elseAssertionNode})
+                Map.of("then", new INode[] {thenAssertionNode},
+                        "else", new INode[] {elseAssertionNode})
         );
 
 
@@ -73,13 +72,13 @@ public class IfTest {
     }
 
     @Test
-    public void should_execute_else_node_when_test_is_true_but_not_then_node(){
+    public void should_execute_else_node_when_test_is_true_but_not_then_node() {
         var thenAssertionNode = new AssertionNode();
         var elseAssertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Constant(false)),
-                Map.of("then", new INode[]{thenAssertionNode},
-                        "else", new INode[]{elseAssertionNode})
+                Map.of("then", new INode[] {thenAssertionNode},
+                        "else", new INode[] {elseAssertionNode})
         );
 
 
@@ -91,11 +90,11 @@ public class IfTest {
 
 
     @Test
-    public void should_acccept_empty_else_node(){
+    public void should_acccept_empty_else_node() {
         var thenAssertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Constant(false)),
-                Map.of("then", new INode[]{thenAssertionNode})
+                Map.of("then", new INode[] {thenAssertionNode})
         );
 
 
@@ -105,14 +104,14 @@ public class IfTest {
     }
 
     @Test
-    public void should_apply_model(){
+    public void should_apply_model() {
         var thenAssertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Variable("scope.test")),
-                Map.of("then", new INode[]{thenAssertionNode})
+                Map.of("then", new INode[] {thenAssertionNode})
         );
 
-        var model  = new TemplateModel<>(new TestDefinition());
+        var model = new TemplateModel<>(new TestDefinition());
         model.scope().addDefintion("test", Types.BOOLEAN, null, true, false, true);
         ifNode.evaluate(model);
 
@@ -122,9 +121,9 @@ public class IfTest {
     @Test
     public void should_serialize_to_json() throws IOException {
         var thenAssertionNode = new AssertionNode();
-        var ifNode =  If.create(
+        var ifNode = If.create(
                 Collections.singletonMap("test", new Variable("scope.test")),
-                Map.of("then", new INode[]{thenAssertionNode})
+                Map.of("then", new INode[] {thenAssertionNode})
         );
 
 

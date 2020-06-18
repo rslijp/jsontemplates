@@ -1,5 +1,7 @@
 package nl.softcause.jsontemplates.nodes;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -7,9 +9,6 @@ import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
-import nl.softcause.jsontemplates.types.IExpressionType;
-
-import java.util.Map;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public interface INode {

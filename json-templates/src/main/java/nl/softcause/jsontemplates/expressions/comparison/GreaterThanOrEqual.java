@@ -19,6 +19,6 @@ public class GreaterThanOrEqual extends NumericComparisonTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.Comparison;
+        return OperatorPrecendence.COMPARISON;
     }
 }

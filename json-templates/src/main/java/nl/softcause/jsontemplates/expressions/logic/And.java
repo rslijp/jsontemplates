@@ -17,6 +17,6 @@ public class And extends BooleanTupleExpression {
 
     @Override
     public Integer priority() {
-        return OperatorPrecendence.And;
+        return OperatorPrecendence.AND;
     }
 }

@@ -1,10 +1,10 @@
 package nl.softcause.jsontemplates.model;
 
+import java.util.Locale;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-
-import java.util.Locale;
 
 public class DefinedModel<T> implements IModel {
 
@@ -31,7 +31,9 @@ public class DefinedModel<T> implements IModel {
     }
 
     @Override
-    public DefinitionRegistryEntry[] getDefinitions() { return defintion.getDefinitions();}
+    public DefinitionRegistryEntry[] getDefinitions() {
+        return defintion.getDefinitions();
+    }
 
 
     @Override
@@ -44,8 +46,8 @@ public class DefinedModel<T> implements IModel {
         defintion.set(subject, name, value);
     }
 
-    public void load(T subject){
-        this.subject=subject;
+    public void load(T subject) {
+        this.subject = subject;
     }
 
     public ModelDefinition<T> getModelDefinition() {

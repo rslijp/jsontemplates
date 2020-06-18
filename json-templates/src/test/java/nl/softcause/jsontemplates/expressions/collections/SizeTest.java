@@ -1,24 +1,22 @@
 package nl.softcause.jsontemplates.expressions.collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.collections.IntegerList;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
-
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class SizeTest {
     @Test
-    public void should_get_size_of_array_value(){
-        var size = new Size(Arrays.asList(new Constant(new int[]{1,2,3})));
+    public void should_get_size_of_array_value() {
+        var size = new Size(Arrays.asList(new Constant(new int[] {1, 2, 3})));
 
         var r = size.evaluate(new TestModel());
 
@@ -26,8 +24,8 @@ public class SizeTest {
     }
 
     @Test
-    public void should_get_size_of_list_value(){
-        var size = new Size(Arrays.asList(new Constant(new IntegerList(1,2,3))));
+    public void should_get_size_of_list_value() {
+        var size = new Size(Arrays.asList(new Constant(new IntegerList(1, 2, 3))));
 
         var r = size.evaluate(new TestModel());
 
@@ -35,7 +33,7 @@ public class SizeTest {
     }
 
     @Test
-    public void should_be_null_safe(){
+    public void should_be_null_safe() {
         var size = new Size(Arrays.asList(new Constant(null)));
 
         var r = size.evaluate(new TestModel());
@@ -45,9 +43,9 @@ public class SizeTest {
 
 
     @Test
-    public void should_consume_variables(){
+    public void should_consume_variables() {
         var size = new Size(Arrays.asList(new Variable("V")));
-        var model = new TestModel().put("V", new IntegerList(1,2,3));
+        var model = new TestModel().put("V", new IntegerList(1, 2, 3));
 
         var r = size.evaluate(model);
 

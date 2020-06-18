@@ -1,6 +1,14 @@
 package nl.softcause.jsontemplates.expressions;
 
+import static nl.softcause.jsontemplates.types.Types.INTEGER;
+import static nl.softcause.jsontemplates.types.Types.OBJECT;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import lombok.Getter;
 import lombok.Setter;
 import nl.softcause.jsontemplates.model.DefinedModel;
@@ -9,17 +17,10 @@ import nl.softcause.jsontemplates.types.Types;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static nl.softcause.jsontemplates.types.Types.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-
 public class VariableTest {
 
     @Test
-    public void should_return_value_of_model(){
+    public void should_return_value_of_model() {
         var c = new Variable("name");
 
         var r = c.evaluate(new TestModel().put("name", "42"));
@@ -28,35 +29,21 @@ public class VariableTest {
     }
 
     @Test
-    public void should_reject_of_unknown_value(){
+    public void should_reject_of_unknown_value() {
         var c = new Variable("wrong");
 
         try {
             var r = c.evaluate(new TestModel().put("name", "42"));
             fail();
-        } catch (ModelException Me){
+        } catch (ModelException Me) {
             assertThat(Me.getMessage(), is(ModelException.notFound("wrong", TestModel.class).getMessage()));
         }
 
 
     }
 
-
-    public class VariableTestModel{
-        @Getter
-        String name;
-
-        @Getter
-        VariableTestModel nested;
-
-        @Setter
-        int age;
-
-    }
-
-
     @Test
-    public void should_return_type_of_any(){
+    public void should_return_type_of_any() {
         var model = new DefinedModel<>(VariableTestModel.class);
 
         assertThat(new Variable("name").getReturnType(model), is(Types.OPTIONAL_TEXT));
@@ -76,5 +63,17 @@ public class VariableTest {
         Assert.assertThat(obj, is(c));
         Assert.assertThat(obj, isA(Variable.class));
         Assert.assertThat(obj.getName(), is("wrong"));
+    }
+
+    public class VariableTestModel {
+        @Getter
+        String name;
+
+        @Getter
+        VariableTestModel nested;
+
+        @Setter
+        int age;
+
     }
 }

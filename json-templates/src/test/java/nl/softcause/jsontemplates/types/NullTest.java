@@ -1,27 +1,26 @@
 package nl.softcause.jsontemplates.types;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import org.junit.Test;
 
 public class NullTest {
 
     @Test
-    public void should_detect_null_as_null(){
+    public void should_detect_null_as_null() {
         assertThat(Types.NULL.isA(null), is(true));
     }
 
     @Test
-    public void should_reject_object_as_null(){
+    public void should_reject_object_as_null() {
         assertThat(Types.NULL.isA(new Object()), is(false));
     }
 
     @Test
-    public void should_pass_through_null(){
+    public void should_pass_through_null() {
 
         assertThat(Types.OBJECT.convert(null), nullValue());
     }

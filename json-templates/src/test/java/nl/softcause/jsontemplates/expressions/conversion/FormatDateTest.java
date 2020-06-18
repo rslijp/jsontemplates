@@ -1,9 +1,17 @@
 package nl.softcause.jsontemplates.expressions.conversion;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.TimeZone;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
-import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.util.DateFormatterUtils;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
@@ -12,44 +20,30 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.IsoFields;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 public class FormatDateTest {
 
     @Before
-    public void setUp(){
-        DateFormatterUtils.FORCE_DEFAULT_LOCALE= TimeZone.getTimeZone("Europe/Amsterdam");
+    public void setUp() {
+        DateFormatterUtils.FORCE_DEFAULT_LOCALE = TimeZone.getTimeZone("Europe/Amsterdam");
     }
 
     @After
-    public void tearDown(){
-        DateFormatterUtils.FORCE_DEFAULT_LOCALE= null;
+    public void tearDown() {
+        DateFormatterUtils.FORCE_DEFAULT_LOCALE = null;
     }
 
     @Test
-    public void should_format_constant(){
+    public void should_format_constant() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
 
         var formatDate = new FormatDate(Arrays.asList(new Constant(d)));
-        var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var r = formatDate.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("Aug 26, 2019, 8:22:10 AM"));
     }
 
     @Test
-    public void should_format_constant_using_model_locale(){
+    public void should_format_constant_using_model_locale() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
         var formatDate = new FormatDate(Arrays.asList(new Constant(d)));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
@@ -61,18 +55,18 @@ public class FormatDateTest {
     }
 
     @Test
-    public void should_format_constant_with_pattern_short(){
+    public void should_format_constant_with_pattern_short() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("SHORT")));
-        var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("SHORT")));
+        var r = formatDate.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("Aug 26, 2019, 8:22 AM"));
     }
 
     @Test
-    public void should_format_constant_using_model_locale_with_pattern_short(){
+    public void should_format_constant_using_model_locale_with_pattern_short() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("SHORT")));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("SHORT")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
 
@@ -82,18 +76,18 @@ public class FormatDateTest {
     }
 
     @Test
-    public void should_format_constant_with_pattern_medium(){
+    public void should_format_constant_with_pattern_medium() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("MEDIUM")));
-        var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("MEDIUM")));
+        var r = formatDate.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("Aug 26, 2019, 8:22:10 AM"));
     }
 
     @Test
-    public void should_format_constant_using_model_locale_with_pattern_medium(){
+    public void should_format_constant_using_model_locale_with_pattern_medium() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("MEDIUM")));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("MEDIUM")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
 
@@ -103,18 +97,18 @@ public class FormatDateTest {
     }
 
     @Test
-    public void should_format_constant_with_pattern_long(){
+    public void should_format_constant_with_pattern_long() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("LONG")));
-        var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("LONG")));
+        var r = formatDate.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("Aug 26, 2019, 8:22:10 AM CEST"));
     }
 
     @Test
-    public void should_format_constant_using_model_locale_with_pattern_long(){
+    public void should_format_constant_using_model_locale_with_pattern_long() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("LONG")));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("LONG")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
 
@@ -124,18 +118,18 @@ public class FormatDateTest {
     }
 
     @Test
-    public void should_format_constant_with_pattern(){
+    public void should_format_constant_with_pattern() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("dd-MM-yyyy'T'HH:mm:ss")));
-        var r = formatDate.evaluate( new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("dd-MM-yyyy'T'HH:mm:ss")));
+        var r = formatDate.evaluate(new TemplateModel<>(new DefinedModel<>(TestDefinition.class)));
 
         assertThat(r, is("26-08-2019T08:22:10"));
     }
 
     @Test
-    public void should_format_constant_using_model_locale_with_pattern(){
+    public void should_format_constant_using_model_locale_with_pattern() {
         var d = Instant.parse("2019-08-26T06:22:10.533293Z");
-        var formatDate = new FormatDate(Arrays.asList(new Constant(d),new Constant("dd-MMM-yyyy'T'HH:mm:ss")));
+        var formatDate = new FormatDate(Arrays.asList(new Constant(d), new Constant("dd-MMM-yyyy'T'HH:mm:ss")));
         var model = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         model.setLocale(Locale.FRANCE);
 
@@ -146,7 +140,7 @@ public class FormatDateTest {
 
 
     @Test
-    public void should_accept_null(){
+    public void should_accept_null() {
         var formatDate = new FormatDate(Arrays.asList(new Constant(null)));
 
         var r = formatDate.evaluate(null);

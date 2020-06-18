@@ -1,22 +1,21 @@
 package nl.softcause.jsontemplates.expressions.logic;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.TestModel;
 import nl.softcause.jsontemplates.expressions.Variable;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class NotTest {
 
     @Test
-    public void should_apply_boolean_not_to_values_t(){
+    public void should_apply_boolean_not_to_values_t() {
         var not = new Not(Arrays.asList(new Constant(true)));
 
         var r = not.evaluate(null);
@@ -25,7 +24,7 @@ public class NotTest {
     }
 
     @Test
-    public void should_apply_boolean_not_to_values_f(){
+    public void should_apply_boolean_not_to_values_f() {
         var not = new Not(Arrays.asList(new Constant(true)));
 
         var r = not.evaluate(null);
@@ -34,9 +33,8 @@ public class NotTest {
     }
 
 
-
     @Test
-    public void should_consume_variables(){
+    public void should_consume_variables() {
         var not = new Not(Arrays.asList(new Variable("V")));
         var model = new TestModel().put("V", true);
 

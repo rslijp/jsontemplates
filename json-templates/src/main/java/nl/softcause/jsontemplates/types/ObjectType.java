@@ -2,7 +2,8 @@ package nl.softcause.jsontemplates.types;
 
 public class ObjectType implements IExpressionType<Object> {
 
-    ObjectType(){}
+    ObjectType() {
+    }
 
     @Override
     public String getType() {
@@ -25,7 +26,9 @@ public class ObjectType implements IExpressionType<Object> {
     }
 
     @Override
-    public IExpressionType baseType() { return this; }
+    public IExpressionType baseType() {
+        return this;
+    }
 
     @Override
     public String toString() {
