@@ -69,7 +69,7 @@ module.exports = env => {
             }
         },
         plugins: [
-            env === "development" ? new UglifyJsPlugin() : null,  // This plugin will generate an index.ejs file for us that can be used
+            env === "production" ? new UglifyJsPlugin() : null,  // This plugin will generate an index.ejs file for us that can be used
             // by the Webpack dev server. We can give it a template file (written in EJS)
             // and it will handle injecting our bundle for us.
             new HtmlWebpackPlugin({
