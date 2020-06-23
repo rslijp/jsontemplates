@@ -8,9 +8,9 @@ module.exports = env => {
     var config =  {
         // Tell Webpack which file kicks off our app.
         entry: [path.resolve(__dirname, 'src/app.js')],
-        // Tell Weback to output our bundle to ./dist/bundle.js
+        // Tell Webpack to output our bundle to ./dist/jsontemplate.js
         output: {
-            filename: 'bundle.js',
+            filename: 'jsontemplate-bundle.js',
             path: path.resolve(__dirname, 'dist')
         },
         // devtool: 'inline-source-map',
@@ -62,7 +62,7 @@ module.exports = env => {
                 }
             },
             watchOptions: {
-                index: 'index.ejs.html',
+                index: 'workbench.ejs.html',
                 open: true,
                 poll: true,
                 watchContentBase: true
@@ -73,14 +73,14 @@ module.exports = env => {
             // by the Webpack dev server. We can give it a template file (written in EJS)
             // and it will handle injecting our bundle for us.
             new HtmlWebpackPlugin({
-                template: path.resolve(__dirname, 'src/index.ejs'),
+                filename: 'workbench.html',
+                template: path.resolve(__dirname, 'src/workbench.ejs'),
                 inject: true
             }),
-            new CopyWebpackPlugin([
-                {
+            new CopyWebpackPlugin([{
                     from: path.resolve(__dirname, 'content/**/*'),
                     to: '[path]/[name].[ext]'
-                }])
+            }])
         ]
     };
     config.plugins=config.plugins.filter(x => !!x);

@@ -44,6 +44,7 @@ public class RegistryFactory {
         var name = p.getName();
         try {
             var type = Types.determine(p.getPropertyType());
+//            var infusedType = type.infuse(p.getPropertyType());
             var readeable = p.getReadMethod() != null;
             var writerable = p.getWriteMethod() != null;
             if (IGNORED_PROPERTIES.contains(name)) {

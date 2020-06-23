@@ -71,9 +71,13 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <attach>false</attach>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -95,12 +99,10 @@
                                     <includes>
                                         <include>**/*.js</include>
                                         <include>**/*.css</include>
-                                        <include>**/*.html</include>
                                         <include>**/*.jpg</include>
                                         <include>**/*.png</include>
                                         <include>**/*.ico</include>
                                         <include>**/*.svg</include>
-                                        <exclude>index.html</exclude>
                                     </includes>
                                 </resource>
                             </resources>
@@ -119,7 +121,7 @@
                                 <resource>
                                     <directory>${basedir}/../reference-api-frontend/dist</directory>
                                     <includes>
-                                        <include>index.html</include>
+                                        <include>workbench.html</include>
                                     </includes>
                                 </resource>
                             </resources>

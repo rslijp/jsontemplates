@@ -39,6 +39,12 @@ public class GenericType implements IExpressionType<Object> {
         return this;
     }
 
+
+    @Override
+    public IExpressionType<Object> infuse(Class<?> src) {
+        return this;
+    }
+
     @Override
     public String toString() {
         return getType();

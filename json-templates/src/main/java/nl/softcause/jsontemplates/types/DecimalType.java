@@ -50,6 +50,11 @@ public class DecimalType implements IExpressionType<Double> {
     }
 
     @Override
+    public IExpressionType<Double> infuse(Class<?> src) {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

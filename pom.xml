@@ -39,6 +39,7 @@
             </activation>
             <modules>
                 <module>json-templates</module>
+                <module>reference-api-frontend</module>
                 <module>reference-api</module>
             </modules>
         </profile>

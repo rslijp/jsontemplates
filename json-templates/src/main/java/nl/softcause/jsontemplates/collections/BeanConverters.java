@@ -43,4 +43,8 @@ public class BeanConverters {
             }
         };
     }
+
+    public static void buildAndRegister(Supplier<Object> create, Class elementType, Class targetClass) {
+        ConvertUtils.register(build(create,elementType), targetClass);
+    }
 }

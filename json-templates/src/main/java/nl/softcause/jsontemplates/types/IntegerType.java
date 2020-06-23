@@ -41,6 +41,11 @@ public class IntegerType implements IExpressionType<Long> {
     }
 
     @Override
+    public IExpressionType<Long> infuse(Class<?> src) {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

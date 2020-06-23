@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <artifactId>reference-api</artifactId>
+    <artifactId>reference-api-frontend</artifactId>
     <version>0.1.0-alpha</version>
 
     <parent>
@@ -66,7 +66,7 @@
                 <configuration>
                     <basedir>${basedir}</basedir>
                     <includes>
-                        <include>dist/index.html</include>
+                        <include>dist/workbench.html</include>
                         <include>dist/404.html</include>
                         <include>dist/50x.html</include>
                     </includes>

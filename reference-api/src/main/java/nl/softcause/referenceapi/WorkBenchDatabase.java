@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
 public class WorkBenchDatabase {
     private static final Logger logger = LoggerFactory.getLogger(WorkBenchDatabase.class);
     private Map<String, DatabaseEntry> DATABASE = new ConcurrentHashMap<>();

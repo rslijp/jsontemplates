@@ -6,13 +6,19 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import nl.softcause.jsontemplates.collections.BeanConverters;
 import nl.softcause.jsontemplates.collections.IntegerList;
 import nl.softcause.jsontemplates.collections.IntegerMap;
 import nl.softcause.jsontemplates.collections.StringList;
 import nl.softcause.jsontemplates.types.Types;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.Test;
 
 public class DefinedModelTest {
+
+    static {
+        BeanConverters.buildAndRegister(TestDefintionWithEnum.ListTestNum::new, TestEnum.class, TestDefintionWithEnum.ListTestNum.class);
+    }
 
     @Test
     public void Should_retrieve_generic_type() {
@@ -847,4 +853,89 @@ public class DefinedModelTest {
         assertThat(td.getMoreMagic().get("homer"), nullValue());
     }
 
+    @Test
+    public void Should_handle_enum() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+        var td = new TestDefintionWithEnum();
+        td.setName("bla");
+        td.setValue(TestEnum.FIRST);
+        model.load(td);
+
+        model.set("value",TestEnum.SECOND);
+        assertThat(td.getValue(), is(TestEnum.SECOND));
+
+    }
+
+    @Test
+    public void Should_handle_enum_convert_from_string() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+        var td = new TestDefintionWithEnum();
+        td.setName("bla");
+        td.setValue(TestEnum.FIRST);
+        model.load(td);
+
+        model.set("value",TestEnum.SECOND.name());
+        assertThat(td.getValue(), is(TestEnum.SECOND));
+
+    }
+
+
+
+    @Test
+    public void Should_describe_enum() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+
+        var definition = model.getDefinition("value");
+
+        assertThat(definition.getType(), is(Types.OPTIONAL_ENUM));
+        assertThat(definition.getName(), is("value"));
+
+    }
+
+    @Test
+    public void Should_describe_enum_array() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+
+        var definition = model.getDefinition("valueArray");
+
+        assertThat(definition.getType(), is(Types.LIST_ENUM));
+        assertThat(definition.getName(), is("valueArray"));
+    }
+
+
+    @Test
+    public void Should_describe_enum_list() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+
+        var definition = model.getDefinition("values");
+
+        assertThat(definition.getType(), is(Types.LIST_ENUM));
+        assertThat(definition.getName(), is("values"));
+    }
+
+    @Test
+    public void Should_set_EnumList_value_with_cast() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+        var td = new TestDefintionWithEnum();
+        model.load(td);
+
+        model.set("values", new String[] {"FIRST","SECOND"});
+
+        assertThat(td.getValues().size(), is(2));
+        assertThat(td.getValues().get(0), is(TestEnum.FIRST));
+        assertThat(td.getValues().get(1), is(TestEnum.SECOND));
+    }
+
+    @Test
+    public void Should_set_EnumList_value_with_cast_on_index() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+        var td = new TestDefintionWithEnum();
+        td.setValues(new TestDefintionWithEnum.ListTestNum(TestEnum.SECOND));
+        model.load(td);
+
+        model.set("values[0]", TestEnum.FIRST);
+
+        assertThat(td.getValues().size(), is(1));
+        assertThat(td.getValues().get(0), is(TestEnum.FIRST));
+    }
 }

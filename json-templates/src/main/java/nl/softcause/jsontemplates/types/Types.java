@@ -22,12 +22,14 @@ public class Types {
     private static final IExpressionType<Long> _INTEGER = new IntegerType();
     private static final IExpressionType<Double> _DECIMAL = new DecimalType();
     private static final IExpressionType<String> _TEXT = new TextType();
+    private static final IExpressionType<Enum> _ENUM = new TextEnumType();
     private static final IExpressionType<Instant> _DATETIME = new DateTimeType();
 
     public static final IExpressionType<Boolean> OPTIONAL_BOOLEAN = add(new Optional<>(_BOOLEAN));
     public static final IExpressionType<Long> OPTIONAL_INTEGER = add(new Optional<>(_INTEGER));
     public static final IExpressionType<Double> OPTIONAL_DECIMAL = add(new Optional<>(_DECIMAL));
     public static final IExpressionType<String> OPTIONAL_TEXT = add(new Optional<>(_TEXT));
+    public static final IExpressionType<Enum> OPTIONAL_ENUM = add(new Optional<>(_ENUM));
     public static final IExpressionType<Instant> OPTIONAL_DATETIME = add(new Optional<>(_DATETIME));
 
     public static final IExpressionType<Boolean> BOOLEAN = add(_BOOLEAN);
@@ -35,18 +37,21 @@ public class Types {
     public static final IExpressionType<Double> DECIMAL = add(_DECIMAL);
     public static final IExpressionType<String> TEXT = add(_TEXT);
     public static final IExpressionType<Instant> DATETIME = add(_DATETIME);
+    public static final IExpressionType<Enum> ENUM = add(_ENUM);
 
     public static final IExpressionType<List<Boolean>> LIST_BOOLEAN = add(new ListOf<>(BOOLEAN));
     public static final IExpressionType<List<Long>> LIST_INTEGER = add(new ListOf<>(INTEGER));
     public static final IExpressionType<List<Double>> LIST_DECIMAL = add(new ListOf<>(DECIMAL));
     public static final IExpressionType<List<String>> LIST_TEXT = add(new ListOf<>(TEXT));
     public static final IExpressionType<List<Instant>> LIST_DATETIME = add(new ListOf<>(DATETIME));
+    public static final IExpressionType<List<Enum>> LIST_ENUM = add(new ListOf<>(ENUM));
 
     public static final IExpressionType<Map<String, Boolean>> MAP_BOOLEAN = add(new MapOf<>(BOOLEAN));
     public static final IExpressionType<Map<String, Long>> MAP_INTEGER = add(new MapOf<>(INTEGER));
     public static final IExpressionType<Map<String, Double>> MAP_DECIMAL = add(new MapOf<>(DECIMAL));
     public static final IExpressionType<Map<String, String>> MAP_TEXT = add(new MapOf<>(TEXT));
     public static final IExpressionType<Map<String, Instant>> MAP_DATETIME = add(new MapOf<>(DATETIME));
+    public static final IExpressionType<Map<String, Enum>> MAP_ENUM = add(new MapOf<>(ENUM));
 
 
     public static final IExpressionType<Object> NULL = add(new NullType());
@@ -88,7 +93,7 @@ public class Types {
     //Optional types are not auto guessed
 
     public static IExpressionType determineConstant(Object src) {
-        return Arrays.stream(types).
+        return  Arrays.stream(types).
                 filter(c -> c.isA(src)).
                 findFirst().
                 get();
@@ -145,6 +150,9 @@ public class Types {
     public static boolean typesMatch(IExpressionType target, IExpressionType candidate) {
         if (target.equals(candidate)) {
             return true;
+        }
+        if(target.equals(Types.DECIMAL)){
+            throw new RuntimeException("To do");
         }
         if (target.equals(Types.DECIMAL) && candidate.equals(Types.INTEGER)) {
             return true;

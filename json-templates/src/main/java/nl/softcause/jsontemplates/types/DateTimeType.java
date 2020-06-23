@@ -54,6 +54,11 @@ public class DateTimeType implements IExpressionType<Instant> {
     }
 
     @Override
+    public IExpressionType<Instant> infuse(Class<?> src) {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

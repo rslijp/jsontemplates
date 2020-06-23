@@ -16,4 +16,6 @@ public interface IExpressionType<T> {
     T convert(Object src);
 
     IExpressionType baseType();
+
+    IExpressionType<T> infuse(Class<?> src);
 }

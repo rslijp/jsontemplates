@@ -37,6 +37,12 @@ public class TextType implements IExpressionType<String> {
         return this;
     }
 
+
+    @Override
+    public IExpressionType<String> infuse(Class<?> src) {
+        return this;
+    }
+
     @Override
     public String toString() {
         return getType();

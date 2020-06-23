@@ -73,9 +73,7 @@ public class MapOf<T> implements IExpressionType<Map<String, T>> {
         var yield = new TypedHashMap<T>(elementOf(src));
         if (src instanceof Map) {
             var iter = (Map) src;
-            iter.forEach((key, value) -> {
-                yield.put((String) key, baseType.convert(value));
-            });
+            iter.forEach((key, value) -> yield.put((String) key, baseType.convert(value)));
         }
         return yield;
     }
@@ -83,6 +81,11 @@ public class MapOf<T> implements IExpressionType<Map<String, T>> {
     @Override
     public IExpressionType baseType() {
         return baseType == Types.OBJECT ? baseType : Types.byName(Optional.name(baseType));
+    }
+
+    @Override
+    public IExpressionType<Map<String, T>> infuse(Class<?> src) {
+        return new MapOf<>(baseType.infuse(src));
     }
 
     @Override

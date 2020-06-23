@@ -52,6 +52,11 @@ public class Optional<T> implements IExpressionType<T> {
     }
 
     @Override
+    public IExpressionType<T> infuse(Class<?> src) {
+        return new Optional<>(baseType.infuse(src));
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

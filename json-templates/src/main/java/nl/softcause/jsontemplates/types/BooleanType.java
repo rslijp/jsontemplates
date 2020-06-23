@@ -37,6 +37,11 @@ public class BooleanType implements IExpressionType<java.lang.Boolean> {
     }
 
     @Override
+    public IExpressionType<Boolean> infuse(Class<?> src) {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

@@ -31,6 +31,11 @@ public class ObjectType implements IExpressionType<Object> {
     }
 
     @Override
+    public IExpressionType<Object> infuse(Class<?> src) {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return getType();
     }

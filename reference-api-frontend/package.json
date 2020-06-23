@@ -1,5 +1,5 @@
 {
-  "name": "JsonTemplate editor",
+  "name": "JsonTemplateEditor",
   "version": "0.1.0",
   "description": "Drag and drop jsontemplate editor",
   "repository": {
@@ -14,13 +14,7 @@
     "eslint-fix": "node node_modules/eslint/bin/eslint.js  --fix src/**/*.js",
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""
   },
-  "keywords": [
-    "rest",
-    "hateoas",
-    "spring",
-    "data",
-    "react"
-  ],
+  "keywords": ["templating"],
   "author": "R.Z. Slijp",
   "license": "Apache-2.0",
   "bugs": {

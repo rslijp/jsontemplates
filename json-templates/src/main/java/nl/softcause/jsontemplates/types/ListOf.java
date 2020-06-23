@@ -94,6 +94,8 @@ public class ListOf<T> implements IExpressionType<List<T>> {
     private void addElement(TypedArrayList yield, Object arrayElement) {
         if (baseType == Types.GENERIC) {
             yield.add(Types.determineConstant(arrayElement).convert(arrayElement));
+        } else  if (baseType.getType().equals(Types.ENUM.getType())) {
+            yield.add(baseType.convert(arrayElement));
         } else {
             var optionalType = Types.byName(Optional.name(baseType));
             yield.add(optionalType.convert(arrayElement));
@@ -104,6 +106,11 @@ public class ListOf<T> implements IExpressionType<List<T>> {
     public IExpressionType baseType() {
         return (baseType == Types.OBJECT || baseType == Types.GENERIC) ? baseType :
                 Types.byName(Optional.name(baseType));
+    }
+
+    @Override
+    public IExpressionType<List<T>> infuse(Class<?> src) {
+        return new ListOf<>(baseType.infuse(elementClass(src)));
     }
 
     @Override

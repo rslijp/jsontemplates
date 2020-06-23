@@ -120,10 +120,11 @@ public class DefinitionRegistry {
     }
 
     private Object convert(Object value, IExpressionType type, Class propertyType) {
+        var infusedType = type.infuse(propertyType); //to handle type safe enums
         Object converted = value;
         try {
-            if (value != null && propertyType != value.getClass() && type.isA(value)) {
-                converted = type.convert(value);
+            if (value != null && propertyType != value.getClass() && infusedType.isA(value)) {
+                converted = infusedType.convert(value);
             }
         } catch (TypeException Te) {
             //jammer dit...ff naar kijken.

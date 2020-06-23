@@ -1,15 +1,11 @@
 package nl.softcause.referenceapi;
 
-
 import nl.softcause.dto.TemplateAndDescriptionDTO;
 import nl.softcause.dto.TemplateDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(path = "/workbench-api")
 public class NodeController {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeController.class);
@@ -22,7 +18,8 @@ public class NodeController {
 
 
     @GetMapping(path = "/{token}")
-    public @ResponseBody TemplateAndDescriptionDTO describe(@PathVariable String token){
+    public @ResponseBody
+    TemplateAndDescriptionDTO describe(@PathVariable String token){
         logger.info("Download template ["+token+"]");
         return database.getFullDto(token);
     }
