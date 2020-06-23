@@ -30,11 +30,11 @@ public class ScopeModelTest {
     public void should_return_definition_for_known_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
         //Case
         var def = model.getDefinition("known");
 
-        assertThat(def, is(new DefinitionRegistryEntry("known", Types.INTEGER, null, true, true)));
+        assertThat(def, is(new DefinitionRegistryEntry("known", Types.INTEGER, null, true, true, null)));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ScopeModelTest {
     public void should_return_null_for_retrieving_known_not_set_optional_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, true, null);
+        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, true, null, null);
 
         //Case
         var value = model.get("known");
@@ -73,7 +73,7 @@ public class ScopeModelTest {
 
         //Case
         try {
-            model.addDefintion("known", Types.INTEGER, null, true, true, null);
+            model.addDefintion("known", Types.INTEGER, null, true, true, null, null);
             fail();
         } catch (ScopeException Te) {
             //Then
@@ -86,7 +86,7 @@ public class ScopeModelTest {
     public void should_return_null_for_known_set_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, true, null);
+        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, true, null, null);
         model.set("known", 42);
 
         //Case
@@ -115,7 +115,7 @@ public class ScopeModelTest {
     public void should_return_error_for_non_writable_error() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, false, null);
+        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, true, false, null, null);
 
         //Case
         try {
@@ -131,7 +131,7 @@ public class ScopeModelTest {
     public void should_return_error_for_non_readable_error() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, false, true, null);
+        model.addDefintion("known", Types.OPTIONAL_INTEGER, null, false, true, null, null);
 
         //Case
         try {
@@ -147,7 +147,7 @@ public class ScopeModelTest {
     public void should_throw_an_error_for_setting_non_optional_value_to_null() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
 
         //Case
         try {
@@ -163,11 +163,11 @@ public class ScopeModelTest {
     public void should_report_double_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
 
         //Case
         try {
-            model.addDefintion("known", Types.TEXT, null, true, true, 0);
+            model.addDefintion("known", Types.TEXT, null, true, true, 0, null);
             fail();
         } catch (ScopeException Se) {
             //Then
@@ -179,10 +179,10 @@ public class ScopeModelTest {
     public void should_not_report_identical_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
 
         //When
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
 
         assertThat(model.hasDefinition("known"), is(true));
     }
@@ -191,7 +191,7 @@ public class ScopeModelTest {
     public void should_report_revoke_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
         model.getDefinition("known");
 
         //when
@@ -231,7 +231,7 @@ public class ScopeModelTest {
         //Case
         try {
             model.addDefintion("me.age", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true,
-                    null);
+                    null, null);
 
             fail();
         } catch (ScopeException Se) {
@@ -260,32 +260,32 @@ public class ScopeModelTest {
     public void should_return_nested_definition_for_known_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
 
         //Case
         var def = model.getDefinition("known.magicNumbers");
 
-        assertThat(def, is(new DefinitionRegistryEntry("magicNumbers", Types.LIST_INTEGER, null, true, true)));
+        assertThat(def, is(new DefinitionRegistryEntry("magicNumbers", Types.LIST_INTEGER, null, true, true, null)));
     }
 
     @Test
     public void should_return_deep_nested_definition_for_known_entry() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
 
         //Case
         var def = model.getDefinition("known.nested.name");
 
         //Then
-        assertThat(def, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(def, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
     }
 
     @Test
     public void should_not_allow_nesting_of_primitives() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
 
         //Case
         try {
@@ -302,7 +302,7 @@ public class ScopeModelTest {
     public void should_return_nested_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         td.setMentalAge(42);
         model.set("known", td);
@@ -317,7 +317,7 @@ public class ScopeModelTest {
     public void should_return_deep_nested_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         td.setMentalAge(42);
         var tnd = new TestNestedDefinition();
@@ -335,7 +335,7 @@ public class ScopeModelTest {
     public void should_return_deep_nested_value_with_indexer() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         td.setMentalAge(42);
         var tnd = new TestNestedDefinition();
@@ -353,7 +353,7 @@ public class ScopeModelTest {
     public void should_return_report_error_on_null() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         model.set("known", td);
         //Case
@@ -372,7 +372,7 @@ public class ScopeModelTest {
     public void should_return_report_error_on_non_object() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.INTEGER, null, true, true, 0);
+        model.addDefintion("known", Types.INTEGER, null, true, true, 0, null);
         model.set("known", 42);
         //Case
         try {
@@ -389,7 +389,7 @@ public class ScopeModelTest {
     public void should_set_nested_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         model.set("known", td);
 
@@ -404,7 +404,7 @@ public class ScopeModelTest {
     public void should_set_deep_nested_value() {
         //Given
         var model = new ScopeModel(null);
-        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null);
+        model.addDefintion("known", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, null, null);
         var td = new TestDefinition();
         td.setMentalAge(42);
         var tnd = new TestNestedDefinition();
@@ -423,7 +423,7 @@ public class ScopeModelTest {
         var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
 
         modelDefintion
-                .addDefinition("rhs", Types.INTEGER, RegistryFactory.register(TestDefinition.class), true, true, 42);
+                .addDefinition("rhs", Types.INTEGER, RegistryFactory.register(TestDefinition.class), true, true, 42, null);
 
         assertThat(modelDefintion.get("scope.rhs"), is(42L));
 
@@ -434,7 +434,7 @@ public class ScopeModelTest {
         var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
 
         try {
-            modelDefintion.addDefinition("rhs", Types.TEXT, null, true, true, 42);
+            modelDefintion.addDefinition("rhs", Types.TEXT, null, true, true, 42, null);
             fail();
         } catch (ScopeException Se) {
             assertThat(Se.getMessage(),
@@ -448,7 +448,7 @@ public class ScopeModelTest {
         var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
         var td = new TestDefinition();
         modelDefintion
-                .addDefinition("rhs", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, td);
+                .addDefinition("rhs", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, td, null);
 
         assertThat(modelDefintion.get("scope.rhs"), is(td));
     }
@@ -460,7 +460,7 @@ public class ScopeModelTest {
 
         try {
             modelDefintion
-                    .addDefinition("rhs", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, td);
+                    .addDefinition("rhs", Types.OBJECT, RegistryFactory.register(TestDefinition.class), true, true, td, null);
             fail();
         } catch (ScopeException Se) {
             assertThat(Se.getMessage(),

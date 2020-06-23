@@ -12,6 +12,7 @@ import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.NodeScopeChange;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
+import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
 
 @Data
@@ -63,11 +64,18 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
         try {
             var writable = field.canAccess(instance);
             field.setAccessible(true);
-            return new NodeScopeChange(fieldName, Types.determine(fieldType), writable, field.get(instance));
+            return new NodeScopeChange(fieldName, Types.determine(fieldType), writable, field.get(instance), determineAllowedValues(field));
         } catch (IllegalAccessException IAe) {
             throw ReflectionBasedNodeException.illegalGetAccessOfScopeField(scopeModel, fieldName);
         }
 
+    }
+
+    protected Object[] determineAllowedValues(Field field){
+        if(field.getType().isEnum()){
+            return TextEnumType.getEnumValues(field.getType()).toArray();
+        }
+        return null;
     }
 
 

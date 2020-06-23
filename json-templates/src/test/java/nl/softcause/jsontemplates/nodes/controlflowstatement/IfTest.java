@@ -112,7 +112,7 @@ public class IfTest {
         );
 
         var model = new TemplateModel<>(new TestDefinition());
-        model.scope().addDefintion("test", Types.BOOLEAN, null, true, false, true);
+        model.scope().addDefintion("test", Types.BOOLEAN, null, true, false, true, null);
         ifNode.evaluate(model);
 
         assertThat(thenAssertionNode.isCalled(), is(true));

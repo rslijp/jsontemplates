@@ -44,8 +44,8 @@ public class DefinitionRegistry {
     }
 
     void addDefintion(String name, IExpressionType type, DefinitionRegistry nested, boolean readeable,
-                      boolean writerable) {
-        model.put(name, new DefinitionRegistryEntry(name, type, nested, readeable, writerable));
+                      boolean writerable, Object[] allowedValues) {
+        model.put(name, new DefinitionRegistryEntry(name, type, nested, readeable, writerable, allowedValues));
     }
 
     DefinitionRegistryEntry getDefinition(String name) {

@@ -151,9 +151,6 @@ public class Types {
         if (target.equals(candidate)) {
             return true;
         }
-        if(target.equals(Types.DECIMAL)){
-            throw new RuntimeException("To do");
-        }
         if (target.equals(Types.DECIMAL) && candidate.equals(Types.INTEGER)) {
             return true;
         }

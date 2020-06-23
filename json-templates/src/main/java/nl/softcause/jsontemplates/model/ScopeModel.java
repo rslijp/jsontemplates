@@ -32,14 +32,14 @@ public class ScopeModel implements IModel {
 
     public void addNodeScopeChange(NodeScopeChange change) {
         this.addDefintion(change.getName(), change.getType(), null, true, change.isWritable(),
-                change.getDefaultValue());
+                change.getDefaultValue(), change.getAllowedValues());
     }
 
     public void addDefintion(@NonNull String name, @NonNull IExpressionType type, DefinitionRegistry nested,
-                             boolean readable, boolean writable, Object defaultValue) {
+                             boolean readable, boolean writable, Object defaultValue, Object[] allowedValue) {
         guardNesting(name);
         var defaultType = Types.determineConstant(defaultValue);
-        var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable);
+        var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable,allowedValue);
         if (definitions.containsKey(name) && !definitions.get(name).equals(newDefinition)) {
             throw ScopeException.alreadyDefined(name);
         }
@@ -53,7 +53,7 @@ public class ScopeModel implements IModel {
 
             }
         }
-        definitions.put(name, new DefinitionRegistryEntry(name, type, nested, readable, writable));
+        definitions.put(name, newDefinition);
         values.put(name, type.convert(defaultValue));
     }
 

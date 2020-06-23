@@ -11,6 +11,8 @@ public class NodeScopeChange {
     private boolean writable;
     @JsonIgnore
     private Object defaultValue;
+    @JsonIgnore
+    private Object[] allowedValues;
 
 
 }

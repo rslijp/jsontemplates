@@ -74,8 +74,8 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
 
     public void addDefinition(String name, IExpressionType type, DefinitionRegistry nested, boolean readeable,
-                              boolean writerable, Object defaultValue) {
-        scopes.peek().addDefintion(name, type, nested, readeable, writerable, defaultValue);
+                              boolean writerable, Object defaultValue, Object[] allowedValues) {
+        scopes.peek().addDefintion(name, type, nested, readeable, writerable, defaultValue, allowedValues);
     }
 
     public void dropDefintion(String name) {

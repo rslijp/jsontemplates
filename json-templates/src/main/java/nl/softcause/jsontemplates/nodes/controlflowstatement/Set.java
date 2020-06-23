@@ -37,7 +37,7 @@ public class Set extends ReflectionBasedNodeImpl {
         var path = Types.TEXT.convert(getArguments().get("path").evaluate(null));
         getArgumentsTypes().put("value", new ArgumentDefinition(type, null));
         if (path.startsWith("scope.")) {
-            model.addDefinition(path.substring("scope.".length()), type, null, true, true, null);
+            model.addDefinition(path.substring("scope.".length()), type, null, true, true, null, null);
         }
     }
 

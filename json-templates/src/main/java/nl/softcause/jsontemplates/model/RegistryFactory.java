@@ -1,11 +1,13 @@
 package nl.softcause.jsontemplates.model;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.TypeException;
 import nl.softcause.jsontemplates.types.Types;
 import nl.softcause.jsontemplates.utils.BeanUtilsExtensions;
@@ -44,7 +46,7 @@ public class RegistryFactory {
         var name = p.getName();
         try {
             var type = Types.determine(p.getPropertyType());
-//            var infusedType = type.infuse(p.getPropertyType());
+            var infusedType = type.infuse(p.getPropertyType());
             var readeable = p.getReadMethod() != null;
             var writerable = p.getWriteMethod() != null;
             if (IGNORED_PROPERTIES.contains(name)) {
@@ -54,9 +56,16 @@ public class RegistryFactory {
             if (type.baseType().equals(Types.OBJECT)) {
                 nested = register(BeanUtilsExtensions.resolveClass(p.getPropertyType(), true));
             }
-            model.addDefintion(name, type, nested, readeable, writerable);
+            model.addDefintion(name, infusedType, nested, readeable, writerable,determineAllowedValues(p));
         } catch (TypeException ex) {
             throw TypeException.onProperty(ex, modelType, name);
         }
+    }
+
+    private static Object[] determineAllowedValues(PropertyDescriptor p){
+        if(p.getPropertyType().isEnum()){
+            return TextEnumType.getEnumValues(p.getPropertyType()).toArray();
+        }
+        return null;
     }
 }

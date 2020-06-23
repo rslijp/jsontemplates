@@ -6,10 +6,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import java.util.List;
 import nl.softcause.jsontemplates.collections.BeanConverters;
 import nl.softcause.jsontemplates.collections.IntegerList;
 import nl.softcause.jsontemplates.collections.IntegerMap;
 import nl.softcause.jsontemplates.collections.StringList;
+import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.Test;
@@ -35,7 +37,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("name");
 
-        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
     }
 
     @Test
@@ -44,7 +46,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("nameGet");
 
-        assertThat(d, is(new DefinitionRegistryEntry("nameGet", Types.OPTIONAL_TEXT, null, true, false)));
+        assertThat(d, is(new DefinitionRegistryEntry("nameGet", Types.OPTIONAL_TEXT, null, true, false, null)));
     }
 
 
@@ -54,7 +56,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("nameSet");
 
-        assertThat(d, is(new DefinitionRegistryEntry("nameSet", Types.OPTIONAL_TEXT, null, false, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("nameSet", Types.OPTIONAL_TEXT, null, false, true, null)));
     }
 
 
@@ -64,7 +66,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("age");
 
-        assertThat(d, is(new DefinitionRegistryEntry("age", Types.INTEGER, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("age", Types.INTEGER, null, true, true, null)));
     }
 
 
@@ -74,7 +76,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("mentalAge");
 
-        assertThat(d, is(new DefinitionRegistryEntry("mentalAge", Types.OPTIONAL_INTEGER, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("mentalAge", Types.OPTIONAL_INTEGER, null, true, true, null)));
     }
 
 
@@ -84,7 +86,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("magicNumbers");
 
-        assertThat(d, is(new DefinitionRegistryEntry("magicNumbers", Types.LIST_INTEGER, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("magicNumbers", Types.LIST_INTEGER, null, true, true, null)));
     }
 
 
@@ -94,7 +96,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("titles");
 
-        assertThat(d, is(new DefinitionRegistryEntry("titles", Types.LIST_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("titles", Types.LIST_TEXT, null, true, true, null)));
     }
 
     @Test
@@ -103,7 +105,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("certificates");
 
-        assertThat(d, is(new DefinitionRegistryEntry("certificates", Types.LIST_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("certificates", Types.LIST_TEXT, null, true, true, null)));
     }
 
     @Test
@@ -113,7 +115,7 @@ public class DefinedModelTest {
         var d = model.getDefinition("nested");
 
         assertThat(d, is(new DefinitionRegistryEntry("nested", Types.OBJECT,
-                RegistryFactory.register(TestNestedDefinition.class), true, true)));
+                RegistryFactory.register(TestNestedDefinition.class), true, true, null)));
     }
 
 
@@ -124,7 +126,7 @@ public class DefinedModelTest {
         var d = model.getDefinition("other");
 
         assertThat(d, is(new DefinitionRegistryEntry("other", Types.LIST_OBJECT,
-                RegistryFactory.register(TestNestedDefinition.class), true, true)));
+                RegistryFactory.register(TestNestedDefinition.class), true, true, null)));
     }
 
     @Test
@@ -133,7 +135,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("name");
 
-        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
     }
 
     @Test
@@ -142,7 +144,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("name");
 
-        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
     }
 
     @Test
@@ -151,7 +153,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("nested.name");
 
-        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
 
     }
 
@@ -162,7 +164,7 @@ public class DefinedModelTest {
         var d = model.getDefinition("nested");
 
         assertThat(d, is(new DefinitionRegistryEntry("nested", Types.OBJECT,
-                RegistryFactory.register(RecursiveNestedDefinition.class), true, true)));
+                RegistryFactory.register(RecursiveNestedDefinition.class), true, true, null)));
     }
 
     @Test
@@ -172,7 +174,7 @@ public class DefinedModelTest {
         var d = model.getDefinition("map");
 
         assertThat(d, is(new DefinitionRegistryEntry("map", Types.MAP_OBJECT,
-                RegistryFactory.register(TestNestedDefinition.class), true, true)));
+                RegistryFactory.register(TestNestedDefinition.class), true, true, null)));
     }
 
     @Test
@@ -181,7 +183,7 @@ public class DefinedModelTest {
 
         var d = model.getDefinition("map.name");
 
-        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true)));
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, true, null)));
 
     }
 
@@ -889,6 +891,7 @@ public class DefinedModelTest {
 
         assertThat(definition.getType(), is(Types.OPTIONAL_ENUM));
         assertThat(definition.getName(), is("value"));
+        assertThat(definition.getAllowedValues(), is(new String[]{TestEnum.FIRST.name(), TestEnum.SECOND.name()}));
 
     }
 

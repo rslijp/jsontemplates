@@ -13,7 +13,7 @@ public class TestModel implements IModel {
 
     @Override
     public DefinitionRegistryEntry getDefinition(String name) {
-        return new DefinitionRegistryEntry(name, Types.determineConstant(get(name)), null, true, true);
+        return new DefinitionRegistryEntry(name, Types.determineConstant(get(name)), null, true, true, null);
     }
 
     @Override

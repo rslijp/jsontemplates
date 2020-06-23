@@ -11,6 +11,7 @@ public class DefinitionRegistryEntry {
     private DefinitionRegistry nested;
     private boolean readable;
     private boolean writable;
+    private Object[] allowedValues;
 
     public IExpressionType getDecoratedType() {
         if (nested != null) {

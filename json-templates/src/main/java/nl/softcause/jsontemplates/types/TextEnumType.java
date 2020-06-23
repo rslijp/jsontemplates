@@ -38,7 +38,7 @@ public class TextEnumType implements IExpressionType<Enum> {
     }
 
     @SneakyThrows
-    private static List<String> getEnumValues(Class<?> enumClass) {
+    public static List<String> getEnumValues(Class<?> enumClass) {
         Field f = enumClass.getDeclaredField("$VALUES");
         f.setAccessible(true);
         var o = (Object[]) f.get(null);
@@ -86,5 +86,8 @@ public class TextEnumType implements IExpressionType<Enum> {
         return getType();
     }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof TextEnumType;
+    }
 }

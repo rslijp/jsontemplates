@@ -13,5 +13,5 @@ public interface ITemplateModelDefinition extends IModelDefinition {
     ScopeModel scope();
 
     void addDefinition(String name, IExpressionType type, DefinitionRegistry nested, boolean readeable,
-                       boolean writerable, Object defaultValue);
+                       boolean writerable, Object defaultValue, Object[] allowedValues);
 }

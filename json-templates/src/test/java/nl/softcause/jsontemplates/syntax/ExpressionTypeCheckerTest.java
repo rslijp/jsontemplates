@@ -454,8 +454,8 @@ public class ExpressionTypeCheckerTest {
             add.setArguments(Arrays.asList(lhs, rhs));
 
             var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0);
-            modelDefintion.addDefinition("rhs", Types.INTEGER, null, true, true, 0);
+            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0, null);
+            modelDefintion.addDefinition("rhs", Types.INTEGER, null, true, true, 0, null);
 
             new ExpressionTypeChecker(modelDefintion).checkTypes(add);
         } catch (TypeCheckException TCe) {
@@ -472,8 +472,8 @@ public class ExpressionTypeCheckerTest {
             add.setArguments(Arrays.asList(lhs, rhs));
 
             var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0);
-            modelDefintion.addDefinition("rhs", Types.INTEGER, null, true, true, 0);
+            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0, null);
+            modelDefintion.addDefinition("rhs", Types.INTEGER, null, true, true, 0, null);
             modelDefintion.pushScope(null);
 
             new ExpressionTypeChecker(modelDefintion).checkTypes(add);
@@ -492,8 +492,8 @@ public class ExpressionTypeCheckerTest {
             add.setArguments(Arrays.asList(lhs, rhs));
 
             var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-            modelDefintion.addDefinition("lhs", Types.DECIMAL, null, true, true, 0);
-            modelDefintion.addDefinition("rhs", Types.TEXT, null, true, true, "a");
+            modelDefintion.addDefinition("lhs", Types.DECIMAL, null, true, true, 0, null);
+            modelDefintion.addDefinition("rhs", Types.TEXT, null, true, true, "a", null);
 
             new ExpressionTypeChecker(modelDefintion).checkTypes(add);
             fail();
@@ -512,7 +512,7 @@ public class ExpressionTypeCheckerTest {
             add.setArguments(Arrays.asList(lhs, rhs));
 
             var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0);
+            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0, null);
             modelDefintion.pushScope(null);
 
             new ExpressionTypeChecker(modelDefintion).checkTypes(add);
@@ -530,7 +530,7 @@ public class ExpressionTypeCheckerTest {
         ternary.getArguments().addAll(Arrays.asList(condition, lhs, rhs));
 
         var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-        modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0);
+        modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0, null);
         modelDefintion.pushScope(null);
 
         assertThat(new ExpressionTypeChecker(modelDefintion).cachedDetermineReturnType(ternary), is(Types.TEXT));
@@ -546,7 +546,7 @@ public class ExpressionTypeCheckerTest {
             ternary.getArguments().addAll(Arrays.asList(condition, lhs, rhs));
 
             var modelDefintion = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0);
+            modelDefintion.addDefinition("lhs", Types.INTEGER, null, true, true, 0, null);
             modelDefintion.pushScope(null);
 
             new ExpressionTypeChecker(modelDefintion).checkTypes(ternary);
