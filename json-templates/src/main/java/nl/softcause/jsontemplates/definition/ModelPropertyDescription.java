@@ -7,11 +7,12 @@ import nl.softcause.jsontemplates.types.IExpressionType;
 class ModelPropertyDescription {
 
 
-    ModelPropertyDescription(String name, IExpressionType type, boolean readable, boolean writable) {
+    ModelPropertyDescription(String name, IExpressionType type, boolean readable, boolean writable,Object[] allowedValues) {
         this.name = name;
         this.type = type.getType();
         this.readable = readable;
         this.writable = writable;
+        this.allowedValues = allowedValues;
     }
 
     private String name;
@@ -19,6 +20,7 @@ class ModelPropertyDescription {
     private final boolean writable;
     private final boolean readable;
     private Integer modelReference;
+    private Object[] allowedValues;
 
     @Override
     public String toString() {

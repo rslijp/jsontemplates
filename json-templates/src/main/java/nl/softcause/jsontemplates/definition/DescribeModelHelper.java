@@ -29,7 +29,8 @@ public class DescribeModelHelper {
                 entry.getName(),
                 entry.getType(),
                 entry.isReadable(),
-                entry.isWritable());
+                entry.isWritable(),
+                entry.getAllowedValues());
         if (entry.getNested() != null && entry.getType().baseType() == Types.OBJECT) {
             var nested = entry.getNested();
             description.addRef(describeSubModel(nested.getModelType(), nested.getDefinitions(), template, seen));
