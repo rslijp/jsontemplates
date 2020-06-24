@@ -36,10 +36,10 @@ public class ScopeModel implements IModel {
     }
 
     public void addDefintion(@NonNull String name, @NonNull IExpressionType type, DefinitionRegistry nested,
-                             boolean readable, boolean writable, Object defaultValue, Object[] allowedValue) {
+                             boolean readable, boolean writable, Object defaultValue, Object[] allowedValues) {
         guardNesting(name);
         var defaultType = Types.determineConstant(defaultValue);
-        var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable,allowedValue);
+        var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable, allowedValues);
         if (definitions.containsKey(name) && !definitions.get(name).equals(newDefinition)) {
             throw ScopeException.alreadyDefined(name);
         }

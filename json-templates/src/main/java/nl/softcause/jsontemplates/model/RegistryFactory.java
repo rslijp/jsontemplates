@@ -49,21 +49,45 @@ public class RegistryFactory {
             var infusedType = type.infuse(p.getPropertyType());
             var readeable = p.getReadMethod() != null;
             var writerable = p.getWriteMethod() != null;
-            if (IGNORED_PROPERTIES.contains(name)) {
+            if (ignoreProperty(p, modelType)) {
                 return;
             }
             DefinitionRegistry nested = null;
             if (type.baseType().equals(Types.OBJECT)) {
                 nested = register(BeanUtilsExtensions.resolveClass(p.getPropertyType(), true));
             }
-            model.addDefintion(name, infusedType, nested, readeable, writerable,determineAllowedValues(p));
+            model.addDefintion(name, infusedType, nested, readeable, writerable, determineAllowedValues(p));
         } catch (TypeException ex) {
             throw TypeException.onProperty(ex, modelType, name);
         }
     }
 
-    private static Object[] determineAllowedValues(PropertyDescriptor p){
-        if(p.getPropertyType().isEnum()){
+    private static boolean ignoreProperty(PropertyDescriptor p, Class modelType) {
+        String name = p.getName();
+        var readMethod = p.getReadMethod();
+        var writeMethod = p.getWriteMethod();
+        if (readMethod != null && readMethod.getAnnotation(IgnoreIntrospection.class) != null) {
+            return true;
+        }
+        if (writeMethod != null && writeMethod.getAnnotation(IgnoreIntrospection.class) != null) {
+            return true;
+        }
+        if (IGNORED_PROPERTIES.contains(name)) {
+            return true;
+        }
+        try {
+            Field field = modelType.getDeclaredField(name);
+            if (field.getAnnotation(IgnoreIntrospection.class) != null) {
+                return true;
+            }
+        } catch (NoSuchFieldException | SecurityException e) {
+//
+        }
+        return false;
+    }
+
+    private static Object[] determineAllowedValues(PropertyDescriptor p) {
+        if (p.getPropertyType().isEnum()) {
             return TextEnumType.getEnumValues(p.getPropertyType()).toArray();
         }
         return null;

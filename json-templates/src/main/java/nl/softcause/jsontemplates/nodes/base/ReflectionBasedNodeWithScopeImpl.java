@@ -71,8 +71,8 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
 
     }
 
-    protected Object[] determineAllowedValues(Field field){
-        if(field.getType().isEnum()){
+    protected Object[] determineAllowedValues(Field field) {
+        if(field.getType().isEnum()) {
             return TextEnumType.getEnumValues(field.getType()).toArray();
         }
         return null;

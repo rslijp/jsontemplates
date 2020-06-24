@@ -7,7 +7,7 @@ import nl.softcause.jsontemplates.types.IExpressionType;
 class ModelPropertyDescription {
 
 
-    ModelPropertyDescription(String name, IExpressionType type, boolean readable, boolean writable,Object[] allowedValues) {
+    ModelPropertyDescription(String name, IExpressionType type, boolean readable, boolean writable, Object[] allowedValues) {
         this.name = name;
         this.type = type.getType();
         this.readable = readable;

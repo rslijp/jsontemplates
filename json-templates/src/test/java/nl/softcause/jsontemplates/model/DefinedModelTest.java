@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import nl.softcause.jsontemplates.collections.BeanConverters;
@@ -940,5 +941,21 @@ public class DefinedModelTest {
 
         assertThat(td.getValues().size(), is(1));
         assertThat(td.getValues().get(0), is(TestEnum.FIRST));
+    }
+
+    @Test
+    public void Should_ignore_model_parts() {
+        var model = new DefinedModel<>(TestDefinitionWithIgnore.class);
+        var td = new TestDefinitionWithIgnore();
+        model.load(td);
+
+        model.set("name", "Test");
+//        model.set("nested", new TestNestedDefinition());
+//        model.set("nested.name", "Nested");
+
+        assertThat(model.get("name"), is("Test"));
+        assertThat(Arrays.stream(model.getDefinitions()).anyMatch(a->a.getName().equals("name")), is(true));
+        assertThat(Arrays.stream(model.getDefinitions()).anyMatch(a->a.getName().equals("nested")), is(false));
+//        assertThat(model.get("nested.name"), is("Nested"));
     }
 }
