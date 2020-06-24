@@ -81,7 +81,7 @@ public class DefinitionRegistry {
             }
             var converted = type.convert(value);
             if (!endsWithIndex && converted != null && converted.getClass() != propertyType) {
-                converted = ConvertUtils.convert(converted, propertyType);
+                converted = ConvertUtils.convert(value, propertyType);
             }
             return converted;
         } catch (IllegalAccessException e) {

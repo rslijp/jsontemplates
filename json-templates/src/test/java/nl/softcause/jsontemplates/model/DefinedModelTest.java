@@ -761,6 +761,22 @@ public class DefinedModelTest {
 
 
     @Test
+    public void Should_get_map() {
+        var model = new DefinedModel<>(TestDefinition.class);
+        var td = new TestDefinition();
+        var n = new TestNestedDefinition();
+        n.setName("Nested");
+        td.setMap(new TestDefinition.TestNestedDefinitionMap());
+        td.getMap().put("homer", n);
+        model.load(td);
+
+
+        var map = (TestDefinition.TestNestedDefinitionMap) model.get("map");
+        assertThat(map.get("homer").name, is("Nested"));
+    }
+
+
+    @Test
     public void Should_get_map_value() {
         var model = new DefinedModel<>(TestDefinition.class);
         var td = new TestDefinition();
