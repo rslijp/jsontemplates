@@ -74,11 +74,16 @@ public class DefinitionRegistry {
         }
         try {
             var value = PropertyUtils.getProperty(source, name);
+            var propertyType = PropertyUtils.getPropertyType(source, name);
             var type = definition.getType();
             if (endsWithIndex) {
                 type = type.baseType();
             }
-            return type.convert(value);
+            var converted = type.convert(value);
+            if (!endsWithIndex && converted != null && converted.getClass() != propertyType) {
+                converted = ConvertUtils.convert(converted, propertyType);
+            }
+            return converted;
         } catch (IllegalAccessException e) {
             throw ModelException.noAccess(name, modelType);
         } catch (InvocationTargetException e) {

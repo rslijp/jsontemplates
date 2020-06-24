@@ -251,7 +251,7 @@ public class DefinedModelTest {
 
         var name = model.get("age");
 
-        assertThat(name, is(42L));
+        assertThat(name, is(42));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class DefinedModelTest {
 
         var name = model.get("mentalAge");
 
-        assertThat(name, is(42L));
+        assertThat(name, is(42));
     }
 
     @Test
@@ -287,7 +287,7 @@ public class DefinedModelTest {
 
         var name = model.get("magicNumbers");
 
-        assertThat(name, is(Collections.singletonList(42L)));
+        assertThat(name, is(new IntegerList(42)));
     }
 
     @Test
@@ -323,7 +323,7 @@ public class DefinedModelTest {
 
         var name = model.get("titles");
 
-        assertThat(name, is(Collections.singletonList("drs.")));
+        assertThat(name, is(new StringList("drs.")));
     }
 
     @Test
@@ -360,7 +360,7 @@ public class DefinedModelTest {
 
         var name = model.get("certificates");
 
-        assertThat(name, is(Collections.singletonList("scum")));
+        assertThat(name, is(new String[] {"scum"}));
     }
 
     @Test
@@ -928,6 +928,22 @@ public class DefinedModelTest {
         assertThat(td.getValues().size(), is(2));
         assertThat(td.getValues().get(0), is(TestEnum.FIRST));
         assertThat(td.getValues().get(1), is(TestEnum.SECOND));
+    }
+
+    @Test
+    public void Should_get_EnumList_value_with_cast() {
+        var model = new DefinedModel<>(TestDefintionWithEnum.class);
+        var td = new TestDefintionWithEnum();
+        td.setValues(new TestDefintionWithEnum.ListTestNum());
+        td.getValues().add(TestEnum.FIRST);
+        td.getValues().add(TestEnum.SECOND);
+        model.load(td);
+
+        var list = (TestDefintionWithEnum.ListTestNum) model.get("values");
+
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0), is(TestEnum.FIRST));
+        assertThat(list.get(1), is(TestEnum.SECOND));
     }
 
     @Test

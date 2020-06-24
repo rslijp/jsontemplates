@@ -40,6 +40,9 @@ public class MultiNode implements INode {
 
     @Override
     public void evaluate(TemplateModel model) {
+        if(nodes == null) {
+            return;
+        }
         for (INode node : nodes) {
             node.evaluate(model);
         }

@@ -310,7 +310,7 @@ public class ScopeModelTest {
         var value = model.get("known.mentalAge");
 
         //Then
-        assertThat(value, is(42L));
+        assertThat(value, is(42));
     }
 
     @Test

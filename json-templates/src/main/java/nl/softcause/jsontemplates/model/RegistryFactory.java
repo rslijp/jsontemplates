@@ -45,13 +45,13 @@ public class RegistryFactory {
     private static void extractTypeInformation(PropertyDescriptor p, DefinitionRegistry model, Class modelType) {
         var name = p.getName();
         try {
+            if (ignoreProperty(p, modelType)) {
+                return;
+            }
             var type = Types.determine(p.getPropertyType());
             var infusedType = type.infuse(p.getPropertyType());
             var readeable = p.getReadMethod() != null;
             var writerable = p.getWriteMethod() != null;
-            if (ignoreProperty(p, modelType)) {
-                return;
-            }
             DefinitionRegistry nested = null;
             if (type.baseType().equals(Types.OBJECT)) {
                 nested = register(BeanUtilsExtensions.resolveClass(p.getPropertyType(), true));
