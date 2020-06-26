@@ -775,6 +775,14 @@ public class DefinedModelTest {
         assertThat(map.get("homer").name, is("Nested"));
     }
 
+    @Test
+    public void Should_get_map_definition() {
+        var model = new DefinedModel<>(TestDefinition.class);
+
+        var definition = model.getDefinition("map");
+        assertThat(definition.getType(), is(Types.MAP_OBJECT));
+    }
+
 
     @Test
     public void Should_get_map_value() {

@@ -82,6 +82,23 @@ public class ExpressionParserTest {
     }
 
     @Test
+    public void should_parse_simple_string_constant_with_dash() {
+        //Given
+        var constant = (Constant) new ExpressionParser().parse("'hello-world'");
+        //Then
+        assertThat(constant.getValue(), is("hello-world"));
+    }
+
+    @Test
+    public void should_parse_simple_string_constant_with_odd_chars() {
+        //Given
+        var constant = (Constant) new ExpressionParser().parse("'Hello world!?.\";:'");
+        //Then
+        assertThat(constant.getValue(), is("Hello world!?.\";:"));
+    }
+
+
+    @Test
     public void should_trim_start() {
         //Given
         var constant = (Constant) new ExpressionParser().parse(" 'Hello world'");

@@ -23,6 +23,7 @@ import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
 import nl.softcause.jsontemplates.nodes.types.LimitedSlot;
 import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
+import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
 
 @Data
@@ -145,7 +146,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         var fieldName = field.getName();
         try {
             if (getArguments().get(fieldName) != null) {
-                field.set(this, getArguments().get(fieldName).evaluate(model));
+                var value = getArguments().get(fieldName).evaluate(model);
+                if(field.getType().isEnum() && value instanceof String) {
+                    value = TextEnumType.getEnumValue(field.getType(), (String) value);
+                }
+                field.set(this, value);
             } else {
                 field.set(this, getArgumentsTypes().get(fieldName).getDefaultValue());
             }

@@ -49,7 +49,7 @@ public class TextEnumType implements IExpressionType<Enum> {
     }
 
     @SneakyThrows
-    private static Enum getEnumValue(Class<?> enumClass, String src) {
+    public static Enum getEnumValue(Class<?> enumClass, String src) {
         Field f = enumClass.getDeclaredField("$VALUES");
         f.setAccessible(true);
         var o = (Object[]) f.get(null);
