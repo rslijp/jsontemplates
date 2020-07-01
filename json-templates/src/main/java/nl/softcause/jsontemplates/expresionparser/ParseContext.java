@@ -20,7 +20,7 @@ class ParseContext {
     private static final boolean LOG = false;
     private static final Pattern LONG_PATTERN = Pattern.compile("^(-?[0-9]+)");
     private static final Pattern DOUBLE_PATTERN = Pattern.compile("^(-?[0-9]+\\.[0-9]+)");
-    private static final Pattern TEXT_PATTERN = Pattern.compile("^'((\\w|\\s|[-!?.\";:])+)'");
+    private static final Pattern TEXT_PATTERN = Pattern.compile("^'((\\w|\\s|[-!?.\";:{}/\\\\#])+)'");
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("^\\$([0-9A-Za-z\\.]+)");
     private static final String BRACKET_OPEN = "(";
     private static final String PARAMETER_SEPARATOR = ",";

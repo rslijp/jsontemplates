@@ -15,6 +15,7 @@ public class TemplateAndDescriptionDTO {
 
     private TemplateDTO template;
     private TemplateDescription description;
-
+    private String commitUrl;
+    private String cancelUrl;
 
 }

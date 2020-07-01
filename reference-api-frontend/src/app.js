@@ -20,16 +20,20 @@ class App extends React.Component {
 	}
 
 	loadFromServer() {
-		get(document.location.hash.substring(1),data => {
+		var id = document.location.hash.substring(1);
+		get(id,data => {
 			const description = data.description;
 			initExpressionLibrary(description.expressionDescriptions);
 			setGlobalNodes(description.mainNodeIds);
 			setAvailableNodes(description.nodeDescriptions, description.mainNodeIds);
 			setVariables(description.modelDescriptions);
 			initModelDefinition(description.modelDescriptions[0]);
-            setSlots(data.template,description.nodeDescriptions)
-			this.setState({
+            setSlots(data.template,description.nodeDescriptions);
+            this.setState({
+				id: id,
 				initialized: true,
+				commitUrl: data.commitUrl,
+				cancelUrl: data.cancelUrl,
 				mainNodeIds: description.mainNodeIds,
 				mainModelId: description.mainModelId,
 				modelDescriptions: description.modelDescriptions,
@@ -47,7 +51,7 @@ class App extends React.Component {
 	render() {
 		let app = <></>;
 		if(this.state.initialized) {
-			app=<MainApp nodeDescriptions={this.state.nodeDescriptions}/>;
+			app=<MainApp id={this.state.id} nodeDescriptions={this.state.nodeDescriptions} commitUrl={this.state.commitUrl} cancelUrl={this.state.cancelUrl}/>;
 		}
 		return (<AllowNodesProvider>
 					<VariablesProvider>

@@ -52,7 +52,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 Collections.singletonMap("body", new INode[] {ifNode})
         );
 
-        database.save("TEST-SINGLE", buildLibrary(), TestDefinition.class, new INode[]{forNode});
+        database.save("TEST-SINGLE", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{forNode});
     }
 
     private void loadPreloadDouble() {
@@ -65,11 +65,11 @@ public class DatabaseLoader implements CommandLineRunner {
                         "value", new Variable("scope.current"))
         );
 
-        database.save("TEST-DOUBLE", buildLibrary(), TestDefinition.class, new INode[]{setNode1, setNode2});
+        database.save("TEST-DOUBLE", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{setNode1, setNode2});
     }
 
 
     private void loadEmpty() {
-        database.save("TEST-EMPTY", buildLibrary(), TestDefinition.class, new INode[]{});
+        database.save("TEST-EMPTY", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{});
     }
 }

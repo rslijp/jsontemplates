@@ -32,14 +32,13 @@ public class NodeDTOTest {
 
     @Test
     public void should_collect_correct_arguments_actionNode() {
-        var actionNode = new SearchScreen.Action();
+        var actionNode = new SearchScreen.RowAction();
 
         var argumentTypes = actionNode.getArgumentsTypes();
 
         assertThat(argumentTypes, is(Map.of(
                 "dialogName", new ArgumentDefinition(Types.TEXT, null),
                 "label", new ArgumentDefinition(Types.TEXT, null),
-                "actionType", new ArgumentDefinition(Types.TEXT, null),
                 "icon", new ArgumentDefinition(Types.TEXT,  null)
         )));
     }
@@ -198,17 +197,15 @@ public class NodeDTOTest {
 
     @Test
     public void should_set_child_action_nodes() {
-        var actionEditNode = SearchScreen.Action.create(
+        var actionEditNode = SearchScreen.RowAction.create(
                 "test-edit",
                 null,
-                "edit",
-                ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROW
+                "edit"
         );
-        var actionAddNode = SearchScreen.Action.create(
+        var actionAddNode = SearchScreen.ScreenAction.create(
                 "test-add",
                 null,
-                "add",
-                ClientSearchScreenAction.ClientSearchScreenColumnActionType.SCREEN
+                "add"
         );
 
         var searchScreenNode = SearchScreen.create(
@@ -285,7 +282,11 @@ public class NodeDTOTest {
                 column("clientName","TEXT","NO"),
                 column("userName","TEXT","NO"),
 
-                action("show-log-entry","ROW","detail")
+                rowAction("show-log-entry","ROW","detail"),
+                post("edit-client-template","client.template","template",
+                        param("commitUrl", "/dialog/confirm-client-template/{uuid}"),
+                        param("cancelUrl", "/search/client")),
+                screenAction("create-client","create-client.Title", "create")
         );
     }
 
@@ -305,13 +306,41 @@ public class NodeDTOTest {
     }
 
 
-    private static SearchScreen.Action  action(String dialogName, String actionType, String icon){
-        return SearchScreen.Action.create(
+    private static SearchScreen.RowAction  rowAction(String dialogName, String icon) {
+        return rowAction(dialogName, null, icon);
+    }
+
+    private static SearchScreen.RowAction  rowAction(String dialogName, String label, String icon){
+        return SearchScreen.RowAction.create(
                 dialogName,
-                null,
-                icon,
-                ClientSearchScreenAction.ClientSearchScreenColumnActionType.valueOf(actionType)
+                label,
+                icon
         );
+    }
+
+    private static SearchScreen.ScreenAction  screenAction(String dialogName, String icon) {
+        return screenAction(dialogName, null, icon);
+    }
+
+    private static SearchScreen.ScreenAction  screenAction(String dialogName, String label, String icon){
+        return SearchScreen.ScreenAction.create(
+                dialogName,
+                label,
+                icon
+        );
+    }
+
+    private static SearchScreen.Post post(String dialogName, String label,  String icon,  SearchScreen.Post.PostParam... params) {
+        return SearchScreen.Post.create(
+                dialogName,
+                label,
+                icon,
+                params
+        );
+    }
+
+    private static SearchScreen.Post.PostParam param(String key, String value) {
+        return SearchScreen.Post.PostParam.create(key, value);
     }
 
 

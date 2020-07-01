@@ -59,7 +59,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 //    }
 
     private void reflectOnNode() {
-        var fields = nodeClass.getDeclaredFields();
+        reflectOnNode(nodeClass);
+    }
+
+    private void reflectOnNode(Class clazz) {
+        var fields = clazz.getDeclaredFields();
 
         for (var field : fields) {
             var fieldType = field.getType();
@@ -69,6 +73,14 @@ public abstract class ReflectionBasedNodeImpl implements INode {
                 reflectOnArgumentField(field, fieldType);
             }
         }
+        //Check super
+        if(shouldRecurse(clazz)) {
+            reflectOnNode(clazz.getSuperclass());
+        }
+    }
+
+    private boolean shouldRecurse(Class clazz) {
+        return !clazz.getSuperclass().equals(ReflectionBasedNodeWithScopeImpl.class) && !clazz.getSuperclass().equals(ReflectionBasedNodeImpl.class);
     }
 
     private void reflectOnArgumentField(Field field, Class<?> fieldType) {
@@ -107,36 +119,45 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
 
     public void evaluate(TemplateModel model) {
+        var parent = model.scope().getOwner();
         this.registerDefinitions(model);
-        populateFields(model);
+        populateFields(model, parent);
         internalEvaluate(model);
         this.revokeDefinitions(model);
     }
 
-    private void populateFields(TemplateModel model) {
-        var fields = nodeClass.getDeclaredFields();
+    private void populateFields(TemplateModel model, Object parent) {
+        populateFields(nodeClass, model, parent);
+    }
+
+    private void populateFields(Class clazz, TemplateModel model, Object parent) {
+        var fields = clazz.getDeclaredFields();
 
         for (var field : fields) {
-            populateField(model, field);
+            populateField(model, field, parent);
+        }
+
+        if(shouldRecurse(clazz)) {
+            populateFields(clazz.getSuperclass(), model, parent);
         }
     }
 
-    protected void populateField(TemplateModel model, String fieldName) {
+    protected void populateField(TemplateModel model, String fieldName, Object parent) {
         Field field;
         try {
             field = nodeClass.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
             throw ReflectionBasedNodeException.noSuchField(nodeClass, fieldName);
         }
-        populateField(model, field);
+        populateField(model, field, parent);
 
     }
 
-    private void populateField(TemplateModel model, Field field) {
+    private void populateField(TemplateModel model, Field field, Object parent) {
         field.setAccessible(true);
         var fieldType = field.getType();
         if (INode.class.isAssignableFrom(fieldType)) {
-            populateNodeField(model, field);
+            populateNodeField(model, field, parent);
         } else {
             populateArgumentField(model, field);
         }
@@ -159,11 +180,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         }
     }
 
-    private void populateNodeField(TemplateModel model, Field field) {
+    private void populateNodeField(TemplateModel model, Field field, Object parent) {
         var fieldName = field.getName();
         try {
             if (this instanceof INodeWithParent && fieldName.equals("parent")) {
-                field.set(this, model.scope().getOwner());
+                field.set(this, parent);
                 return;
             }
             fieldName = NodeUtil.slotName(fieldName);

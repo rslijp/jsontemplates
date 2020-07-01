@@ -92,9 +92,9 @@ public class ExpressionParserTest {
     @Test
     public void should_parse_simple_string_constant_with_odd_chars() {
         //Given
-        var constant = (Constant) new ExpressionParser().parse("'Hello world!?.\";:'");
+        var constant = (Constant) new ExpressionParser().parse("'Hello world!?.\";:{}/\\#'");
         //Then
-        assertThat(constant.getValue(), is("Hello world!?.\";:"));
+        assertThat(constant.getValue(), is("Hello world!?.\";:{}/\\#"));
     }
 
 

@@ -19,4 +19,9 @@ public class WildCardSlot implements ISlotPattern {
     public ISlotPattern getBasePattern() {
         return this;
     }
+
+    @Override
+    public Class[] getLimit() {
+        return null;
+    }
 }

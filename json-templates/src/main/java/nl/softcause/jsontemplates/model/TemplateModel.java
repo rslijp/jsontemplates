@@ -1,8 +1,9 @@
 package nl.softcause.jsontemplates.model;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,8 +26,8 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
     @Setter
     private Locale locale;
 
-    public TemplateModel(T model) {
-        this.model = new DefinedModel<>(model);
+    public TemplateModel(T m) {
+        this.model = new DefinedModel<>(m);
         this.locale = Locale.ENGLISH;
         pushScope(this);
     }
@@ -56,6 +57,18 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
     public ScopeModel scope() {
         return scopes.peek();
+    }
+
+    public static <T> Collector<T, ?, Stream<T>> reverse() {
+        return Collectors.collectingAndThen(Collectors.toList(), list -> {
+            Collections.reverse(list);
+            return list.stream();
+        });
+    }
+
+
+    public Optional<ScopeModel> scope(Object owner) {
+        return scopes.stream().collect(reverse()).filter(s -> s.getOwner() == owner).findFirst();
     }
 
     public int scopeDepth() {

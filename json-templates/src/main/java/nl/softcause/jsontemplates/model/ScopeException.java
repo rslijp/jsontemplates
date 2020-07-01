@@ -24,6 +24,10 @@ public class ScopeException extends RuntimeException {
         return new ScopeException(String.format("'%s' isn't found", path));
     }
 
+    public static ScopeException notFoundForOwner(Object owner) {
+        return new ScopeException(String.format("No scope found for owner '%s'", owner));
+    }
+
     public static ScopeException notReadable(String path) {
         return new ScopeException(String.format("'%s' isn't readable", path));
     }

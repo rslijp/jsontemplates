@@ -4,13 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
-import nl.softcause.jsontemplates.model.NodeScopeChange;
-import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.model.*;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
@@ -64,7 +63,8 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
         try {
             var writable = field.canAccess(instance);
             field.setAccessible(true);
-            return new NodeScopeChange(fieldName, Types.determine(fieldType), writable, field.get(instance), determineAllowedValues(field));
+            return new NodeScopeChange(fieldName, Types.determine(fieldType), writable, field.get(instance),
+                    determineAllowedValues(field));
         } catch (IllegalAccessException IAe) {
             throw ReflectionBasedNodeException.illegalGetAccessOfScopeField(scopeModel, fieldName);
         }
@@ -72,7 +72,7 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
     }
 
     protected Object[] determineAllowedValues(Field field) {
-        if(field.getType().isEnum()) {
+        if (field.getType().isEnum()) {
             return TextEnumType.getEnumValues(field.getType()).toArray();
         }
         return null;
@@ -115,7 +115,11 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
         var fieldName = field.getName();
         try {
             field.setAccessible(true);
-            var value = model.scope().get(fieldName);
+            Optional<ScopeModel> scope = model.scope(this);
+            if (scope.isEmpty()) {
+                throw ScopeException.notFoundForOwner(this);
+            }
+            var value = scope.get().get(fieldName);
             field.set(instance, value);
         } catch (IllegalAccessException IAe) {
             throw ReflectionBasedNodeException.illegalSetAccessOfScopeField(scopeModel, fieldName);

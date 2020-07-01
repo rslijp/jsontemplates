@@ -29,7 +29,7 @@ public class While extends ReflectionBasedNodeWithDefaultScopeImpl {
     public void internalEvaluate(TemplateModel model) {
         while (test) {
             bodyNode.evaluate(model);
-            populateField(model, "test");
+            populateField(model, "test", this);
         }
     }
 

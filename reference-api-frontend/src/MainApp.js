@@ -5,13 +5,13 @@ import WorkBench from "./workbench/WorkBench";
 import AppInitialized from "./utils/AppInitialized";
 import {DndProvider} from "react-dnd";
 import Backend from "react-dnd-html5-backend";
-import {any} from "prop-types";
+import {any, string} from "prop-types";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleLeft, faAngleRight, faExchangeAlt, faCompressAlt } from "@fortawesome/free-solid-svg-icons";
 import VariablesList from "./variables/VariablesList";
 import EditorControl from "./EditorControl";
 
-function MainApp({nodeDescriptions}){
+function MainApp({id, nodeDescriptions, commitUrl, cancelUrl}){
     const [leftExpanded, setLeftExpanded] = useState(true);
     const [sticky, setSticky] = useState(true);
     const [rightExpanded, setRightExpanded] = useState(false);
@@ -47,7 +47,7 @@ function MainApp({nodeDescriptions}){
             </div>
             <div className={"workbench"+benchClasses}>
                 <h2>Workbench <Button variant="light" className={"expand-button"} onClick={toggleSticky}><FontAwesomeIcon title={sticky?"shrink":"expand"} icon={sticky?faExchangeAlt:faCompressAlt}/></Button>
-                    <EditorControl allNodes={nodeDescriptions} onWorkBenchAvailable={updateWorkBenchAvailable}/>
+                    <EditorControl id={id} commitUrl={commitUrl} cancelUrl={cancelUrl} allNodes={nodeDescriptions} onWorkBenchAvailable={updateWorkBenchAvailable}/>
                 </h2>
                 {workBenchAvailable?<WorkBench allNodes={nodeDescriptions} />:null}
             </div>
@@ -64,6 +64,9 @@ function MainApp({nodeDescriptions}){
     </AppInitialized>);
 }
 MainApp.propTypes = {
+    id: string,
+    commitUrl: string,
+    cancelUrl: string,
     nodeDescriptions: any
 };
 export default MainApp;

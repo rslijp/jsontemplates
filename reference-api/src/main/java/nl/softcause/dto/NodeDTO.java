@@ -74,13 +74,14 @@ public class NodeDTO {
             var raw=entry.getValue();
             if(raw == null) return;
             ISlotPattern slotPattern = finalNode.getSlotTypes().get(toSlotName(entry.getKey()));
-            if(slotPattern instanceof LimitedSlot){
-                library.push(((LimitedSlot) slotPattern).getLimit());
+            var limit = slotPattern.getLimit();
+            if(limit!=null){
+                library.push(limit);
             }
             finalNode.getSlots().put(entry.getKey(),
                     Arrays.stream(raw).map(c->c.asTemplate(library)).toArray(INode[]::new)
             );
-            if(slotPattern instanceof LimitedSlot){
+            if(limit!=null){
                 library.pop();
             }
         });

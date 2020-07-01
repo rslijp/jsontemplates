@@ -21,4 +21,9 @@ public class OptionalSlot implements ISlotPattern {
     public String getDescription() {
         return basePattern.getDescription() + "?";
     }
+
+    @Override
+    public Class[] getLimit() {
+        return basePattern.getLimit();
+    }
 }

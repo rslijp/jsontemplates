@@ -1,19 +1,25 @@
 import {post,revert} from './client';
 import {Button} from "react-bootstrap";
 import React from 'react';
-import {any, arrayOf, func} from "prop-types";
+import {any, arrayOf, func, string} from "prop-types";
 import {getSlotsAsDto, setSlots} from "./model/JsonTemplate";
 
-function EditorControl({allNodes,onWorkBenchAvailable}){
+function EditorControl({id, cancelUrl, commitUrl, allNodes,onWorkBenchAvailable}){
+    const onClose = ()=>{
+        document.location = cancelUrl;
+    };
+
     const onCommit = ()=>{
         const slots = getSlotsAsDto();
-        post(document.location.hash.substring(1),{slots: slots},data => {
-            if(!data) alert('Save failed');
+        post(id,{slots: slots},data => {
+            if(!data) {
+                alert('Save failed');
+            } else {
+                document.location = commitUrl;
+            }
         });
     };
-    const onClose = ()=>{
-        window.close();
-    };
+
     const onRevert = ()=>{
         if(onWorkBenchAvailable) onWorkBenchAvailable(false);
         revert(document.location.hash.substring(1),data => {
@@ -29,6 +35,9 @@ function EditorControl({allNodes,onWorkBenchAvailable}){
 
 }
 EditorControl.propTypes = {
+    id: string,
+    commitUrl: string,
+    cancelUrl: string,
     allNodes: arrayOf(any),
     onWorkBenchAvailable: func
 };

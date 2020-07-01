@@ -38,7 +38,7 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
 
         var columns = Arrays.stream(fields).filter(c->c instanceof SearchScreen.Column).toArray(INode[]::new);
         var filters = Arrays.stream(fields).filter(c->c instanceof SearchScreen.Filter).toArray(INode[]::new);
-        var actions = Arrays.stream(fields).filter(c->c instanceof SearchScreen.Action).toArray(INode[]::new);
+        var actions = Arrays.stream(fields).filter(c->c instanceof SearchScreen.BaseAction).toArray(INode[]::new);
         searchScreen.setSlots(Map.of(
                 "columns", columns,
                 "filters", filters,
@@ -66,8 +66,8 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
     private INode filtersNode=null;
 
     @RequiredSlot
-    @LimitSlots(allowed={nl.softcause.dto.SearchScreen.Action.class})
-    private INode actionsNode=null;
+    @LimitSlots(allowed = {nl.softcause.dto.SearchScreen.RowAction.class,nl.softcause.dto.SearchScreen.ScreenAction.class,nl.softcause.dto.SearchScreen.Post.class})
+    private INode actionsNode = null;
 
     @Override
     protected void internalEvaluate(TemplateModel model) {
@@ -192,30 +192,37 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
     }
 
     @EqualsAndHashCode(callSuper = true)
-    public static class Action extends ReflectionBasedNodeImpl implements INodeWithParent<SearchScreen> {
+    private abstract static class BaseAction extends ReflectionBasedNodeWithScopeImpl<BaseAction.BaseActionScope> implements INodeWithParent<SearchScreen> {
 
-        public static Action create(String dialogName,
-                                    String label,
-                                    String icon,
-                                    ClientSearchScreenAction.ClientSearchScreenColumnActionType actionType) {
-            var  action= new Action();
-            Map<String, IExpression>  arguments = new HashMap<>(Map.of(
+        protected BaseAction() {
+            super(BaseAction.BaseActionScope.class);
+        }
+
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class BaseActionScope {
+            @Getter
+            protected ClientSearchScreenAction action;
+        }
+
+        void decorate(String dialogName,
+                      String label,
+                      String icon) {
+            Map<String, IExpression> arguments = new HashMap<>(Map.of(
                     "dialogName", new Constant(dialogName),
-                    "actionType", new Constant(actionType.name()),
                     "icon", new Constant(icon)
             ));
-            if(label!=null) {
+            if (label != null) {
                 arguments.put("label", new Constant(label));
             }
-            action.setArguments(arguments);
-            return action;
+            setArguments(arguments);
         }
 
         private SearchScreen parent;
 
         @Override
         public void registerParent(SearchScreen parent) {
-            this.parent=parent;
+            this.parent = parent;
         }
 
         @RequiredArgument
@@ -225,21 +232,113 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         private String label;
 
         @RequiredArgument
-        private String actionType;
-
-        @RequiredArgument
         private String icon;
 
-        @Override
-        protected void internalEvaluate(TemplateModel model) {
+        void baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType actionType, TemplateModel model) {
             var scope = parent.pullScopeModel(model);
             var searchScreen = scope.getSearchScreen();
             var searchScreenAction = new ClientSearchScreenAction();
+            pushScopeModel(model, new BaseAction.BaseActionScope(searchScreenAction));
             searchScreenAction.setDialogName(dialogName);
-            searchScreenAction.setLabel(StringUtils.isEmpty(label)?searchScreen.suggestLabel(dialogName):label);
-            searchScreenAction.setActionType(ClientSearchScreenAction.ClientSearchScreenColumnActionType.valueOf(actionType));
+            searchScreenAction.setLabel(StringUtils.isEmpty(label) ? searchScreen.suggestLabel(dialogName) : label);
+            searchScreenAction
+                    .setActionType(actionType);
             searchScreenAction.setIcon(icon);
             searchScreen.addAction(searchScreenAction);
+        }
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    public static class ScreenAction extends BaseAction {
+
+        public static ScreenAction create(String dialogName,
+                                          String label,
+                                          String icon) {
+            var action = new ScreenAction();
+            action.decorate(dialogName, label, icon);
+            return action;
+        }
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.SCREEN, model);
+        }
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    public static class RowAction extends BaseAction {
+
+        public static RowAction create(String dialogName,
+                                       String label,
+                                       String icon) {
+            var action = new RowAction();
+            action.decorate(dialogName, label, icon);
+            return action;
+        }
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROW, model);
+        }
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    public static class Post extends BaseAction {
+
+        public static Post create(String dialogName,
+                                  String label,
+                                  String icon, SearchScreen.Post.PostParam... params
+        ) {
+            var action = new Post();
+            action.decorate(dialogName, label, icon);
+            action.setSlots(Map.of(
+                    "param", params
+            ));
+            return action;
+        }
+
+        @LimitSlots(allowed = {nl.softcause.dto.SearchScreen.Post.PostParam.class})
+        private INode paramNode = null;
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROWPOST, model);
+            if(paramNode!=null) paramNode.evaluate(model);
+        }
+
+        @EqualsAndHashCode(callSuper = true)
+        public static class PostParam extends ReflectionBasedNodeImpl implements INodeWithParent<SearchScreen.Post> {
+            public static PostParam create(
+                    String key,
+                    String value) {
+                var param = new PostParam();
+                Map<String, IExpression> arguments = new HashMap<>(Map.of(
+                        "key", new Constant(key),
+                        "value", new Constant(value)
+                ));
+                param.setArguments(arguments);
+
+                return param;
+            }
+
+            private SearchScreen.Post parent;
+
+            @Override
+            public void registerParent(SearchScreen.Post parent) {
+                this.parent = parent;
+            }
+
+            @RequiredArgument
+            private String key;
+
+            @RequiredArgument
+            private String value;
+
+            @Override
+            protected void internalEvaluate(TemplateModel model) {
+                var scope = parent.pullScopeModel(model);
+                scope.getAction().addParam(key, value);
+            }
         }
     }
 }

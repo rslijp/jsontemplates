@@ -8,16 +8,6 @@ import nl.softcause.jsontemplates.collections.StringList;
 
 public class TestDefinition {
 
-//        public static class TestNestedDefinitionList implements List<TestNestedDefinition> {
-//            @Delegate
-//            private List<TestNestedDefinition> base = new ArrayList<>();
-//        }
-//
-//        static class TestNestedDefinitionMap implements Map<String,TestNestedDefinition> {
-//            @Delegate
-//            private Map<String,TestNestedDefinition> base = new HashMap<>();
-//        }
-
     @Setter
     @Getter
     String name;

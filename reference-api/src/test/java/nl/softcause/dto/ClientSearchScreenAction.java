@@ -3,6 +3,7 @@ package nl.softcause.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import nl.softcause.jsontemplates.collections.StringMap;
 
 @Data
 public class ClientSearchScreenAction  {
@@ -23,13 +24,21 @@ public class ClientSearchScreenAction  {
     @NotNull
     private Integer location;
 
+    private StringMap postParams;
+
     public ClientSearchScreenAction() {
         // required
+    }
+
+    public void addParam(String key, String value) {
+        if(postParams==null) postParams = new StringMap();
+        postParams.put(key, value);
     }
 
 
     public enum ClientSearchScreenColumnActionType {
         ROW("row"),
+        ROWPOST("row-post"),
         SCREEN("screen");
 
         private final String value;

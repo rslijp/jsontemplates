@@ -7,4 +7,6 @@ public interface ISlotPattern {
     String getDescription();
 
     ISlotPattern getBasePattern();
+
+    Class[] getLimit();
 }

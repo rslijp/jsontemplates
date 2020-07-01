@@ -45,7 +45,7 @@ public class NodeDescription {
                 nodeSlotLimits = new HashMap<>();
             }
             description = "limited";
-            var limits = ((LimitedSlot) pattern).getLimit();
+            var limits = pattern.getLimit();
             var limitDescription = new long[limits.length];
             for (var i = 0; i < limits.length; i++) {
                 var limit = limits[i];
