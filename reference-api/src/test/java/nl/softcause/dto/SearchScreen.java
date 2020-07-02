@@ -1,5 +1,6 @@
 package nl.softcause.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.INodeWithParent;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
@@ -84,6 +86,26 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         config.put(reference, searchScreen);
     }
 
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase()
+                .add("Add a search screen named").
+                        expression(getArguments().get("name")).
+                        add("referenced by").
+                        expression(getArguments().get("reference")).
+                        end();
+        builder.phrase()
+                .add("Page the search result in pages of").
+                expression(getArguments().get("pageSize")).
+                end();
+        builder.phrase("Result can be filtered by");
+        builder.describe(getSlots().get("filter"));
+        builder.phrase("Display the following columns");
+        builder.describe(getSlots().get("columns"));
+        builder.phrase("From here the following actions can be performed");
+        builder.describe(getSlots().get("actions"));
+    }
+
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SearchScreenScope {
@@ -143,6 +165,26 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             searchScreenColumn.setSort(sort);
             searchScreen.addColumn(searchScreenColumn);
         }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            var arguments = getArguments();
+            var label = arguments.get("label");
+            var phrase = builder.phrase();
+            if(label==null){
+                phrase.add("A column");
+            } else {
+                phrase.add("A column labelled").
+                        expression(arguments.get("label"));
+            }
+            phrase.add("displaying field").
+                    expression(arguments.get("field")).
+                    add("as").
+                    expression(arguments.get("dataType")).
+                    add("initially sorted").
+                    expression(arguments.get("sort")).
+                    end();
+        }
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -164,6 +206,7 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             return filter;
         }
 
+        @JsonIgnore
         private SearchScreen parent;
 
         @Override
@@ -188,6 +231,24 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             searchScreenFilter.setLabel(StringUtils.isEmpty(label)?searchScreen.suggestLabel(field):label);
             searchScreenFilter.setInputType(inputType);
             searchScreen.addFilter(searchScreenFilter);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            var arguments = getArguments();
+            var label = arguments.get("label");
+            var phrase = builder.phrase();
+            if(label==null){
+                phrase.add("A filter");
+            } else {
+                phrase.add("A filter labelled").
+                        expression(arguments.get("label"));
+            }
+            phrase.add("for field").
+                    expression(arguments.get("field")).
+                    add("as").
+                    expression(arguments.get("inputType")).
+                    end();
         }
     }
 
@@ -218,6 +279,7 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             setArguments(arguments);
         }
 
+        @JsonIgnore
         private SearchScreen parent;
 
         @Override
@@ -234,17 +296,37 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         @RequiredArgument
         private String icon;
 
-        void baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType actionType, TemplateModel model) {
-            var scope = parent.pullScopeModel(model);
+        protected abstract ClientSearchScreenAction.ClientSearchScreenColumnActionType getType();
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+           var scope = parent.pullScopeModel(model);
             var searchScreen = scope.getSearchScreen();
             var searchScreenAction = new ClientSearchScreenAction();
             pushScopeModel(model, new BaseAction.BaseActionScope(searchScreenAction));
             searchScreenAction.setDialogName(dialogName);
             searchScreenAction.setLabel(StringUtils.isEmpty(label) ? searchScreen.suggestLabel(dialogName) : label);
             searchScreenAction
-                    .setActionType(actionType);
+                    .setActionType(getType());
             searchScreenAction.setIcon(icon);
             searchScreen.addAction(searchScreenAction);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            var arguments = getArguments();
+            var label = arguments.get("label");
+            var phrase = builder.phrase();
+            if(label==null){
+                phrase.add("A "+getType().getValue()+ " action");
+            } else {
+                phrase.add("A "+getType().getValue()+ " action labelled").
+                        expression(arguments.get("label"));
+            }
+            phrase.add("with icon").expression(arguments.get("icon"));
+            phrase.add(getType().isOpenDialog()?"to open dialog":"to perform action").
+                    expression(arguments.get("dialog")).
+                    end();
         }
     }
 
@@ -260,9 +342,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         }
 
         @Override
-        protected void internalEvaluate(TemplateModel model) {
-            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.SCREEN, model);
+        protected ClientSearchScreenAction.ClientSearchScreenColumnActionType getType() {
+            return ClientSearchScreenAction.ClientSearchScreenColumnActionType.SCREEN;
         }
+
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -277,9 +360,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         }
 
         @Override
-        protected void internalEvaluate(TemplateModel model) {
-            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROW, model);
+        protected ClientSearchScreenAction.ClientSearchScreenColumnActionType getType() {
+            return ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROW;
         }
+
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -301,9 +385,20 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         private INode paramNode = null;
 
         @Override
+        protected ClientSearchScreenAction.ClientSearchScreenColumnActionType getType() {
+            return ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROWPOST;
+        }
+
+        @Override
         protected void internalEvaluate(TemplateModel model) {
-            baseEvaluate(ClientSearchScreenAction.ClientSearchScreenColumnActionType.ROWPOST, model);
+            super.internalEvaluate(model);
             if(paramNode!=null) paramNode.evaluate(model);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            super.describe(builder);
+            builder.describeIfPresent("With parameters", getSlots().get("param"));
         }
 
         @EqualsAndHashCode(callSuper = true)
@@ -338,6 +433,16 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             protected void internalEvaluate(TemplateModel model) {
                 var scope = parent.pullScopeModel(model);
                 scope.getAction().addParam(key, value);
+            }
+
+            @Override
+            public void describe(IDescriptionBuilder builder) {
+                builder.phrase()
+                        .add("Param named")
+                        .expression(getArguments().get("key"))
+                        .add("with value")
+                        .expression(getArguments().get("value"))
+                        .end();
             }
         }
     }

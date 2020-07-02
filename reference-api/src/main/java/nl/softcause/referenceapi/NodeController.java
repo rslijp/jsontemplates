@@ -25,7 +25,7 @@ public class NodeController {
     }
 
     @PostMapping(path = "/{token}")
-    public @ResponseBody boolean save(@PathVariable String token, @RequestBody TemplateDTO dto){
+    public @ResponseBody boolean save(@PathVariable String token, @RequestBody TemplateDTO dto) {
         logger.info("Upload template ["+token+"]: ");
         logger.info("DTO ["+token+"]: "+dto);
         return database.update(token, dto);

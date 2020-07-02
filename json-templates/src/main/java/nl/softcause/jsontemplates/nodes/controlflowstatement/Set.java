@@ -8,6 +8,7 @@ import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 import nl.softcause.jsontemplates.types.Optional;
 import nl.softcause.jsontemplates.types.Types;
@@ -47,4 +48,13 @@ public class Set extends ReflectionBasedNodeImpl {
     }
 
 
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase()
+                .add("Set")
+                .expression(getArguments().get("path"))
+                .add("to")
+                .expression(getArguments().get("value"))
+                .end();
+    }
 }

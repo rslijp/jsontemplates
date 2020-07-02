@@ -19,7 +19,7 @@ public class TemplateDTO {
         return dto;
     }
 
-    public INode[] asTemplate(ILibrary library) {
-        return Arrays.stream(slots).map(slot->slot.asTemplate(library)).toArray(INode[]::new);
+    public INode[] asTemplate(ILibrary library)  {
+        return Arrays.stream(slots).map(slot -> slot.asTemplate(library)).toArray(INode[]::new);
     }
 }

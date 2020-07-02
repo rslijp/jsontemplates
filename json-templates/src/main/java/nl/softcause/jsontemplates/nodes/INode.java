@@ -31,4 +31,5 @@ public interface INode {
 
     void revokeDefinitions(ITemplateModelDefinition model);
 
+    void describe(IDescriptionBuilder builder);
 }

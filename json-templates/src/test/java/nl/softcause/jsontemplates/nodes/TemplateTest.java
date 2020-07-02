@@ -3,11 +3,12 @@ package nl.softcause.jsontemplates.nodes;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.comparison.Equals;
@@ -74,6 +75,7 @@ public class TemplateTest {
 
         assertThat(forNode, is(obj));
     }
+
 
     @Test
     public void should_have_a_stack_depth_of_one_for_simple_template() {

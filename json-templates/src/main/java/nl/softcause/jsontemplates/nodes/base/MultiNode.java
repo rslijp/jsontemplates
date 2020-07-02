@@ -10,6 +10,7 @@ import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
@@ -89,5 +90,10 @@ public class MultiNode implements INode {
             hashCode += node.hashCode();
         }
         return hashCode;
+    }
+
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.describe(nodes);
     }
 }

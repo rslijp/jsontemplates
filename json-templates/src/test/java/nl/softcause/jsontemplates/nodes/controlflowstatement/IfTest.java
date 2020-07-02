@@ -3,10 +3,11 @@ package nl.softcause.jsontemplates.nodes.controlflowstatement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.TemplateModel;

@@ -24,7 +24,7 @@ class Expression extends React.Component {
             id: "id" + (id++),
             valid: true,
             error: null,
-            typeValid: props.optional,
+            typeValid: (node?node.arguments:null)?true:props.optional,
             text: nodeArguments[props.argumentName]||"",
             partialMatch: "",
             blocks: [],

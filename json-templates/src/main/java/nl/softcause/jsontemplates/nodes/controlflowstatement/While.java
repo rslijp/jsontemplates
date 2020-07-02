@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.EqualsAndHashCode;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeWithDefaultScopeImpl;
 
@@ -33,5 +34,14 @@ public class While extends ReflectionBasedNodeWithDefaultScopeImpl {
         }
     }
 
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase()
+                .add("While").
+                expression(getArguments().get("test")).
+                add("holds do").
+                end();
+        builder.describe(getSlots().get("body"));
+    }
 
 }

@@ -37,10 +37,15 @@ public class WorkBenchDatabase {
             return false;
         }
         var entry = DATABASE.get(token);
-        var slots = dto.asTemplate(entry.getLibrary());
-        entry.slots = slots;
-        entry.saved = true;
-        return true;
+        try {
+            var slots = dto.asTemplate(entry.getLibrary());
+            entry.slots = slots;
+            entry.saved = true;
+            return true;
+        } catch (Exception e){
+            logger.error("Error on save of "+token, e);
+            return false;
+        }
     }
 
     public TemplateDTO getDto(String token) {

@@ -68,7 +68,7 @@ function Slot({node,path,allNodes,forSlot}) {
         const result = Object.entries(nodeSlots).map(([k,v]) => {
             let value = v;
             const optional = v.endsWith("?");
-            const name = k;//.endsWith("Node")?k.substr(0,k.length-4):k
+            const name = k.endsWith("Node")?k.substr(0,k.length-4):k;
             if(optional){
                 value=value.substr(0,value.length-1);
             }

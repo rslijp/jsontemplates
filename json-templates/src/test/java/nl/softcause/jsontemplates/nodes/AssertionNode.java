@@ -2,10 +2,12 @@ package nl.softcause.jsontemplates.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.Data;
+import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
@@ -60,5 +62,14 @@ public class AssertionNode implements INode {
     @Override
     public void revokeDefinitions(ITemplateModelDefinition model) {
 
+    }
+
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase("Assertion");
+        builder.phrase()
+                .add("Counter is")
+                .expression(new Constant(counter))
+                .end();
     }
 }

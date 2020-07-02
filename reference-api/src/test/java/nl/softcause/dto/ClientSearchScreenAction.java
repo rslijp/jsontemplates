@@ -37,18 +37,24 @@ public class ClientSearchScreenAction  {
 
 
     public enum ClientSearchScreenColumnActionType {
-        ROW("row"),
-        ROWPOST("row-post"),
-        SCREEN("screen");
+        ROW("row", true),
+        ROWPOST("row-post", false),
+        SCREEN("screen", true);
 
         private final String value;
+        private final boolean openDialog;
 
-        ClientSearchScreenColumnActionType(String value) {
+        ClientSearchScreenColumnActionType(String value, boolean openDialog) {
             this.value = value;
+            this.openDialog = openDialog;
         }
 
         public String getValue() {
             return this.value;
+        }
+
+        public boolean isOpenDialog(){
+            return this.openDialog;
         }
     }
 }

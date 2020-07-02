@@ -174,7 +174,8 @@ function toDTO(slot){
     };
     if(slot.nodeSlots) {
         Object.keys(slot.nodeSlots).forEach(slotName => {
-            dto.slots[slotName] = (slot[slotName] || []).map(toDTO);
+            const name = slotName.endsWith("Node")?slotName.substr(0,slotName.length-4):slotName;
+            dto.slots[name] = (slot[slotName] || []).map(toDTO);
         });
     }
     return dto;
@@ -183,12 +184,14 @@ function toDTO(slot){
 function fromDTO(nodeDTO,library){
     const nodeTemplate=library.find(c=>c.name===nodeDTO.name);
     const node =  {...nodeTemplate};
+
     node.arguments={};
     Object.keys(node.argumentTypes||{}).forEach(argumentName=>{
         node.arguments[argumentName]=nodeDTO.arguments[argumentName];
     });
     Object.keys(node.nodeSlots||{}).forEach(slotName=>{
-        const slotsDTO=nodeDTO.slots[slotName]||[];
+        const name = slotName.endsWith("Node")?slotName.substr(0,slotName.length-4):slotName;
+        const slotsDTO=nodeDTO.slots[name]||[];
         node[slotName]=slotsDTO.map(slot=>fromDTO(slot,library));
     });
     return node;

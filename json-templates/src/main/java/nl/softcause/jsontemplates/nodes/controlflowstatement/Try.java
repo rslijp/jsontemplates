@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeWithScopeImpl;
 
@@ -48,6 +49,13 @@ public class Try extends ReflectionBasedNodeWithScopeImpl<Try.TryScope> {
     public static class TryScope {
         protected String errorMessage;
         protected Exception exception;
+    }
+
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase("Try");
+        builder.describe(getSlots().get("body"));
+        builder.describeIfPresent("in case of errors do", getSlots().get("onError"));
     }
 
 }

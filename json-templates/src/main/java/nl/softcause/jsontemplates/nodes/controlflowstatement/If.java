@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.EqualsAndHashCode;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 
@@ -33,4 +34,10 @@ public class If extends ReflectionBasedNodeImpl {
         }
     }
 
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase().add("If").expression(getArguments().get("test")).add("then").end();
+        builder.describe(getSlots().get("then"));
+        builder.describeIfPresent("else", getSlots().get("else"));
+    }
 }

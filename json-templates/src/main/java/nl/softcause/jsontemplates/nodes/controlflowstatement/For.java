@@ -7,8 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.expressions.IExpression;
+import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TemplateModelException;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeWithScopeImpl;
 
@@ -80,5 +82,21 @@ public class For extends ReflectionBasedNodeWithScopeImpl<For.ForScope> {
         protected long current = 0;
         protected boolean first = true;
         protected boolean last = false;
+    }
+
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase()
+                .add("For").
+                expression(new Variable("i")).
+                add("is").
+                expression(getArguments().get("start")).
+                add("to").
+                expression(getArguments().get("until")).
+                add("in steps of").
+                expression(getArguments().get("step")).
+                end();
+        builder.phrase("do");
+        builder.describe(getSlots().get("body"));
     }
 }

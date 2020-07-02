@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.INodeWithParent;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
@@ -47,6 +48,13 @@ public class Switch extends ReflectionBasedNodeWithScopeImpl<Switch.SwitchScope>
         protected boolean picked = false;
     }
 
+    @Override
+    public void describe(IDescriptionBuilder builder) {
+        builder.phrase("Execute");
+        builder.describe(getSlots().get("case"));
+        builder.describeIfPresent("in case none match do", getSlots().get("defaultNode"));
+    }
+
     @EqualsAndHashCode(callSuper = true)
     public static class Case extends ReflectionBasedNodeImpl implements INodeWithParent<Switch> {
 
@@ -78,6 +86,18 @@ public class Switch extends ReflectionBasedNodeWithScopeImpl<Switch.SwitchScope>
         @Override
         public void registerParent(Switch parent) {
             this.parent = parent;
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().
+                    add("in case").
+                    expression(getArguments().
+                    get("test")).
+                    add("holds").
+                    end();
+            builder.phrase("do");
+            builder.describe(getSlots().get("body"));
         }
     }
 
