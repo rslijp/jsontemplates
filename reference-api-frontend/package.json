@@ -14,7 +14,9 @@
     "eslint-fix": "node node_modules/eslint/bin/eslint.js  --fix src/**/*.js",
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""
   },
-  "keywords": ["templating"],
+  "keywords": [
+    "templating"
+  ],
   "author": "R.Z. Slijp",
   "license": "Apache-2.0",
   "bugs": {
@@ -25,7 +27,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.26",
     "@fortawesome/free-solid-svg-icons": "^5.12.0",
     "@fortawesome/react-fontawesome": "^0.1.8",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.5.0",
     "prop-types": "^15.7.2",
     "react": "^16.5.2",
     "react-bootstrap": "^1.0.0-beta.16",

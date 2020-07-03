@@ -1,3 +1,5 @@
+import {parse} from "./ExpressionParser";
+
 let observer = null;
 
 let slots = [];
@@ -42,6 +44,37 @@ function innerGetNode(c, path) {
 
 export function getNode(path) {
     return innerGetNode(slots, path.toString());
+}
+
+export function  isArgumentAConstant(path,argumentName, types){
+    const node = getNode(path);
+    const expressionStr = (node.arguments||{})[argumentName];
+    if(!expressionStr) {
+        const type = (node.argumentTypes||{})[argumentName];
+        const baseType= type.indexOf("?") > -1 ? type.substr(0,type.length-1):type;
+        return types.includes(baseType);
+    }
+    const parseResult = parse(expressionStr);
+    if(!parseResult.success) return false;
+    const expression  = parseResult.expression;
+    if(expression.type!=='CONSTANT') return false;
+    if(types) {
+        const type = expression.returnType();
+        const baseType= type.indexOf("?") > -1 ? type.substr(0,type.length-1):type;
+        return types.includes(baseType);
+    }
+    return true;
+}
+
+export function getConstantArgumentValue(path,argumentName){
+    const node = getNode(path);
+    const expressionStr = (node.arguments||{})[argumentName];
+    if(!expressionStr) return null;
+    const parseResult = parse(expressionStr);
+    if(!parseResult.success) return null;
+    const expression  = parseResult.expression;
+    if(expression.type!=='CONSTANT') throw "Not a constant";
+    return expression.value;
 }
 
 function innerSetNode(c, path,node) {
@@ -181,10 +214,10 @@ function toDTO(slot){
     return dto;
 }
 
-function fromDTO(nodeDTO,library){
+function fromDTO(nodeDTO,library, expanded){
     const nodeTemplate=library.find(c=>c.name===nodeDTO.name);
     const node =  {...nodeTemplate};
-
+    node.expanded=expanded;
     node.arguments={};
     Object.keys(node.argumentTypes||{}).forEach(argumentName=>{
         node.arguments[argumentName]=nodeDTO.arguments[argumentName];
@@ -192,7 +225,7 @@ function fromDTO(nodeDTO,library){
     Object.keys(node.nodeSlots||{}).forEach(slotName=>{
         const name = slotName.endsWith("Node")?slotName.substr(0,slotName.length-4):slotName;
         const slotsDTO=nodeDTO.slots[name]||[];
-        node[slotName]=slotsDTO.map(slot=>fromDTO(slot,library));
+        node[slotName]=slotsDTO.map(slot=>fromDTO(slot,library, true));
     });
     return node;
 }
@@ -214,5 +247,7 @@ export function getSlotsAsDto(){
 }
 
 export function setSlots(template, library){
-    slots=template.slots.map(slot=>fromDTO(slot,library));
+    slots=template.slots.map((slot,i)=>{
+        return fromDTO(slot,library, i===0);
+    });
 }

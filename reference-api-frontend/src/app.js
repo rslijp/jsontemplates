@@ -1,6 +1,5 @@
 'use strict';
 
-import './css/main.css';
 import { AllowNodesProvider, setAvailableNodes, setGlobalNodes } from './available/AllowNodesProvider'
 import { VariablesProvider, setVariables } from './variables/VariableProvider'
 import React from "react";
@@ -16,11 +15,10 @@ class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {initialized: false, mainNodeIds: [], mainModelId: null, modelDescriptions: {}, expressionDescriptions: [], nodeDescriptions:[]};
-
 	}
 
 	loadFromServer() {
-		var id = document.location.hash.substring(1);
+		const id = document.location.hash.substring(1);
 		get(id,data => {
 			const description = data.description;
 			initExpressionLibrary(description.expressionDescriptions);

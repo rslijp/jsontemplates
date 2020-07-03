@@ -7,7 +7,7 @@ module.exports = env => {
     console.log("*** "+env+" ***");
     var config =  {
         // Tell Webpack which file kicks off our app.
-        entry: [path.resolve(__dirname, 'src/app.js')],
+        entry: [path.resolve(__dirname, 'src/index.js')],
         // Tell Webpack to output our bundle to ./dist/jsontemplate.js
         output: {
             filename: 'jsontemplate-bundle.js',

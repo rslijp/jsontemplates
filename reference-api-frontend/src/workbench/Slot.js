@@ -1,20 +1,21 @@
 import {Card, Col, Container, Row} from "react-bootstrap";
+import React, {useState} from 'react';
 import {any, arrayOf, shape, string} from "prop-types";
 import {canAcceptNode, clearNode, displayName, getNode, hasFocus, setFocus, setNode, slotNodes} from '../model/JsonTemplate';
+import {faMinusSquare, faPlusSquare, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
+import Argument from "./Argument";
 import EmptySlot from "./EmptySlot";
-import ErrorBoundary from "../common/ErrorBoundary";
-import Expression from "./Expression";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { ItemTypes } from '../Constants';
-import Optional from "../common/Optional";
 import Overlay from '../common/Overlay';
-import React from 'react';
-import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 import {getGlobalNodes} from '../available/AllowNodesProvider';
 import { useDrop } from 'react-dnd';
 
 function Slot({node,path,allNodes,forSlot}) {
-
+    const [expanded, setExpanded] = useState(node.expanded===undefined?true:node.expanded);
+    const toggleExpanded = ()=>{
+        setExpanded(!expanded);
+    };
     function onDrop(item,path){
         const node = item.payload;
         setNode(path,node);
@@ -50,8 +51,7 @@ function Slot({node,path,allNodes,forSlot}) {
         const result = Object.entries(argumentTypes).map(([k,v]) => {
             // let value = v;
             const isOptional = v.endsWith("?");
-            const optional = isOptional?<Optional/>:null;
-            return (<Row className="mb-2" key={k}><Col sm={"2"}>{k}<br/>{optional}</Col><Col className='font-weight-light'><ErrorBoundary><Expression optional={isOptional} path={path} argumentName={k} type={v}/></ErrorBoundary></Col></Row>);
+            return <Argument key={k} optional={isOptional} path={path} argumentName={k} type={v}/>;
         });
         return (
             <div>
@@ -110,11 +110,14 @@ function Slot({node,path,allNodes,forSlot}) {
         setFocus(path, null);
     }
 
-    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null} <div className="float-right remove-container"> <FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div></h3></Card.Header>, path);
+    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}
+        <div className="toggle-container"><FontAwesomeIcon onClick={toggleExpanded} className="text-secondary h-100" icon={expanded?faMinusSquare:faPlusSquare} /></div>
+        <div className="float-right remove-container"><FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div>
+    </h3></Card.Header>, path);
     return (
         <Card className={"mb-3 "+(hasFocus(path, null)?"border border-primary":"")} >
             {header}
-            <Card.Body>
+            <Card.Body className={expanded?"":"d-none"}>
                 {argumentTypes}
                 {nodeSlots}
             </Card.Body>

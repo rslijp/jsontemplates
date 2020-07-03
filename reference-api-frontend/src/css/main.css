@@ -78,8 +78,12 @@ html, body,#root, #react, #root > .row {
     width: 150px;
 }
 
-.remove-container {
+.remove-container,.toggle-container {
     height: 20px;
+}
+
+.toggle-container {
+    display: inline flow-root;
 }
 /*[data-toggle="collapse"].collapsed .if-not-collapsed {*/
 /*    display: none;*/
