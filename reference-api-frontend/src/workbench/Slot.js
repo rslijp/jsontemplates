@@ -85,7 +85,7 @@ function Slot({node,path,allNodes,forSlot}) {
                 const currentPath = childPath+"."+i;
                 return (<Slot key={i} forSlot={name} path={currentPath} node={node} allNodes={allNodes}/>);
             });
-            const addSlot =/*dropArea(*/<EmptySlot forSlot={name} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>;/*, childPath);*/
+            const addSlot =/*dropArea(*/<EmptySlot forSlot={name+"Node"} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>;/*, childPath);*/
             return (<Row className="mb-2" key={k}><Col sm>{slots}{addSlot}</Col></Row>);
         });
         return (
@@ -107,9 +107,9 @@ function Slot({node,path,allNodes,forSlot}) {
 
     function giveFocus(e){
         e.stopPropagation();
+        console.log(path);
         setFocus(path, null);
     }
-
     const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}
         <div className="toggle-container"><FontAwesomeIcon onClick={toggleExpanded} className="text-secondary h-100" icon={expanded?faMinusSquare:faPlusSquare} /></div>
         <div className="float-right remove-container"><FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div>
@@ -123,6 +123,7 @@ function Slot({node,path,allNodes,forSlot}) {
             </Card.Body>
         </Card>
     );
+
 }
 Slot.propTypes = {
     node: shape({

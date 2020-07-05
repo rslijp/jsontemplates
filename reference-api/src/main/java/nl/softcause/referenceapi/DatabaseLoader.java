@@ -59,12 +59,12 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private void loadPreloadDouble() {
         var setNode1 = Set.create(
-                Map.of("path", new Constant("age"),
-                        "value", new Variable("scope.current"))
+                Map.of("path", new Constant("myAge"),
+                        "value", new Variable("age"))
         );
         var setNode2 = Set.create(
-                Map.of("path", new Constant("mentalAge"),
-                        "value", new Variable("scope.current"))
+                Map.of("path", new Constant("myMentalAge"),
+                        "value", new Variable("mentalAge"))
         );
 
         database.save("TEST-DOUBLE", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{setNode1, setNode2});

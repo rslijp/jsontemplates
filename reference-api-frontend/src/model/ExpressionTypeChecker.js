@@ -149,6 +149,8 @@ function ExpressionTypeChecker(definition){
 
     function typesMatch(target, candidate){
         log("target",target,"candidate",candidate);
+        if(target === ReturnTypes.OBJECTOPTIONAL) return true;
+        if(target === ReturnTypes.OBJECT && !isOptional(candidate)) return true;
         if(target === candidate) return true;
         if(target === ReturnTypes.DECIMAL && candidate === ReturnTypes.INTEGER) return true;
         if(baseType(target) === ReturnTypes.GENERIC && baseType(candidate) !== ReturnTypes.GENERIC) {

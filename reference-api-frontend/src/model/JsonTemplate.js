@@ -66,6 +66,16 @@ export function  isArgumentAConstant(path,argumentName, types){
     return true;
 }
 
+export function  isArgumentAVariable(path,argumentName){
+    const node = getNode(path);
+    const expressionStr = (node.arguments||{})[argumentName];
+    if(!expressionStr) return true;
+    const parseResult = parse(expressionStr);
+    if(!parseResult.success) return false;
+    const expression  = parseResult.expression;
+    return (expression.type==='VARIABLE');
+}
+
 export function getConstantArgumentValue(path,argumentName){
     const node = getNode(path);
     const expressionStr = (node.arguments||{})[argumentName];
@@ -75,6 +85,17 @@ export function getConstantArgumentValue(path,argumentName){
     const expression  = parseResult.expression;
     if(expression.type!=='CONSTANT') throw "Not a constant";
     return expression.value;
+}
+
+export function getVariableArgumentValue(path,argumentName){
+    const node = getNode(path);
+    const expressionStr = (node.arguments||{})[argumentName];
+    if(!expressionStr) return null;
+    const parseResult = parse(expressionStr);
+    if(!parseResult.success) return null;
+    const expression  = parseResult.expression;
+    if(expression.type!=='VARIABLE') throw "Not a variable";
+    return expression.name;
 }
 
 function innerSetNode(c, path,node) {
@@ -175,7 +196,9 @@ function innerSlotNodes(parentPath, slot){
 }
 export function slotNodes(parentPath, slot){
     let cPath = parentPath || pathWithFocus;
+    console.log(parentPath,pathWithFocus,cPath);
     let cSlot = slot || slotWithFocus;
+    console.log(slot,slotWithFocus,cSlot);
     if(cPath) {
         let slotNodes = innerSlotNodes(cPath, cSlot);
         if(slotNodes) return slotNodes;

@@ -83,7 +83,8 @@ html, body,#root, #react, #root > .row {
 }
 
 .toggle-container {
-    display: inline flow-root;
+    /*display: inline flow-root;*/
+    display: inline-block;
 }
 /*[data-toggle="collapse"].collapsed .if-not-collapsed {*/
 /*    display: none;*/
