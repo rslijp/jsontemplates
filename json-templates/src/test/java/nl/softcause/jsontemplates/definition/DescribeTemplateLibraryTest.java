@@ -212,7 +212,6 @@ public class DescribeTemplateLibraryTest {
 
     public static class AllowedValuesProvider extends StaticValuesProvider {
 
-
         @SuppressWarnings({"unchecked", "WeakerAccess"})
         public AllowedValuesProvider() {
             super("Hello world","Goodbye");
@@ -267,6 +266,34 @@ public class DescribeTemplateLibraryTest {
         )));
 //        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
     }
+
+
+    public static class AllowedValuesTestNodeWithBase extends AllowedValuesTestNode {
+
+    }
+
+    @Test
+    public void should_describe_simple_node_with_allowed_values_with_base() {
+        var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
+        var description = new DescribeTemplateLibrary().addMainNodes(AllowedValuesTestNodeWithBase.class).describe(modelDefinition);
+
+        var nodeDefOpt =
+                description.getNodeDescriptions().stream().filter(f -> f.getName().equals("AllowedValuesTestNodeWithBase")).findFirst();
+        assertThat(nodeDefOpt.isPresent(), is(true));
+        var nodeDef = nodeDefOpt.orElseThrow();
+        assertThat(nodeDef.getName(), is("AllowedValuesTestNodeWithBase"));
+        assertThat(nodeDef.getNodeSlots(), nullValue());
+        assertThat(nodeDef.getNodeSlotLimits(), nullValue());
+        assertThat(nodeDef.getArgumentTypes(), is(Map.of(
+                "value", "text?",
+                "output", "text?"
+        )));
+        assertThat(nodeDef.getAllowedValues(), is(Map.of(
+                "value", new AllowedValuesDescription(AllowedValuesTestNodeWithBase.class.getSimpleName(),"", new AllowedValuesProvider().allValues())
+        )));
+//        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
+    }
+
 
     @Test
     public void should_describe_node_with_scope_change() {

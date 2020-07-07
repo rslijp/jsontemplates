@@ -145,6 +145,8 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
     }
 
 
+
+
     @Value
     private class ResolvedModel {
         IModel model;

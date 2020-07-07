@@ -5,9 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 @SuppressWarnings("unchecked")
 public abstract class ReflectionBasedNodeImpl implements INode {
 
+    private static ThreadLocal<Stack<INode>> parentsContext = new ThreadLocal<>();
 
     private final Class nodeClass;
     protected Map<String, IExpression> arguments = new LinkedHashMap<>();
@@ -122,11 +125,35 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
 
     public void evaluate(TemplateModel model) {
-        var parent = model.scope().getOwner();
+        var parent = getParent();
+        pushParent();
         this.registerDefinitions(model);
         populateFields(model, parent);
         internalEvaluate(model);
         this.revokeDefinitions(model);
+        popParent();
+    }
+
+    private INode getParent() {
+        var stack = parentsContext.get();
+        if (stack == null || stack.size() == 0) {
+            return null;
+        }
+        return stack.peek();
+    }
+
+    private void pushParent() {
+        var stack = parentsContext.get();
+        if (stack == null) {
+            stack = new Stack<>();
+            parentsContext.set(stack);
+        }
+        stack.push(this);
+    }
+
+    private void popParent() {
+        var stack = parentsContext.get();
+        stack.pop();
     }
 
     private void populateFields(TemplateModel model, Object parent) {
@@ -199,11 +226,19 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         }
     }
 
-    private String getDiscriminatorValue(String field, TemplateModel model) {
+    protected String getDiscriminatorValue(String field, TemplateModel model) {
         if (StringUtils.isBlank(field)) {
             return null;
         }
-        var value = getArguments().get(field).evaluate(model);
+        INode c = this;
+        var parts = new ArrayList(Arrays.asList(field.split("\\.")));
+        while (parts.get(0).equals("parent")) {
+            var withParent = (INodeWithParent<?>) c;
+            c = withParent.getRegisteredParent();
+            parts.remove(0);
+        }
+        field = String.join(".", parts);
+        var value = c.getArguments().get(field).evaluate(model);
         if (value == null) {
             return null;
         }

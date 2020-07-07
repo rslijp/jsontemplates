@@ -88,6 +88,10 @@ public class Switch extends ReflectionBasedNodeWithScopeImpl<Switch.SwitchScope>
             this.parent = parent;
         }
 
+        public Switch getRegisteredParent() {
+            return parent;
+        }
+
         @Override
         public void describe(IDescriptionBuilder builder) {
             builder.phrase().

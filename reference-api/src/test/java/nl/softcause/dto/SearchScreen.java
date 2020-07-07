@@ -141,6 +141,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             this.parent=parent;
         }
 
+        public SearchScreen getRegisteredParent(){
+            return parent;
+        }
+
         @RequiredArgument
         private String field;
 
@@ -215,6 +219,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             this.parent=parent;
         }
 
+        public SearchScreen getRegisteredParent(){
+            return parent;
+        }
+
         @RequiredArgument
         private String field;
 
@@ -286,6 +294,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         @Override
         public void registerParent(SearchScreen parent) {
             this.parent = parent;
+        }
+
+        public SearchScreen getRegisteredParent(){
+            return parent;
         }
 
         @RequiredArgument
@@ -422,6 +434,10 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
             @Override
             public void registerParent(SearchScreen.Post parent) {
                 this.parent = parent;
+            }
+
+            public SearchScreen.Post getRegisteredParent(){
+                return parent;
             }
 
             @RequiredArgument

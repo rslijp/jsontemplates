@@ -13,6 +13,7 @@ import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
 import nl.softcause.jsontemplates.nodes.base.AllowedValues;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
+import nl.softcause.jsontemplates.utils.ClassUtil;
 
 public class DescribeNodeHelper {
 
@@ -69,7 +70,11 @@ public class DescribeNodeHelper {
     private void processField(Class nodeClass, NodeDescription description,
                               Map.Entry<String, ArgumentDefinition> slot) {
         description.addArgument(slot.getKey(), slot.getValue().getType());
-        var field = nodeClass.getDeclaredField(slot.getKey());
+
+        var field = ClassUtil.searchForDeclaredField(nodeClass, slot.getKey());
+        if (field == null) {
+            throw new Exception("Can't find " + slot.getKey() + " on " + nodeClass.getTypeName());
+        }
         var allowedValues = field.getAnnotation(AllowedValues.class);
         if (allowedValues != null) {
             description.addAllowedValueSet(slot.getKey(), allowedValues);
