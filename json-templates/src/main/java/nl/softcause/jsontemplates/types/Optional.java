@@ -40,9 +40,6 @@ public class Optional<T> implements IExpressionType<T> {
         if (src == null) {
             return null;
         }
-        if (!baseType.isA(src)) {
-            throw TypeException.invalidCast(src, this);
-        }
         return baseType.convert(src);
     }
 

@@ -107,7 +107,6 @@ function Slot({node,path,allNodes,forSlot}) {
 
     function giveFocus(e){
         e.stopPropagation();
-        console.log(path);
         setFocus(path, null);
     }
     const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}

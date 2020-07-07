@@ -66,7 +66,7 @@ public class NodeDTOTest {
                 "field", new ArgumentDefinition(Types.TEXT, null),
                 "label", new ArgumentDefinition(Types.OPTIONAL_TEXT, null),
                 "dataType", new ArgumentDefinition(Types.ENUM, null),
-                "sort", new ArgumentDefinition(Types.ENUM, null)
+                "sort", new ArgumentDefinition(Types.ENUM, ClientSearchScreenColumn.DefaultSortDataType.NO)
         )));
     }
 

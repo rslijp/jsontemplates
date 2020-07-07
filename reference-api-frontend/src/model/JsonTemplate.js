@@ -47,6 +47,7 @@ export function getNode(path) {
 }
 
 export function  isArgumentAConstant(path,argumentName, types){
+    types = types || ['text', 'boolean', 'integer','enum'];
     const node = getNode(path);
     const expressionStr = (node.arguments||{})[argumentName];
     if(!expressionStr) {
@@ -64,6 +65,32 @@ export function  isArgumentAConstant(path,argumentName, types){
         return types.includes(baseType);
     }
     return true;
+}
+
+export function getAllowedValues(path,argumentName){
+    const allowedValueSet = getNode(path).allowedValues;
+    if(allowedValueSet && allowedValueSet[argumentName]){
+        const setForArguments = allowedValueSet[argumentName];
+        const discriminatorField = setForArguments.discriminatorField;
+        let discriminatorValue = null;
+        if(discriminatorField && isArgumentAConstant(path, discriminatorField)){
+            discriminatorValue=getConstantArgumentValue(path, discriminatorField);
+        }
+        if(discriminatorValue !== null) discriminatorValue=discriminatorValue.toString();
+        var candidate = setForArguments.valueSet.filter(v=>v.discriminator===discriminatorValue);
+        if(candidate.length===1) {
+            return candidate[0].values;
+        } else {
+            return [];
+        }
+    } else {
+        return null;
+    }
+}
+
+export function hasAllowedValues(path,argumentName){
+    const allowedValueSet = getNode(path).allowedValues;
+    return allowedValueSet && allowedValueSet[argumentName];
 }
 
 export function  isArgumentAVariable(path,argumentName){
@@ -196,9 +223,7 @@ function innerSlotNodes(parentPath, slot){
 }
 export function slotNodes(parentPath, slot){
     let cPath = parentPath || pathWithFocus;
-    console.log(parentPath,pathWithFocus,cPath);
     let cSlot = slot || slotWithFocus;
-    console.log(slot,slotWithFocus,cSlot);
     if(cPath) {
         let slotNodes = innerSlotNodes(cPath, cSlot);
         if(slotNodes) return slotNodes;

@@ -56,7 +56,7 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
     private String reference;
 
 
-    @DefaultValue(value=10L)
+    @DefaultValue(value="10")
     private Long pageSize;
 
     @RequiredSlot
@@ -150,6 +150,7 @@ public class SearchScreen extends ReflectionBasedNodeWithScopeImpl<SearchScreen.
         private ClientSearchScreenColumn.ClientSearchScreenColumnDataType dataType;
 
         @RequiredArgument
+        @DefaultValue(value="NO")
         private ClientSearchScreenColumn.DefaultSortDataType sort;
 
 

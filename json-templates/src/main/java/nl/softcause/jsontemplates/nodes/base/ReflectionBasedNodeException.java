@@ -1,6 +1,8 @@
 package nl.softcause.jsontemplates.nodes.base;
 
-class ReflectionBasedNodeException extends RuntimeException {
+import java.util.List;
+
+public class ReflectionBasedNodeException extends RuntimeException {
 
     private ReflectionBasedNodeException(String msg) {
         super(msg);
@@ -44,5 +46,19 @@ class ReflectionBasedNodeException extends RuntimeException {
     static ReflectionBasedNodeException errorInvokingScopeConstructor(Class node, ReflectiveOperationException iAe) {
         return new ReflectionBasedNodeException(
                 String.format("Invoking constructor of %s threw an error %s", node.getSimpleName(), iAe.getMessage()));
+    }
+
+    public static ReflectionBasedNodeException illegalValueFor(String path, Object value, List<Object> allowedValues) {
+        return new ReflectionBasedNodeException(
+                String.format("Argument field %s got value '%s' but only %s are allowed",
+                        path,
+                        value.toString(),
+                        String.join(",",
+                                allowedValues.
+                                stream().
+                                map(Object::toString).
+                                map(t -> String.format("'%s'", t)).
+                                toArray(String[]::new)))
+        );
     }
 }

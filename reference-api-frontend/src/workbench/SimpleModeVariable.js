@@ -1,9 +1,9 @@
+import {Form,InputGroup} from "react-bootstrap";
 import React, {useState} from "react";
-import {any, bool, string} from "prop-types";
+import {bool, string} from "prop-types";
 import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {getVariableArgumentValue, updateExpression} from "../model/JsonTemplate";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Form,InputGroup} from "react-bootstrap";
 import SuggestionModelType from "../model/SuggestionModelType";
 import {getModelDefinition} from '../model/ModelDefinition';
 import {typesMatch} from '../model/ExpressionTypeChecker';

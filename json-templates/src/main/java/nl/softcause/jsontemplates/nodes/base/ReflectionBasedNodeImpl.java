@@ -6,13 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
+import lombok.SneakyThrows;
 import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
@@ -25,6 +26,7 @@ import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
@@ -33,14 +35,14 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
 
     private final Class nodeClass;
-    protected Map<String, IExpression> arguments = new HashMap<>();
+    protected Map<String, IExpression> arguments = new LinkedHashMap<>();
     protected Map<String, INode[]> slots;
 
     @JsonIgnore
-    private final Map<String, ArgumentDefinition> argumentsTypes = new HashMap<>();
+    private final Map<String, ArgumentDefinition> argumentsTypes = new LinkedHashMap<>();
 
     @JsonIgnore
-    private final Map<String, ISlotPattern> slotTypes = new HashMap<>();
+    private final Map<String, ISlotPattern> slotTypes = new LinkedHashMap<>();
 
     public ReflectionBasedNodeImpl() {
         this.nodeClass = this.getClass();
@@ -67,6 +69,9 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
         for (var field : fields) {
             var fieldType = field.getType();
+            if (field.getAnnotation(IgnoreArgument.class) != null) {
+                continue;
+            }
             if (INode.class.isAssignableFrom(fieldType)) {
                 reflectOnNodeFIeld(field);
             } else {
@@ -74,13 +79,14 @@ public abstract class ReflectionBasedNodeImpl implements INode {
             }
         }
         //Check super
-        if(shouldRecurse(clazz)) {
+        if (shouldRecurse(clazz)) {
             reflectOnNode(clazz.getSuperclass());
         }
     }
 
     private boolean shouldRecurse(Class clazz) {
-        return !clazz.getSuperclass().equals(ReflectionBasedNodeWithScopeImpl.class) && !clazz.getSuperclass().equals(ReflectionBasedNodeImpl.class);
+        return !clazz.getSuperclass().equals(ReflectionBasedNodeWithScopeImpl.class) &&
+                !clazz.getSuperclass().equals(ReflectionBasedNodeImpl.class);
     }
 
     private void reflectOnArgumentField(Field field, Class<?> fieldType) {
@@ -94,12 +100,9 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
             Object defaultValue = field.get(this);
             if (field.getAnnotation(DefaultValue.class) != null) {
-                defaultValue = field.getAnnotation(DefaultValue.class).value();
+                type = type.infuse(field.getType());
+                defaultValue = type.convert(field.getAnnotation(DefaultValue.class).value());
             }
-//            String objectPath = null;
-//            if(type.baseType() == Types.OBJECT && field.getAnnotation(TypeFromModel.class)!=null){
-//                objectPath = field.getAnnotation(TypeFromModel.class).path();
-//            }
             getArgumentsTypes().put(fieldName, new ArgumentDefinition(type, defaultValue/*,objectPath*/));
         } catch (IllegalAccessException IAe) {
             throw ReflectionBasedNodeException.illegalAccessOfArgumentField(nodeClass, fieldName);
@@ -137,7 +140,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
             populateField(model, field, parent);
         }
 
-        if(shouldRecurse(clazz)) {
+        if (shouldRecurse(clazz)) {
             populateFields(clazz.getSuperclass(), model, parent);
         }
     }
@@ -168,8 +171,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         try {
             if (getArguments().get(fieldName) != null) {
                 var value = getArguments().get(fieldName).evaluate(model);
-                if(field.getType().isEnum() && value instanceof String) {
+                if (field.getType().isEnum() && value instanceof String) {
                     value = TextEnumType.getEnumValue(field.getType(), (String) value);
+                }
+                if (value != null && field.getAnnotation(AllowedValues.class) != null) {
+                    guardFieldValue(value, fieldName, model, field.getAnnotation(AllowedValues.class));
                 }
                 field.set(this, value);
             } else {
@@ -178,6 +184,30 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         } catch (IllegalAccessException e) {
             throw ReflectionBasedNodeException.illegalAccessOfArgumentField(nodeClass, fieldName);
         }
+    }
+
+    @SneakyThrows
+    private void guardFieldValue(Object value, String fieldName, TemplateModel model, AllowedValues annotation) {
+        var argumentDefinition = getArgumentsTypes().get(fieldName);
+        var discriminatorField = annotation.discriminatorField();
+        var values = annotation.factory().getConstructor().newInstance().valuesFor(
+                getDiscriminatorValue(discriminatorField, model)
+        );
+        var allowed = values.stream().map(v -> argumentDefinition.getType().convert(v)).collect(Collectors.toList());
+        if (!allowed.contains(value)) {
+            throw ReflectionBasedNodeException.illegalValueFor(fieldName, value, allowed);
+        }
+    }
+
+    private String getDiscriminatorValue(String field, TemplateModel model) {
+        if (StringUtils.isBlank(field)) {
+            return null;
+        }
+        var value = getArguments().get(field).evaluate(model);
+        if (value == null) {
+            return null;
+        }
+        return value.toString();
     }
 
     private void populateNodeField(TemplateModel model, Field field, Object parent) {
@@ -236,6 +266,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         return getClass().hashCode();
     }
 
+    @Target({ElementType.FIELD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface IgnoreArgument {
+    }
+
 
     @Target({ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -245,7 +280,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     @Target({ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface DefaultValue {
-        long value();
+        String value();
     }
 
 
@@ -259,9 +294,5 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     public @interface LimitSlots {
         Class[] allowed();
     }
-
-//    @Target({ElementType.FIELD})
-//    @Retention(RetentionPolicy.RUNTIME)
-//    public @interface TypeFromModel { String path();}
 
 }

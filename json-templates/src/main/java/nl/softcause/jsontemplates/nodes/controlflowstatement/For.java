@@ -29,10 +29,10 @@ public class For extends ReflectionBasedNodeWithScopeImpl<For.ForScope> {
         super(ForScope.class);
     }
 
-    @DefaultValue(value = 0L)
-    private Long start = 0L;
-    @DefaultValue(value = 1L)
-    private Long step = 1L;
+    @DefaultValue(value = "0")
+    private Long start;
+    @DefaultValue(value = "1")
+    private Long step;
     @RequiredArgument
     private Long until = null;
 

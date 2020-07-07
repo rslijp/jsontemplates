@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import lombok.SneakyThrows;
+import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
+import nl.softcause.jsontemplates.nodes.base.AllowedValues;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 
 public class DescribeNodeHelper {
@@ -38,15 +41,16 @@ public class DescribeNodeHelper {
         seen.put(nodeClass, description);
         INode node = createNode(nodeClass);
         collectSubNodes(nodeClass, template, seen);
-        node.getSlotTypes().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).forEach(
+        node.getSlotTypes().entrySet().forEach(
                 slot -> {
                     var pattern = slot.getValue();
                     description.addSlot(slot.getKey(), pattern, seen);
                 }
         );
-        node.getArgumentsTypes().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).forEach(
+        node.getArgumentsTypes().entrySet().forEach(
                 slot -> {
-                    description.addArgument(slot.getKey(), slot.getValue().getType());
+                    processField(nodeClass, description, slot);
+
                 }
         );
         if (node instanceof IScopeChange) {
@@ -59,6 +63,20 @@ public class DescribeNodeHelper {
         }
         log(description.toString());
         return description.getId();
+    }
+
+    @SneakyThrows
+    private void processField(Class nodeClass, NodeDescription description,
+                              Map.Entry<String, ArgumentDefinition> slot) {
+        description.addArgument(slot.getKey(), slot.getValue().getType());
+        var field = nodeClass.getDeclaredField(slot.getKey());
+        var allowedValues = field.getAnnotation(AllowedValues.class);
+        if (allowedValues != null) {
+            description.addAllowedValueSet(slot.getKey(), allowedValues);
+        } else if (field.getType().isEnum()) {
+            description.addEnumAllowedValueSet(slot.getKey(), field.getType());
+        }
+
     }
 
     private void collectSubNodes(Class nodeClass, TemplateDescription template, Map<Class, NodeDescription> seen) {

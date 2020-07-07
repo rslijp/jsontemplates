@@ -21,7 +21,7 @@ function SimpleModeExpression({optional,path,argumentName,type}){
     };
 
     let input = null;
-    if(baseType==='text') input=<SimpleText value={value} updateValue={updateValue}/>;
+    if(baseType==='text' || baseType==='enum') input=<SimpleText value={value} updateValue={updateValue}/>;
     else if(baseType==='boolean') input=<SimpleBoolean value={value} updateValue={updateValue}/>;
     else if(baseType==='integer') input=<SimpleNumber value={value} updateValue={updateValue}/>;
     return (<div>

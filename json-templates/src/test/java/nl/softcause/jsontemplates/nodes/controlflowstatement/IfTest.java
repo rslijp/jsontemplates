@@ -4,10 +4,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Collectors;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.TemplateModel;
@@ -15,6 +17,7 @@ import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.AssertionNode;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
 import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
 import nl.softcause.jsontemplates.types.Types;
@@ -36,10 +39,20 @@ public class IfTest {
         var ifNode = new If();
 
         var argumentTypes = ifNode.getSlotTypes();
-
         assertThat(argumentTypes, is(Map.of(
                 "thenNode", new WildCardSlot(),
                 "elseNode", new OptionalSlot(new WildCardSlot()))));
+    }
+
+    @Test
+    public void should_retain_order_of_slots() {
+        var ifNode = new If();
+
+        var list = new ArrayList<>(ifNode.getSlotTypes().entrySet());
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getKey(), is("thenNode"));
+        assertThat(list.get(1).getKey(), is("elseNode"));
+
     }
 
     @Test

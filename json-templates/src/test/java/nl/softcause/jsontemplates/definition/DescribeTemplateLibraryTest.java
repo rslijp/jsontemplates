@@ -5,13 +5,18 @@ import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
+import nl.softcause.jsontemplates.nodes.ReflectionBaseNodeImplTest;
+import nl.softcause.jsontemplates.nodes.base.AllowedValues;
+import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
+import nl.softcause.jsontemplates.types.StaticValuesProvider;
 import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
 
@@ -186,6 +191,81 @@ public class DescribeTemplateLibraryTest {
         assertThat(nodeDef.getNodeSlotLimits(), nullValue());
         assertThat(nodeDef.getArgumentTypes(), is(Collections.singletonMap("test", "boolean")));
         assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
+    }
+
+    @Test
+    public void should_retain_order_insize_description() {
+        var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
+        var description = new DescribeTemplateLibrary().describe(modelDefinition);
+
+        var nodeDefOpt =
+                description.getNodeDescriptions().stream().filter(f -> f.getName().equals("If")).findFirst();
+        assertThat(nodeDefOpt.isPresent(), is(true));
+        var nodeDef = nodeDefOpt.orElseThrow();
+        assertThat(nodeDef.getName(), is("If"));
+        var list = new ArrayList<>(nodeDef.getNodeSlots().entrySet());
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getKey(), is("thenNode"));
+        assertThat(list.get(1).getKey(), is("elseNode"));
+
+    }
+
+    public static class AllowedValuesProvider extends StaticValuesProvider {
+
+
+        @SuppressWarnings({"unchecked", "WeakerAccess"})
+        public AllowedValuesProvider() {
+            super("Hello world","Goodbye");
+        }
+    }
+
+    public static class AllowedValuesTestNode extends ReflectionBasedNodeImpl {
+
+        public static ReflectionBaseNodeImplTest.AllowedValuesTestNode create(String value) {
+            var node = new ReflectionBaseNodeImplTest.AllowedValuesTestNode();
+            node.setArguments(Collections.singletonMap("value",new Constant(value)));
+            node.setSlots(new HashMap<>());
+            return node;
+        }
+
+        @SuppressWarnings("unused")
+        @AllowedValues(factory = AllowedValuesProvider.class)
+        private String value;
+        @Getter
+        private String output;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            output=value;
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().add("Value is").expression(getArguments().get("value")).end();
+        }
+    }
+
+    @Test
+    public void should_describe_simple_node_with_allowed_values() {
+        var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
+        var description = new DescribeTemplateLibrary().addMainNodes(AllowedValuesTestNode.class).describe(modelDefinition);
+
+        var nodeDefOpt =
+                description.getNodeDescriptions().stream().filter(f -> f.getName().equals("AllowedValuesTestNode")).findFirst();
+        assertThat(nodeDefOpt.isPresent(), is(true));
+        var nodeDef = nodeDefOpt.orElseThrow();
+        assertThat(nodeDef.getName(), is("AllowedValuesTestNode"));
+        assertThat(nodeDef.getNodeSlots(), nullValue());
+        assertThat(nodeDef.getNodeSlotLimits(), nullValue());
+        assertThat(nodeDef.getArgumentTypes(), is(Map.of(
+                "value", "text?",
+                "output", "text?"
+        )));
+        assertThat(nodeDef.getAllowedValues(), is(Map.of(
+                "value", new AllowedValuesDescription(AllowedValuesTestNode.class.getSimpleName(),"", new AllowedValuesProvider().allValues())
+        )));
+//        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
     }
 
     @Test

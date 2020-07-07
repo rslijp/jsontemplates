@@ -25,6 +25,9 @@ public class BooleanType implements IExpressionType<java.lang.Boolean> {
 
     @Override
     public java.lang.Boolean convert(Object src) {
+        if (src instanceof String) {
+            return Boolean.valueOf((String) src);
+        }
         if (!isA(src)) {
             throw TypeException.invalidCast(src, this);
         }

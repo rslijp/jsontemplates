@@ -1,13 +1,19 @@
 package nl.softcause.jsontemplates.definition;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import nl.softcause.jsontemplates.model.NodeScopeChange;
+import nl.softcause.jsontemplates.nodes.base.AllowedValues;
 import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
 import nl.softcause.jsontemplates.nodes.types.LimitedSlot;
+import nl.softcause.jsontemplates.types.AllowedValueSets;
 import nl.softcause.jsontemplates.types.IExpressionType;
+import nl.softcause.jsontemplates.types.TextEnumType;
 
 @Getter
 public class NodeDescription {
@@ -23,26 +29,49 @@ public class NodeDescription {
     private String name;
     private String packageName;
     private Map<String, String> argumentTypes;
+    private Map<String, AllowedValuesDescription> allowedValues;
     private Map<String, String> nodeSlots;
     private Map<String, long[]> nodeSlotLimits;
     private Map<String, NodeScopeDescription> scopeChanges;
 
-    void addArgument(String name, IExpressionType argType) {
+    void addArgument(String field, IExpressionType argType) {
         if (argumentTypes == null) {
-            argumentTypes = new HashMap<>();
+            argumentTypes = new LinkedHashMap<>();
         }
-        argumentTypes.put(name, argType.getType());
+        argumentTypes.put(field, argType.getType());
+    }
+
+    @SneakyThrows
+    void addAllowedValueSet(String field, AllowedValues definition) {
+        if (allowedValues == null) {
+            allowedValues = new LinkedHashMap<>();
+        }
+        var factory = definition.factory().getConstructor().newInstance();
+        allowedValues
+                .put(field, new AllowedValuesDescription(name, definition.discriminatorField(), factory.allValues()));
+    }
+
+    void addEnumAllowedValueSet(String field, Class enumClass) {
+        if (!enumClass.isEnum()) {
+            throw new IllegalArgumentException("Expected an enum");
+        }
+        if (allowedValues == null) {
+            allowedValues = new LinkedHashMap<>();
+        }
+        var valueSet = new AllowedValueSets(null, new ArrayList<>(TextEnumType.getEnumValues(enumClass)));
+        var description = new AllowedValuesDescription(name, null, Collections.singletonList(valueSet));
+        allowedValues.put(field, description);
     }
 
 
     void addSlot(String name, ISlotPattern pattern, Map<Class, NodeDescription> lookup) {
         if (nodeSlots == null) {
-            nodeSlots = new HashMap<>();
+            nodeSlots = new LinkedHashMap<>();
         }
         var description = pattern.getDescription();
         if (pattern.getBasePattern() instanceof LimitedSlot) {
             if (nodeSlotLimits == null) {
-                nodeSlotLimits = new HashMap<>();
+                nodeSlotLimits = new LinkedHashMap<>();
             }
             description = "limited";
             var limits = pattern.getLimit();
@@ -67,8 +96,8 @@ public class NodeDescription {
     }
 
 
-    public void addEmptyScope() {
-        scopeChanges = new HashMap<>();
+    void addEmptyScope() {
+        scopeChanges = new LinkedHashMap<>();
     }
 
     @Override
@@ -86,7 +115,7 @@ public class NodeDescription {
                 if (!first) {
                     sb.append(", ");
                 }
-                sb.append("[" + slot.getKey() + "] -> " + slot.getValue());
+                sb.append("[").append(slot.getKey()).append("] -> ").append(slot.getValue());
                 first = false;
             }
         }
@@ -97,7 +126,7 @@ public class NodeDescription {
                 if (!first) {
                     sb.append(", ");
                 }
-                sb.append("@" + slot.getKey() + " -> " + slot.getValue());
+                sb.append("@").append(slot.getKey()).append(" -> ").append(slot.getValue());
                 first = false;
             }
         }
@@ -109,7 +138,7 @@ public class NodeDescription {
                 if (!first) {
                     sb.append(", ");
                 }
-                sb.append("+" + scope.getKey() + ": " + scope.getValue());
+                sb.append("+").append(scope.getKey()).append(": ").append(scope.getValue());
                 first = false;
             }
         }

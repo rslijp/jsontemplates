@@ -1,18 +1,26 @@
 package nl.softcause.referenceapi;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.comparison.Equals;
+import nl.softcause.jsontemplates.model.TemplateModel;
+import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.base.AllowedValues;
+import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.For;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.If;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Set;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Switch;
+import nl.softcause.jsontemplates.types.AllowedValueSets;
+import nl.softcause.jsontemplates.types.IAllowedValuesProvider;
+import nl.softcause.jsontemplates.types.StaticValuesProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,7 +33,8 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private DescribeTemplateLibrary buildLibrary() {
-        return new DescribeTemplateLibrary();
+        return new DescribeTemplateLibrary().
+                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class);
     }
 
     @Override
@@ -104,5 +113,125 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private void loadEmpty() {
         database.save("TEST-EMPTY", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{});
+    }
+
+    @SuppressWarnings("unused")
+    public static class LogLevelProvider extends StaticValuesProvider {
+
+        @SuppressWarnings("unused")
+        public LogLevelProvider() {
+            super("info", "warn", "error");
+        }
+    }
+
+    public static class LogLevelProviderWithContext implements IAllowedValuesProvider {
+
+        @Override
+        public List<Object> valuesFor(String discriminator) {
+            var set = allValues().
+                      stream().
+                      filter(v->v.match(discriminator)).
+                      findFirst().
+                      orElse( new AllowedValueSets( null, List.of("debug", "info", "warn", "error")));
+            return set.getValues();
+        }
+
+
+        @Override
+        public List<AllowedValueSets> allValues() {
+            return List.of(
+                    new AllowedValueSets( null, List.of("debug", "info", "warn", "error")),
+                    new AllowedValueSets( "true", List.of( "warn", "error")),
+                    new AllowedValueSets( "false", List.of("debug", "info")));
+        }
+
+    }
+
+    public static class Log extends ReflectionBasedNodeImpl {
+
+        @IgnoreArgument
+        private static final Logger logger = LoggerFactory.getLogger(Log.class);
+
+        @SuppressWarnings("unused")
+        @RequiredArgument
+        @AllowedValues(factory = LogLevelProvider.class)
+        private String level;
+
+        @RequiredArgument
+        private String message;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            if(level.equals("debug")) logger.debug(message);
+            else if(level.equals("info")) logger.info(message);
+            else if (level.equals("warn")) logger.warn(message);
+            else logger.error(message);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().expression(getArguments().get("level")).
+                    expression(getArguments().get("message")).end();
+        }
+    }
+
+    public static class LogWithEnum extends ReflectionBasedNodeImpl {
+
+        @IgnoreArgument
+        private static final Logger logger = LoggerFactory.getLogger(Log.class);
+
+        @SuppressWarnings("unused")
+        @RequiredArgument
+        private LogLevel level;
+
+        @RequiredArgument
+        private String message;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            if(level==LogLevel.INFO) logger.info(message);
+            else if (level==LogLevel.WARN) logger.warn(message);
+            else logger.error(message);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().expression(getArguments().get("level")).
+                    expression(getArguments().get("message")).end();
+        }
+    }
+
+    public static class LogWithContext extends ReflectionBasedNodeImpl {
+
+        @IgnoreArgument
+        private static final Logger logger = LoggerFactory.getLogger(Log.class);
+
+        @SuppressWarnings("unused")
+        private boolean error;
+
+        @SuppressWarnings("unused")
+        @RequiredArgument
+        @AllowedValues(factory = LogLevelProviderWithContext.class, discriminatorField = "error")
+        private String level;
+
+        @RequiredArgument
+        private String message;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            if(level.equals("debug")) logger.debug(message);
+            else if(level.equals("info")) logger.info(message);
+            else if (level.equals("warn")) logger.warn(message);
+            else logger.error(message);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().expression(getArguments().get("level")).
+                    expression(getArguments().get("message")).end();
+        }
     }
 }

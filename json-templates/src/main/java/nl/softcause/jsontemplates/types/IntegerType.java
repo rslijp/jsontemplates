@@ -25,6 +25,9 @@ public class IntegerType implements IExpressionType<Long> {
 
     @Override
     public Long convert(Object src) {
+        if (src instanceof String) {
+            return Long.valueOf((String) src);
+        }
         if (!isA(src)) {
             throw TypeException.invalidCast(src, this);
         }
