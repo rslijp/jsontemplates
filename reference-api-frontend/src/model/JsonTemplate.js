@@ -1,3 +1,4 @@
+import {head, tail} from "../utils/ArrayUtil";
 import {parse} from "./ExpressionParser";
 
 let observer = null;
@@ -47,6 +48,14 @@ export function getNode(path) {
 }
 
 export function  isArgumentAConstant(path,argumentName, types){
+    const parts = argumentName.split(".");
+    if(parts.length>1 && head(parts)==='parent'){
+        const parentPath=path.split(".");
+        parentPath.pop();
+        parentPath.pop();
+        return isArgumentAConstant(parentPath.join("."),tail(parts).join("."),types);
+    }
+
     types = types || ['text', 'boolean', 'integer','enum'];
     const node = getNode(path);
     const expressionStr = (node.arguments||{})[argumentName];
@@ -104,6 +113,14 @@ export function  isArgumentAVariable(path,argumentName){
 }
 
 export function getConstantArgumentValue(path,argumentName){
+    const parts = argumentName.split(".");
+    if(parts.length>1 && head(parts)==='parent'){
+        const parentPath=path.split(".");
+        parentPath.pop();
+        parentPath.pop();
+        return getConstantArgumentValue(parentPath.join("."),tail(parts).join("."));
+    }
+
     const node = getNode(path);
     const expressionStr = (node.arguments||{})[argumentName];
     if(!expressionStr) return null;

@@ -1,6 +1,7 @@
 package nl.softcause.referenceapi;
 
 import java.util.*;
+import lombok.Getter;
 import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
@@ -8,6 +9,7 @@ import nl.softcause.jsontemplates.expressions.comparison.Equals;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.INodeWithParent;
 import nl.softcause.jsontemplates.nodes.base.AllowedValues;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.For;
@@ -34,7 +36,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private DescribeTemplateLibrary buildLibrary() {
         return new DescribeTemplateLibrary().
-                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class);
+                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class, LogParentNode.class, LogWithContextFromParent.class);
     }
 
     @Override
@@ -232,6 +234,73 @@ public class DatabaseLoader implements CommandLineRunner {
         public void describe(IDescriptionBuilder builder) {
             builder.phrase().expression(getArguments().get("level")).
                     expression(getArguments().get("message")).end();
+        }
+    }
+
+    public static class LogParentNode extends
+            ReflectionBasedNodeImpl {
+
+        public static LogParentNode create(boolean error, INode body) {
+            var node = new LogParentNode();
+            node.setArguments(Collections.singletonMap("error", new Constant(error)));
+            node.setSlots(Collections.singletonMap("body", new INode[]{body}));
+            return node;
+        }
+
+        @RequiredArgument
+        private boolean error;
+
+        @RequiredSlot
+        private INode bodyNode = null;
+
+
+        @Override
+        public void internalEvaluate(TemplateModel model) {
+            bodyNode.evaluate(model);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase("Test");
+        }
+    }
+
+    public static class LogWithContextFromParent extends ReflectionBasedNodeImpl implements INodeWithParent<LogParentNode> {
+
+        private LogParentNode parent;
+
+        public static LogWithContextFromParent create(String level) {
+            var node = new LogWithContextFromParent();
+            node.setArguments(Collections.singletonMap("level",new Constant(level)));
+            node.setSlots(new HashMap<>());
+            return node;
+        }
+
+        @SuppressWarnings("unused")
+        @AllowedValues(factory = LogLevelProviderWithContext.class, discriminatorField = "parent.error")
+        private String level;
+        @Getter
+        private String output;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            output=level;
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().add("Value is").expression(getArguments().get("value")).end();
+        }
+
+        @Override
+        public void registerParent(LogParentNode parent) {
+            this.parent=parent;
+        }
+
+        @Override
+        public LogParentNode getRegisteredParent() {
+            return this.parent;
         }
     }
 }

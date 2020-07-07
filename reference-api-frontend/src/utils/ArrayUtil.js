@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 export function groupBy(xs, key) {
     return xs.reduce(function(rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -16,6 +18,17 @@ export function sortOn(property) {
         return result * sortOrder;
     };
 }
+
+export function head(xs){
+    const [head, ...tail] = xs;
+    return head;
+}
+
+export function tail(xs){
+    const [head, ...tail] = xs;
+    return tail;
+}
+
 
 export function last(xs) {
     return xs[xs.length-1];
