@@ -36,7 +36,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private DescribeTemplateLibrary buildLibrary() {
         return new DescribeTemplateLibrary().
-                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class, LogParentNode.class, LogWithContextFromParent.class);
+                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class, LogParent.class, LogWithContextFromParent.class, LogParentNested.class);
     }
 
     @Override
@@ -237,11 +237,11 @@ public class DatabaseLoader implements CommandLineRunner {
         }
     }
 
-    public static class LogParentNode extends
+    public static class LogParent extends
             ReflectionBasedNodeImpl {
 
-        public static LogParentNode create(boolean error, INode body) {
-            var node = new LogParentNode();
+        public static LogParent create(boolean error, INode body) {
+            var node = new LogParent();
             node.setArguments(Collections.singletonMap("error", new Constant(error)));
             node.setSlots(Collections.singletonMap("body", new INode[]{body}));
             return node;
@@ -265,9 +265,9 @@ public class DatabaseLoader implements CommandLineRunner {
         }
     }
 
-    public static class LogWithContextFromParent extends ReflectionBasedNodeImpl implements INodeWithParent<LogParentNode> {
+    public static class LogWithContextFromParent extends ReflectionBasedNodeImpl implements INodeWithParent<LogParent> {
 
-        private LogParentNode parent;
+        private LogParent parent;
 
         public static LogWithContextFromParent create(String level) {
             var node = new LogWithContextFromParent();
@@ -294,12 +294,80 @@ public class DatabaseLoader implements CommandLineRunner {
         }
 
         @Override
-        public void registerParent(LogParentNode parent) {
+        public void registerParent(LogParent parent) {
             this.parent=parent;
         }
 
         @Override
-        public LogParentNode getRegisteredParent() {
+        public LogParent getRegisteredParent() {
+            return this.parent;
+        }
+    }
+
+    public static class LogParentNested extends
+            ReflectionBasedNodeImpl {
+
+        public static LogParentNested create(boolean error, INode body) {
+            var node = new LogParentNested();
+            node.setArguments(Collections.singletonMap("error", new Constant(error)));
+            node.setSlots(Collections.singletonMap("body", new INode[]{body}));
+            return node;
+        }
+
+        @RequiredArgument
+        private boolean error;
+
+        @RequiredSlot
+        @LimitSlots(allowed = {LogWithContextFromParentNested.class})
+        private INode bodyNode = null;
+
+
+        @Override
+        public void internalEvaluate(TemplateModel model) {
+            bodyNode.evaluate(model);
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase("Test");
+        }
+    }
+
+    public static class LogWithContextFromParentNested extends ReflectionBasedNodeImpl implements INodeWithParent<LogParentNested> {
+
+        private LogParentNested parent;
+
+        public static LogWithContextFromParentNested create(String level) {
+            var node = new LogWithContextFromParentNested();
+            node.setArguments(Collections.singletonMap("level",new Constant(level)));
+            node.setSlots(new HashMap<>());
+            return node;
+        }
+
+        @SuppressWarnings("unused")
+        @AllowedValues(factory = LogLevelProviderWithContext.class, discriminatorField = "parent.error")
+        private String level;
+        @Getter
+        private String output;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            output=level;
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().add("Value is").expression(getArguments().get("value")).end();
+        }
+
+        @Override
+        public void registerParent(LogParentNested parent) {
+            this.parent=parent;
+        }
+
+        @Override
+        public LogParentNested getRegisteredParent() {
             return this.parent;
         }
     }

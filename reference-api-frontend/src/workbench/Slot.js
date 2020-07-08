@@ -97,8 +97,8 @@ function Slot({node,path,allNodes,forSlot}) {
             </div>
         );
     }
-    const argumentTypes = renderArguments(node.argumentTypes);
-    const nodeSlots = renderNodeSlots(node.nodeSlots);
+    const argumentTypes = expanded?renderArguments(node.argumentTypes):null;
+    const nodeSlots = expanded?renderNodeSlots(node.nodeSlots):null;
 
     function remove(e){
         e.stopPropagation();

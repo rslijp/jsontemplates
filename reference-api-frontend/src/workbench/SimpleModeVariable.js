@@ -10,9 +10,14 @@ import {typesMatch} from '../model/ExpressionTypeChecker';
 
 function SimpleModeVariable({optional,path,argumentName,type}){
     const baseType= optional? type.substr(0,type.length-1):type;
+    const calculateList = ()=> {
+        const options = SuggestionModelType.collectVariableSuggestions(getModelDefinition()).options;
+        return options.filter(o => typesMatch(o.type, type));
+    };
 
     const [value, setValue] = useState(getVariableArgumentValue(path, argumentName)||'');
     const [valid, setValid] = useState(!!(value!==null||optional));
+    const [applicable] = useState(calculateList());
 
     const updateValue = (variableName)=>{
         variableName=variableName===null?"":variableName;
@@ -20,8 +25,7 @@ function SimpleModeVariable({optional,path,argumentName,type}){
         setValue(variableName);
         setValid(!!(variableName!==""||optional));
     };
-    const options = SuggestionModelType.collectVariableSuggestions(getModelDefinition()).options;
-    const applicable = options.filter(o=>typesMatch(o.type, type));
+
     let selectOptions = applicable.map(o=><option key={o.name} value={o.name}>${o.name}</option>);
     return (<div>
         <InputGroup className="mb-3">

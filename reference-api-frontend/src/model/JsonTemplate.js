@@ -76,7 +76,14 @@ export function  isArgumentAConstant(path,argumentName, types){
     return true;
 }
 
-export function getAllowedValues(path,argumentName){
+function formatTextConstant(s){
+    if(!s) return '';
+    const match = s.match(/'(.*)'/);
+    if(!match) throw "Bug";
+    return match[1];
+}
+
+export function getAllowedValues(path,argumentName, targetType){
     const allowedValueSet = getNode(path).allowedValues;
     if(allowedValueSet && allowedValueSet[argumentName]){
         const setForArguments = allowedValueSet[argumentName];
@@ -84,6 +91,7 @@ export function getAllowedValues(path,argumentName){
         let discriminatorValue = null;
         if(discriminatorField && isArgumentAConstant(path, discriminatorField)){
             discriminatorValue=getConstantArgumentValue(path, discriminatorField);
+            if(targetType==='text' || targetType==='enum') discriminatorValue=formatTextConstant(discriminatorValue);
         }
         if(discriminatorValue !== null) discriminatorValue=discriminatorValue.toString();
         var candidate = setForArguments.valueSet.filter(v=>v.discriminator===discriminatorValue);

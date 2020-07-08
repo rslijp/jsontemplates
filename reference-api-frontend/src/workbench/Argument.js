@@ -35,13 +35,13 @@ function Argument({optional,path,argumentName,type}) {
     };
 
     const switchToggle = <FontAwesomeIcon className="text-secondary" icon={
-        [faCode,faFont,faPuzzlePiece,faList][state]} style={{minWidth: '24px', textAlign: 'left'}}/>;
+        [()=>faCode,()=>faFont,()=>faPuzzlePiece,()=>faList][state]()} style={{minWidth: '24px', textAlign: 'left'}}/>;
     const input = [
-        <Expression key={"expresion"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
-        <SimpleModeExpression key={"simple"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
-        <SimpleModeVariable  key={"variable"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
-        <SimpleModeAllowedValues  key={"variable"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
-    ][state];
+        ()=><Expression key={"expresion"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
+        ()=><SimpleModeExpression key={"simple"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
+        ()=><SimpleModeVariable  key={"variable"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
+        ()=><SimpleModeAllowedValues  key={"variable"} optional={optional} path={path} argumentName={argumentName} type={type}/>,
+    ][state]();
 
     return(<Row className="mb-2" >
         <Col sm={"2"} onClick={toggle} style={{cursor: 'pointer', paddingLeft: '0px'}}>{switchToggle} {argumentName}<br/>{optionalIndicator}</Col>

@@ -14,7 +14,7 @@ public class ClientTemplateConfiguration {
 
     private ClientSearchScreensMap searchScreens;
 
-    public ClientTemplateConfiguration(){
+    public ClientTemplateConfiguration() {
         searchScreens = new ClientSearchScreensMap();
     }
 
@@ -22,7 +22,7 @@ public class ClientTemplateConfiguration {
         @Delegate
         private Map<String, ClientSearchScreen> base = new LinkedHashMap<>();
 
-        public List<ClientSearchScreen> valuesAsList(){
+        public List<ClientSearchScreen> valuesAsList() {
             return new ArrayList<>(base.values());
         }
     }
