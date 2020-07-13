@@ -2,6 +2,7 @@ import {Card, Col, Container, Row} from "react-bootstrap";
 import React, {useState} from 'react';
 import {any, arrayOf, shape, string} from "prop-types";
 import {canAcceptNode, clearNode, displayName, getNode, hasFocus, setFocus, setNode, slotNodes} from '../model/JsonTemplate';
+
 import {faMinusSquare, faPlusSquare, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 import Argument from "./Argument";
 import EmptySlot from "./EmptySlot";
@@ -109,7 +110,12 @@ function Slot({node,path,allNodes,forSlot}) {
         e.stopPropagation();
         setFocus(path, null);
     }
-    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{node.name}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}
+
+    function nodeName(){
+        const name = (node.arguments||{})['name'];//getConstantArgumentValue(path, "name", false);
+        return node.name+(name?(' '+name):'');
+    }
+    const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{nodeName()}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}
         <div className="toggle-container"><FontAwesomeIcon onClick={toggleExpanded} className="text-secondary h-100" icon={expanded?faMinusSquare:faPlusSquare} /></div>
         <div className="float-right remove-container"><FontAwesomeIcon onClick={remove} className="text-primary h-100" icon={faTimesCircle} /></div>
     </h3></Card.Header>, path);

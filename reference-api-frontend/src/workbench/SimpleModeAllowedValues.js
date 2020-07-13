@@ -19,10 +19,10 @@ function SimpleModeAllowedValues({optional,path,argumentName,type}){
         return v;
     };
     const [value, setValue] = useState(convertFrom(getConstantArgumentValue(path, argumentName)||''));
-    const [allowedValues,setAllowedValues]=useState(value?getAllowedValues(path, argumentName, baseType):[]);
+    const [allowedValues,setAllowedValues]=useState(value?getAllowedValues(path, argumentName):[]);
     const [valid, setValid] = useState(!!(value!==null||optional));
     const refreshList = ()=>{
-        setAllowedValues(getAllowedValues(path, argumentName, baseType));
+        setAllowedValues(getAllowedValues(path, argumentName));
     };
 
 

@@ -156,15 +156,17 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         stack.pop();
     }
 
-    private void populateFields(TemplateModel model, Object parent) {
+    private void populateFields(TemplateModel model, INode parent) {
         populateFields(nodeClass, model, parent);
     }
 
-    private void populateFields(Class clazz, TemplateModel model, Object parent) {
+    private void populateFields(Class clazz, TemplateModel model, INode parent) {
         var fields = clazz.getDeclaredFields();
-
+        if(this instanceof INodeWithParent<?>) {
+            ((INodeWithParent<INode>) this).registerParent(parent);
+        }
         for (var field : fields) {
-            populateField(model, field, parent);
+            populateField(model, field);
         }
 
         if (shouldRecurse(clazz)) {
@@ -172,22 +174,22 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         }
     }
 
-    protected void populateField(TemplateModel model, String fieldName, Object parent) {
+    protected void populateField(TemplateModel model, String fieldName) {
         Field field;
         try {
             field = nodeClass.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
             throw ReflectionBasedNodeException.noSuchField(nodeClass, fieldName);
         }
-        populateField(model, field, parent);
+        populateField(model, field);
 
     }
 
-    private void populateField(TemplateModel model, Field field, Object parent) {
+    private void populateField(TemplateModel model, Field field) {
         field.setAccessible(true);
         var fieldType = field.getType();
         if (INode.class.isAssignableFrom(fieldType)) {
-            populateNodeField(model, field, parent);
+            populateNodeField(model, field);
         } else {
             populateArgumentField(model, field);
         }
@@ -227,6 +229,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     }
 
     protected String getDiscriminatorValue(String field, TemplateModel model) {
+        String fullPath = field;
         if (StringUtils.isBlank(field)) {
             return null;
         }
@@ -236,8 +239,15 @@ public abstract class ReflectionBasedNodeImpl implements INode {
             var withParent = (INodeWithParent<?>) c;
             c = withParent.getRegisteredParent();
             parts.remove(0);
+            if (c == null) {
+                throw new IllegalArgumentException("Failed to resolve parent of " + fullPath);
+            }
         }
         field = String.join(".", parts);
+        var nodeField = c.getArguments().get(field);
+        if (nodeField == null) {
+            throw new IllegalArgumentException("Failed to resolve field " + fullPath + " on node");
+        }
         var value = c.getArguments().get(field).evaluate(model);
         if (value == null) {
             return null;
@@ -245,11 +255,10 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         return value.toString();
     }
 
-    private void populateNodeField(TemplateModel model, Field field, Object parent) {
+    private void populateNodeField(TemplateModel model, Field field) {
         var fieldName = field.getName();
         try {
             if (this instanceof INodeWithParent && fieldName.equals("parent")) {
-                field.set(this, parent);
                 return;
             }
             fieldName = NodeUtil.slotName(fieldName);

@@ -77,13 +77,14 @@ export function  isArgumentAConstant(path,argumentName, types){
 }
 
 function formatTextConstant(s){
-    if(!s) return '';
+    if(!s) return s;
+    if(!s.match) return s;
     const match = s.match(/'(.*)'/);
-    if(!match) throw "Bug";
+    if(!match) return s;
     return match[1];
 }
 
-export function getAllowedValues(path,argumentName, targetType){
+export function getAllowedValues(path,argumentName){
     const allowedValueSet = getNode(path).allowedValues;
     if(allowedValueSet && allowedValueSet[argumentName]){
         const setForArguments = allowedValueSet[argumentName];
@@ -91,10 +92,10 @@ export function getAllowedValues(path,argumentName, targetType){
         let discriminatorValue = null;
         if(discriminatorField && isArgumentAConstant(path, discriminatorField)){
             discriminatorValue=getConstantArgumentValue(path, discriminatorField);
-            if(targetType==='text' || targetType==='enum') discriminatorValue=formatTextConstant(discriminatorValue);
+            discriminatorValue=formatTextConstant(discriminatorValue);
         }
         if(discriminatorValue !== null) discriminatorValue=discriminatorValue.toString();
-        var candidate = setForArguments.valueSet.filter(v=>v.discriminator===discriminatorValue);
+        const candidate = setForArguments.valueSet.filter(v=>v.discriminator===discriminatorValue);
         if(candidate.length===1) {
             return candidate[0].values;
         } else {
@@ -120,13 +121,13 @@ export function  isArgumentAVariable(path,argumentName){
     return (expression.type==='VARIABLE');
 }
 
-export function getConstantArgumentValue(path,argumentName){
+export function getConstantArgumentValue(path,argumentName,noError){
     const parts = argumentName.split(".");
     if(parts.length>1 && head(parts)==='parent'){
         const parentPath=path.split(".");
         parentPath.pop();
         parentPath.pop();
-        return getConstantArgumentValue(parentPath.join("."),tail(parts).join("."));
+        return getConstantArgumentValue(parentPath.join("."),tail(parts).join("."),noError);
     }
 
     const node = getNode(path);
@@ -135,9 +136,17 @@ export function getConstantArgumentValue(path,argumentName){
     const parseResult = parse(expressionStr);
     if(!parseResult.success) return null;
     const expression  = parseResult.expression;
-    if(expression.type!=='CONSTANT') throw "Not a constant";
+    if(expression.type!=='CONSTANT') {
+        if(noError) {
+            return null;
+        }
+        else {
+            throw "Not a constant";
+        }
+    }
     return expression.value;
 }
+
 
 export function getVariableArgumentValue(path,argumentName){
     const node = getNode(path);
