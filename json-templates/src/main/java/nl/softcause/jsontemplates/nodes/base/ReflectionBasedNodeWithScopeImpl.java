@@ -92,7 +92,7 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
         return result;
     }
 
-    protected T pullScopeModel(TemplateModel model) {
+    public T pullScopeModel(TemplateModel model) {
         var fields = getScopeFields();
         try {
             var constructor = scopeModel.getDeclaredConstructor();

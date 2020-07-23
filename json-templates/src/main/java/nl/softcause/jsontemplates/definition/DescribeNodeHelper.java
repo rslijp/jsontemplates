@@ -12,6 +12,7 @@ import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
 import nl.softcause.jsontemplates.nodes.base.AllowedValues;
+import nl.softcause.jsontemplates.nodes.base.NamingField;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
 import nl.softcause.jsontemplates.utils.ClassUtil;
 
@@ -81,7 +82,10 @@ public class DescribeNodeHelper {
         } else if (field.getType().isEnum()) {
             description.addEnumAllowedValueSet(slot.getKey(), field.getType());
         }
-
+        var namingField = field.getAnnotation(NamingField.class);
+        if (allowedValues != null) {
+            description.namingField(slot.getKey());
+        }
     }
 
     private void collectSubNodes(Class nodeClass, TemplateDescription template, Map<Class, NodeDescription> seen) {

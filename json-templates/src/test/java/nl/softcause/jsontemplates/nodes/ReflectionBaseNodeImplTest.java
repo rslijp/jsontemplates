@@ -153,7 +153,7 @@ public class ReflectionBaseNodeImplTest {
         } catch(ReflectionBasedNodeException RBNe){
             assertThat(RBNe.getMessage(), is(
                     ReflectionBasedNodeException.
-                            illegalValueFor("value", "Hello world!", new AllowedValuesProvider().valuesFor(null)).getMessage())
+                            illegalValueFor("value", "Hello world!", new AllowedValuesProvider().valuesFor(null,null)).getMessage())
             );
         }
     }
@@ -177,7 +177,7 @@ public class ReflectionBaseNodeImplTest {
         } catch(ReflectionBasedNodeException RBNe){
             assertThat(RBNe.getMessage(), is(
                     ReflectionBasedNodeException.
-                            illegalValueFor("value", "Hello world!", new AllowedValuesProvider().valuesFor(null)).getMessage())
+                            illegalValueFor("value", "Hello world!", new AllowedValuesProvider().valuesFor(null, null)).getMessage())
             );
         }
     }
@@ -225,12 +225,12 @@ public class ReflectionBaseNodeImplTest {
     public static class LogLevelProviderWithContext implements IAllowedValuesProvider {
 
         @Override
-        public List<Object> valuesFor(String discriminator) {
+        public List<Object> valuesFor(String context, String discriminator) {
             var set = allValues().
                     stream().
                     filter(v->v.match(discriminator)).
                     findFirst().
-                    orElse( new AllowedValueSets( null, List.of("debug", "info", "warn", "error")));
+                    orElse( new AllowedValueSets( null, null, List.of("debug", "info", "warn", "error")));
             return set.getValues();
         }
 
@@ -238,9 +238,9 @@ public class ReflectionBaseNodeImplTest {
         @Override
         public List<AllowedValueSets> allValues() {
             return List.of(
-                    new AllowedValueSets( null, List.of("debug", "info", "warn", "error")),
-                    new AllowedValueSets( "true", List.of( "warn", "error")),
-                    new AllowedValueSets( "false", List.of("debug", "info")));
+                    new AllowedValueSets( null,null, List.of("debug", "info", "warn", "error")),
+                    new AllowedValueSets( null,"true", List.of( "warn", "error")),
+                    new AllowedValueSets( null,"false", List.of("debug", "info")));
         }
 
     }
@@ -307,7 +307,7 @@ public class ReflectionBaseNodeImplTest {
         } catch(ReflectionBasedNodeException RBNe){
             assertThat(RBNe.getMessage(), is(
                     ReflectionBasedNodeException.
-                            illegalValueFor("level", "info", new LogLevelProviderWithContext().valuesFor("true")).getMessage())
+                            illegalValueFor("level", "info", new LogLevelProviderWithContext().valuesFor(null,"true")).getMessage())
             );
         }
     }

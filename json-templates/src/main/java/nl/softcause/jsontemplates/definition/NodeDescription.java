@@ -28,11 +28,17 @@ public class NodeDescription {
 
     private String name;
     private String packageName;
+    private String namingField;
     private Map<String, String> argumentTypes;
     private Map<String, AllowedValuesDescription> allowedValues;
     private Map<String, String> nodeSlots;
     private Map<String, long[]> nodeSlotLimits;
     private Map<String, NodeScopeDescription> scopeChanges;
+
+
+    public void namingField(String namingField) {
+        this.namingField = namingField;
+    }
 
     void addArgument(String field, IExpressionType argType) {
         if (argumentTypes == null) {
@@ -48,7 +54,8 @@ public class NodeDescription {
         }
         var factory = definition.factory().getConstructor().newInstance();
         allowedValues
-                .put(field, new AllowedValuesDescription(name, definition.discriminatorField(), factory.allValues()));
+                .put(field, new AllowedValuesDescription(definition.contextField(), definition.discriminatorField(),
+                        factory.allValues()));
     }
 
     void addEnumAllowedValueSet(String field, Class enumClass) {
@@ -58,8 +65,8 @@ public class NodeDescription {
         if (allowedValues == null) {
             allowedValues = new LinkedHashMap<>();
         }
-        var valueSet = new AllowedValueSets(null, new ArrayList<>(TextEnumType.getEnumValues(enumClass)));
-        var description = new AllowedValuesDescription(name, null, Collections.singletonList(valueSet));
+        var valueSet = new AllowedValueSets(null, null, new ArrayList<>(TextEnumType.getEnumValues(enumClass)));
+        var description = new AllowedValuesDescription(null, null, Collections.singletonList(valueSet));
         allowedValues.put(field, description);
     }
 

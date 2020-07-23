@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {head, tail} from "../utils/ArrayUtil";
 import {parse} from "./ExpressionParser";
 
@@ -84,19 +85,29 @@ function formatTextConstant(s){
     return match[1];
 }
 
-export function getAllowedValues(path,argumentName){
+export function getAllowedValues(path,argumentName) {
     const allowedValueSet = getNode(path).allowedValues;
-    if(allowedValueSet && allowedValueSet[argumentName]){
+
+    function extract(field) {
+        let value = null;
+        if (field && isArgumentAConstant(path, field)) {
+            value = getConstantArgumentValue(path, field);
+            value = formatTextConstant(value);
+        }
+        if (value !== null) value = value.toString();
+        return value;
+    }
+
+    if (allowedValueSet && allowedValueSet[argumentName]) {
         const setForArguments = allowedValueSet[argumentName];
         const discriminatorField = setForArguments.discriminatorField;
-        let discriminatorValue = null;
-        if(discriminatorField && isArgumentAConstant(path, discriminatorField)){
-            discriminatorValue=getConstantArgumentValue(path, discriminatorField);
-            discriminatorValue=formatTextConstant(discriminatorValue);
-        }
-        if(discriminatorValue !== null) discriminatorValue=discriminatorValue.toString();
-        const candidate = setForArguments.valueSet.filter(v=>v.discriminator===discriminatorValue);
-        if(candidate.length===1) {
+        const contextField = setForArguments.contextField;
+        let discriminatorValue = extract(discriminatorField);
+        let contextValue = extract(contextField);
+        const candidate = contextField ?
+            setForArguments.valueSet.filter(v => v.context === contextValue && v.discriminator === discriminatorValue) :
+            setForArguments.valueSet.filter(v => v.discriminator === discriminatorValue);
+        if (candidate.length === 1) {
             return candidate[0].values;
         } else {
             return [];

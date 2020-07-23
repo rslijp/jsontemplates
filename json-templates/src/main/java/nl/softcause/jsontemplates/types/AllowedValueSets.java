@@ -6,6 +6,7 @@ import lombok.Value;
 
 @Value
 public class AllowedValueSets {
+    private String context;
     private String discriminator;
     private List<Object> values;
 

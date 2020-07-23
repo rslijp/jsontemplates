@@ -218,8 +218,10 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     @SneakyThrows
     private void guardFieldValue(Object value, String fieldName, TemplateModel model, AllowedValues annotation) {
         var argumentDefinition = getArgumentsTypes().get(fieldName);
+        var contextField = annotation.contextField();
         var discriminatorField = annotation.discriminatorField();
         var values = annotation.factory().getConstructor().newInstance().valuesFor(
+                getDiscriminatorValue(contextField, model),
                 getDiscriminatorValue(discriminatorField, model)
         );
         var allowed = values.stream().map(v -> argumentDefinition.getType().convert(v)).collect(Collectors.toList());

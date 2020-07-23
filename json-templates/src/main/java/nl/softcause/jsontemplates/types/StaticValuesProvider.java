@@ -19,13 +19,13 @@ public class StaticValuesProvider<T> implements IAllowedValuesProvider {
 
 
     @Override
-    public List<Object> valuesFor(String discriminator) {
+    public List<Object> valuesFor(String context, String discriminator) {
         return values;
     }
 
     @Override
     public List<AllowedValueSets> allValues() {
-        return Collections.singletonList(new AllowedValueSets(null, values));
+        return Collections.singletonList(new AllowedValueSets(null, null, values));
     }
 
 }

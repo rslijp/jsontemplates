@@ -129,12 +129,12 @@ public class DatabaseLoader implements CommandLineRunner {
     public static class LogLevelProviderWithContext implements IAllowedValuesProvider {
 
         @Override
-        public List<Object> valuesFor(String discriminator) {
+        public List<Object> valuesFor(String context, String discriminator) {
             var set = allValues().
                       stream().
                       filter(v->v.match(discriminator)).
                       findFirst().
-                      orElse( new AllowedValueSets( null, List.of("debug", "info", "warn", "error")));
+                      orElse( new AllowedValueSets( null,null, List.of("debug", "info", "warn", "error")));
             return set.getValues();
         }
 
@@ -142,9 +142,9 @@ public class DatabaseLoader implements CommandLineRunner {
         @Override
         public List<AllowedValueSets> allValues() {
             return List.of(
-                    new AllowedValueSets( null, List.of("debug", "info", "warn", "error")),
-                    new AllowedValueSets( "true", List.of( "warn", "error")),
-                    new AllowedValueSets( "false", List.of("debug", "info")));
+                    new AllowedValueSets( null,null, List.of("debug", "info", "warn", "error")),
+                    new AllowedValueSets( null,"true", List.of( "warn", "error")),
+                    new AllowedValueSets( null,"false", List.of("debug", "info")));
         }
 
     }

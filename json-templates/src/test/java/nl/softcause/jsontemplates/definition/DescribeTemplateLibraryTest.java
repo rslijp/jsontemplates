@@ -262,7 +262,7 @@ public class DescribeTemplateLibraryTest {
                 "output", "text?"
         )));
         assertThat(nodeDef.getAllowedValues(), is(Map.of(
-                "value", new AllowedValuesDescription(AllowedValuesTestNode.class.getSimpleName(),"", new AllowedValuesProvider().allValues())
+                "value", new AllowedValuesDescription("","", new AllowedValuesProvider().allValues())
         )));
 //        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
     }
@@ -289,7 +289,7 @@ public class DescribeTemplateLibraryTest {
                 "output", "text?"
         )));
         assertThat(nodeDef.getAllowedValues(), is(Map.of(
-                "value", new AllowedValuesDescription(AllowedValuesTestNodeWithBase.class.getSimpleName(),"", new AllowedValuesProvider().allValues())
+                "value", new AllowedValuesDescription("","", new AllowedValuesProvider().allValues())
         )));
 //        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
     }

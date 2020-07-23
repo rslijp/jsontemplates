@@ -11,19 +11,19 @@ import nl.softcause.jsontemplates.types.AllowedValueSets;
 class AllowedValuesDescription {
 
 
-    AllowedValuesDescription(String name, String discriminatorField, List<AllowedValueSets> valueSet) {
-        this.name = name;
+    AllowedValuesDescription(String contextField, String discriminatorField, List<AllowedValueSets> valueSet) {
+        this.contextField = contextField;
         this.discriminatorField = discriminatorField;
         this.valueSet = valueSet;
     }
 
-    private final String name;
+    private final String contextField;
     private final String discriminatorField;
     private final List<AllowedValueSets> valueSet;
 
     @Override
     public String toString() {
-        return String.format("%s %s? -> %s", name, discriminatorField, valueSet.size());
+        return String.format("%s %s? -> %s", contextField, discriminatorField, valueSet.size());
     }
 
 }

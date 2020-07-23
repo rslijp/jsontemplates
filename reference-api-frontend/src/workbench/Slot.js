@@ -112,7 +112,8 @@ function Slot({node,path,allNodes,forSlot}) {
     }
 
     function nodeName(){
-        const name = (node.arguments||{})['name'];//getConstantArgumentValue(path, "name", false);
+        const args = (node.arguments||{});
+        const name = args[node.namingField||'name'];
         return node.name+(name?(' '+name):'');
     }
     const header = dropArea(<Card.Header  onClick={giveFocus}><h3><b>{nodeName()}</b> {forSlot?(<span>for {displayName(forSlot)}</span>):null}

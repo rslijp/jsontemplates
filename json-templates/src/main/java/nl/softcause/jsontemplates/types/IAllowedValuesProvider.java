@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IAllowedValuesProvider {
 
-    List<Object> valuesFor(String discriminator);
+    List<Object> valuesFor(String context, String discriminator);
 
     List<AllowedValueSets> allValues();
 }

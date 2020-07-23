@@ -1,12 +1,20 @@
 package nl.softcause.jsontemplates.definition;
 
-import static nl.softcause.jsontemplates.utils.ClassUtil.listAllExpressions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 
+import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
-import nl.softcause.jsontemplates.nodes.controlflowstatement.*;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.For;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.If;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Set;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.Switch;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.Try;
+import nl.softcause.jsontemplates.nodes.controlflowstatement.While;
 
 public class DescribeTemplateLibrary implements ILibrary {
 
@@ -14,11 +22,11 @@ public class DescribeTemplateLibrary implements ILibrary {
 
     private static final Class[] MAIN_NODES =
             new Class[] {For.class, If.class, Set.class, Switch.class, Try.class, While.class};
-    private static final Class[] MAIN_EXPRESIONS = listAllExpressions();
+
 
     private List<Class> mainNodes = new ArrayList<>(Arrays.asList(MAIN_NODES));
     private Stack<List<Class>> additionalNodes = new Stack<>();
-    private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(MAIN_EXPRESIONS));
+    private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(ExpressionParser.DEFAULT_EXPRESIONS));
 
     public TemplateDescription describe(ITemplateModelDefinition definition) {
         var description = new TemplateDescription();
@@ -31,6 +39,12 @@ public class DescribeTemplateLibrary implements ILibrary {
 
     public DescribeTemplateLibrary addMainNodes(Class... nodes) {
         mainNodes.addAll(Arrays.asList(nodes));
+        return this;
+    }
+
+    @SuppressWarnings("unused")
+    public DescribeTemplateLibrary addExpressions(Class... expressions) {
+        mainExpressions.addAll(Arrays.asList(expressions));
         return this;
     }
 
