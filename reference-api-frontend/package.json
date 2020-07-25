@@ -10,6 +10,7 @@
     "serve": "webpack-dev-server --open --env=development",
     "watch": "webpack --watch -d --env development",
     "build": "webpack --env=production",
+    "build-debug": "webpack --env=development",
     "eslint": "node node_modules/eslint/bin/eslint.js  src/**/*.js",
     "eslint-fix": "node node_modules/eslint/bin/eslint.js  --fix src/**/*.js",
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""

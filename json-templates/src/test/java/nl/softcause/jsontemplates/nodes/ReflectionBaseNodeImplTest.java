@@ -285,6 +285,45 @@ public class ReflectionBaseNodeImplTest {
         }
     }
 
+    public static class ResolveLogNode extends ReflectionBasedNodeImpl implements INodeWithParent<LogParentNode> {
+
+        private LogParentNode parent;
+
+        public static ResolveLogNode create(String level) {
+            var node = new ResolveLogNode();
+            node.setArguments(Collections.singletonMap("level",new Constant(level)));
+            node.setSlots(new HashMap<>());
+            return node;
+        }
+
+        @SuppressWarnings("unused")
+        @AllowedValues(factory = LogLevelProviderWithContext.class, discriminatorField = "resolve.error")
+        private String level;
+        @Getter
+        private String output;
+
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            output=level;
+        }
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase().add("Value is").expression(getArguments().get("value")).end();
+        }
+
+        @Override
+        public void registerParent(LogParentNode parent) {
+            this.parent=parent;
+        }
+
+        @Override
+        public LogParentNode getRegisteredParent() {
+            return this.parent;
+        }
+    }
+
 
     @Test
     public void guard_should_accept_allowed_values_from_parent_discriminator(){
@@ -311,5 +350,32 @@ public class ReflectionBaseNodeImplTest {
             );
         }
     }
+
+    @Test
+    public void guard_should_accept_allowed_values_from_resolving_discriminator(){
+        var logNode = ResolveLogNode.create("info");
+        var node = LogParentNode.create(false, logNode);
+
+        node.evaluate(new TemplateModel<>(new TestDefinition()));
+
+        assertThat(logNode.getOutput(), is("info"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void guard_should_reject_not_allowed_values_from_resolving_discriminator(){
+        var logNode = ResolveLogNode.create("info");
+        var node = LogParentNode.create(true, logNode);
+        try {
+            node.evaluate(new TemplateModel<>(new TestDefinition()));
+            fail();
+        } catch(ReflectionBasedNodeException RBNe){
+            assertThat(RBNe.getMessage(), is(
+                    ReflectionBasedNodeException.
+                            illegalValueFor("level", "info", new LogLevelProviderWithContext().valuesFor(null,"true")).getMessage())
+            );
+        }
+    }
+
 
 }

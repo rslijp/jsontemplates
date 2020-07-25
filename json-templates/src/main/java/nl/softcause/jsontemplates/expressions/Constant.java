@@ -1,18 +1,30 @@
 package nl.softcause.jsontemplates.expressions;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import nl.softcause.jsontemplates.model.IModel;
 import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.Optional;
 import nl.softcause.jsontemplates.types.Types;
 
-@Value
+@Getter
+@EqualsAndHashCode
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class Constant implements IExpression {
 
     private Object value;
+
+    public Constant(){}
+
+    public Constant(Object value) {
+        this.value = value;
+        var type = determineConstantType();
+        if (type.baseType() == Types.TEXT) {
+            this.value = value.toString().replaceAll("\\\\'", "'");
+        }
+    }
 
     @Override
     public IExpressionType getReturnType(IModelDefinition model) {
@@ -52,7 +64,8 @@ public class Constant implements IExpression {
             type = type.baseType();
         }
         if (type == Types.TEXT) {
-            return String.format("'%s'", value);
+            var escaped = value.toString().replaceAll("'", "\\\\'");
+            return String.format("'%s'", escaped);
         }
         if (type == Types.INTEGER || type == Types.DECIMAL) {
             return String.valueOf(value);

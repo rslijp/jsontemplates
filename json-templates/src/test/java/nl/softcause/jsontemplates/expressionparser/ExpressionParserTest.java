@@ -76,10 +76,19 @@ public class ExpressionParserTest {
     @Test
     public void should_parse_simple_string_constant() {
         //Given
+        var constant = (Constant) new ExpressionParser().parse("'Quote hasn\\'t got a value'");
+        //Then
+        assertThat(constant.getValue(), is("Quote hasn't got a value"));
+    }
+
+    @Test
+    public void should_parse_simple_string_constant_with_quote() {
+        //Given
         var constant = (Constant) new ExpressionParser().parse("'Hello world'");
         //Then
         assertThat(constant.getValue(), is("Hello world"));
     }
+
 
     @Test
     public void should_parse_simple_string_constant_with_dash() {

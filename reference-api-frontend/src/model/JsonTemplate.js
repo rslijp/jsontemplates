@@ -56,12 +56,30 @@ export function  isArgumentAConstant(path,argumentName, types){
         parentPath.pop();
         return isArgumentAConstant(parentPath.join("."),tail(parts).join("."),types);
     }
+    if(parts.length>1 && head(parts)==='resolve'){
+        argumentName=parts[1];
+        const parentPath=path.split(".");
+        parentPath.pop();
+        parentPath.pop();
+        let node = getNode(parentPath.join("."));
+        while (node!==null){
+            if((node.arguments||{})[argumentName]) break;
+            parentPath.pop();
+            parentPath.pop();
+            node = getNode(parentPath.join("."));
+        }
+        if(node===null) return null;
+        return isArgumentAConstant(parentPath.join("."),argumentName,types);
+    }
 
     types = types || ['text', 'boolean', 'integer','enum'];
     const node = getNode(path);
     const expressionStr = (node.arguments||{})[argumentName];
     if(!expressionStr) {
         const type = (node.argumentTypes||{})[argumentName];
+        if(type === undefined){
+            console.log(path, argumentName, node);
+        }
         const baseType= type.indexOf("?") > -1 ? type.substr(0,type.length-1):type;
         return types.includes(baseType);
     }
@@ -139,6 +157,21 @@ export function getConstantArgumentValue(path,argumentName,noError){
         parentPath.pop();
         parentPath.pop();
         return getConstantArgumentValue(parentPath.join("."),tail(parts).join("."),noError);
+    }
+    if(parts.length>1 && head(parts)==='resolve'){
+        argumentName=parts[1];
+        const parentPath=path.split(".");
+        parentPath.pop();
+        parentPath.pop();
+        let node = getNode(parentPath.join("."));
+        while (node!==null){
+            if((node.arguments||{})[argumentName]) break;
+            parentPath.pop();
+            parentPath.pop();
+            node = getNode(parentPath.join("."));
+        }
+        if(node===null) return null;
+        return getConstantArgumentValue(parentPath.join("."),argumentName,noError);
     }
 
     const node = getNode(path);

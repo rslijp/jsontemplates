@@ -22,6 +22,15 @@ public class ConstantTest {
     }
 
     @Test
+    public void should_handle_quotes() {
+        var c = new Constant("Quote hasn\'t got a value");
+
+        var r = c.evaluate(null);
+
+        assertThat(r, is("Quote hasn\'t got a value"));
+    }
+
+    @Test
     public void should_return_value_of_all_types() {
         assertThat(new Constant(true).evaluate(null), is(true));
         assertThat(new Constant(this).evaluate(null), is(this));

@@ -10,7 +10,7 @@ import {validateCompletenessOfArguments} from './ParseUtil';
 const LOG = false;
 const LONG_PATTERN = /^(-?[0-9]+)/;
 const DOUBLE_PATTERN = /^(-?[0-9]+\.[0-9]+)/;
-const TEXT_PATTERN  = /^'((\S|\s|[-!?.";:])+?)'/;
+const TEXT_PATTERN  = /^'((?:[^'\\]|\\.)*)'/;
 const VARIABLE_PATTERN  = /^\$([0-9A-Za-z\\.]+)/;
 const BRACKET_OPEN = "(";
 const PARAMETER_SEPARATOR = ",";

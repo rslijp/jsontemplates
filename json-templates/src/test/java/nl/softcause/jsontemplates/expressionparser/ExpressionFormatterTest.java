@@ -28,6 +28,16 @@ public class ExpressionFormatterTest {
     }
 
     @Test
+    public void should_format_constant_string_with_escaped_quote() {
+        var e = new Constant("Quote hasn't got a value");
+
+        var s = new ExpressionFormatter().format(e);
+
+        assertThat(s, is("'Quote hasn\\'t got a value'"));
+
+    }
+
+    @Test
     public void should_format_constant_int() {
         var e = new Constant(42);
 

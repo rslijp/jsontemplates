@@ -162,7 +162,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
 
     private void populateFields(Class clazz, TemplateModel model, INode parent) {
         var fields = clazz.getDeclaredFields();
-        if(this instanceof INodeWithParent<?>) {
+        if (this instanceof INodeWithParent<?>) {
             ((INodeWithParent<INode>) this).registerParent(parent);
         }
         for (var field : fields) {
@@ -238,11 +238,21 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         INode c = this;
         var parts = new ArrayList(Arrays.asList(field.split("\\.")));
         while (parts.get(0).equals("parent")) {
-            var withParent = (INodeWithParent<?>) c;
-            c = withParent.getRegisteredParent();
+            c = ((INodeWithParent<?>) c).getRegisteredParent();
             parts.remove(0);
             if (c == null) {
                 throw new IllegalArgumentException("Failed to resolve parent of " + fullPath);
+            }
+        }
+        if (parts.get(0).equals("resolve")) {
+            parts.remove(0);
+            var attempt = String.join(".", parts);
+            c = ((INodeWithParent<?>) c).getRegisteredParent();
+            while (c.getArguments().get(attempt) == null) {
+                c = ((INodeWithParent<?>) c).getRegisteredParent();
+                if (c == null) {
+                    throw new IllegalArgumentException("Failed to auto resolve property of " + fullPath);
+                }
             }
         }
         field = String.join(".", parts);
