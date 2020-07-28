@@ -195,4 +195,19 @@ html, body,#root, #react, #root > .row {
 .editControls {
     float: right;
     display: inline-block;
+    font-size: initial;
+}
+
+.editControls .input-group {
+    display: inline-flex;
+    max-width: 250px;
+    top: 4.5px;
+}
+
+.editControls .input-group .input-group-text {
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: white;
+    color: #6c757d;
+    font-size: 1rem;
 }
