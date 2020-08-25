@@ -54,7 +54,8 @@ public class NodeDescription {
         }
         var factory = definition.factory().getConstructor().newInstance();
         allowedValues
-                .put(field, new AllowedValuesDescription(definition.contextField(), definition.discriminatorField(),
+                .put(field, new AllowedValuesDescription(definition.contextField(), definition.
+                        discriminatorField(),
                         factory.allValues()));
     }
 

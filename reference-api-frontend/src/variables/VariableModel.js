@@ -13,7 +13,7 @@ function VariableModel({model}) {
         return properties.map((property) => {
             let flags = null;
             if(!property.readable || !property.writable){
-                flags=<Flag name={!property.readable?"read only":"write only"}/>;
+                flags=<Flag name={property.readable?"read only":"write only"}/>;
             }
             return (<Row className="mb-2" key={property.name}><Col sm>{property.name} <br/>{flags}</Col><Col className='font-weight-light'>{property.type}</Col></Row>);
         });

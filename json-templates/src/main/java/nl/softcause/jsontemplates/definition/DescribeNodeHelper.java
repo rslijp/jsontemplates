@@ -83,7 +83,7 @@ public class DescribeNodeHelper {
             description.addEnumAllowedValueSet(slot.getKey(), field.getType());
         }
         var namingField = field.getAnnotation(NamingField.class);
-        if (allowedValues != null) {
+        if (namingField != null) {
             description.namingField(slot.getKey());
         }
     }
@@ -103,6 +103,10 @@ public class DescribeNodeHelper {
         newDefined.stream().sorted(Comparator.comparing(Class::getSimpleName))
                 .forEach(c -> describeNode(c, template, seen));
 
+        Class superclass = nodeClass.getSuperclass();
+        if (superclass != null && !superclass.equals(Object.class)) {
+            collectSubNodes(superclass, template, seen);
+        }
     }
 
     private static INode createNode(Class entry) {
