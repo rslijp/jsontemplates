@@ -41,6 +41,10 @@ public class DefinedModel<T> implements IModel {
         return defintion.get(subject, name);
     }
 
+    public T getModel() {
+        return subject;
+    }
+
     @Override
     public void set(String name, Object value) {
         defintion.set(subject, name, value);

@@ -42,6 +42,10 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
         this.model.load(subject);
     }
 
+    public T getModel() {
+        return this.model.getModel();
+    }
+
     @Override
     public Class getModelType() {
         return model.getModelType();
@@ -143,8 +147,6 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
             throw TemplateModelException.wrongPath(path);
         }
     }
-
-
 
 
     @Value
