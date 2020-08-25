@@ -1,8 +1,6 @@
 package nl.softcause.jsontemplates.syntax;
 
 import nl.softcause.jsontemplates.model.ModelException;
-import nl.softcause.jsontemplates.nodes.INode;
-import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
 import nl.softcause.jsontemplates.types.GenericType;
 import nl.softcause.jsontemplates.types.IExpressionType;
 import nl.softcause.jsontemplates.types.TypeException;
@@ -39,10 +37,8 @@ public class TypeCheckException extends RuntimeException {
                         actualModelType));
     }
 
-    public static TypeCheckException slotMismatch(String name, ISlotPattern pattern, INode actual) {
-        return new TypeCheckException(
-                String.format("Slot '%s' only accepts '%s' but found '%s'", name, pattern.getDescription(),
-                        actual.getClass().getSimpleName()));
+    public static TypeCheckException slotMismatch(String error) {
+        return new TypeCheckException(error);
     }
 
 }

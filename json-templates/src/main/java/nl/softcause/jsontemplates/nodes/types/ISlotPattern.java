@@ -2,11 +2,12 @@ package nl.softcause.jsontemplates.nodes.types;
 
 public interface ISlotPattern {
 
-    boolean match(Object object);
+    String match(String name, Class current, int nodesInSlot);
 
     String getDescription();
 
     ISlotPattern getBasePattern();
 
     Class[] getLimit();
+
 }

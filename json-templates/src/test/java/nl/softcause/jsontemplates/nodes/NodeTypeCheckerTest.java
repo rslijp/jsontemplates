@@ -13,6 +13,8 @@ import nl.softcause.jsontemplates.nodes.controlflowstatement.For;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Set;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Switch;
 import nl.softcause.jsontemplates.nodes.types.LimitedSlot;
+import nl.softcause.jsontemplates.nodes.types.SinglePositionSlot;
+import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
 import nl.softcause.jsontemplates.syntax.TypeCheckException;
 import nl.softcause.jsontemplates.types.Types;
 import org.junit.Test;
@@ -172,7 +174,7 @@ public class NodeTypeCheckerTest {
             new NodeTypeChecker(model).check(switchNode);
         } catch (TypeCheckException TCe) {
             assertThat(TCe.getMessage(), is(TypeCheckException
-                    .slotMismatch("case", new LimitedSlot(new Class[] {Switch.Case.class}), assertionNodeSecond)
+                    .slotMismatch(new LimitedSlot(new Class[] {Switch.Case.class}).error("case", assertionNodeSecond.getClass()))
                     .getMessage()));
         }
     }
@@ -328,6 +330,36 @@ public class NodeTypeCheckerTest {
             new NodeTypeChecker(model).check(mainNode);
         } catch (ScopeException Se) {
             assertThat(Se.getMessage(), is(ScopeException.notFound("step").getMessage()));
+        }
+    }
+
+
+    @Test
+    public void should_accept_single_node() {
+        var assertionNode = new AssertionNode();
+        var forNode = SingleSlotNode.create(assertionNode);
+
+        var definition = new DefinedModel(TestNestedDefinition.class);
+        var model = new TemplateModel<>(definition);
+
+        new NodeTypeChecker(model).check(forNode);
+    }
+
+    @Test
+    public void should_reject_multiple_nodes() {
+        var assertionNode1 = new AssertionNode();
+        var assertionNode2 = new AssertionNode();
+        var forNode = SingleSlotNode.create(assertionNode1, assertionNode2);
+
+        var definition = new DefinedModel(TestNestedDefinition.class);
+        var model = new TemplateModel<>(definition);
+
+        try {
+            new NodeTypeChecker(model).check(forNode);
+        } catch(TypeCheckException TCe) {
+            assertThat(TCe.getMessage(), is(TypeCheckException
+                    .slotMismatch(new SinglePositionSlot(new WildCardSlot()).error("main"))
+                    .getMessage()));
         }
     }
 }

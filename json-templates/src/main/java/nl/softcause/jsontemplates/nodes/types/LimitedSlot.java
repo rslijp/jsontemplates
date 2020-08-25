@@ -10,11 +10,14 @@ public class LimitedSlot implements ISlotPattern {
     private Class[] limit;
 
     @Override
-    public boolean match(Object object) {
-        if (object == null) {
-            return false;
+    public String match(String slotName, Class clazz, int nodesInSlot) {
+        if (clazz == null) {
+            return "Node for slot is empty";
         }
-        return Arrays.asList(limit).contains(object.getClass());
+        if (Arrays.asList(limit).contains(clazz)) {
+            return null;
+        }
+        return error(slotName, clazz);
     }
 
     @Override
@@ -25,5 +28,10 @@ public class LimitedSlot implements ISlotPattern {
     @Override
     public ISlotPattern getBasePattern() {
         return this;
+    }
+
+    public String error(String name, Class actual) {
+        return String.format("Slot '%s' only accepts '%s' but found '%s'", name, getDescription(),
+                actual.getSimpleName());
     }
 }

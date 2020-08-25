@@ -1,5 +1,6 @@
 package nl.softcause.dto;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class NodeDTO {
 
     private Map<String, NodeDTO[]> slots = new HashMap<>();
 
-    public NodeDTO(){
+    public NodeDTO() {
     }
 
     public static NodeDTO asDTO(INode node) {
@@ -33,15 +34,19 @@ public class NodeDTO {
         var dto = new NodeDTO();
         dto.setName(node.getClass().getSimpleName());
         var formatter = new ExpressionFormatter();
-        node.getArguments().entrySet().stream().forEach(entry->{
-            var expression=entry.getValue();
-            if(expression==null) return;
+        node.getArguments().entrySet().stream().forEach(entry -> {
+            var expression = entry.getValue();
+            if (expression == null) {
+                return;
+            }
             logger.info("\tDeflating argument {} -> {}", entry.getKey(), expression);
             dto.arguments.put(entry.getKey(), formatter.format(expression));
         });
-        node.getSlots().entrySet().stream().forEach(entry->{
-            var slots=entry.getValue();
-            if(slots==null) return;
+        node.getSlots().entrySet().stream().forEach(entry -> {
+            var slots = entry.getValue();
+            if (slots == null) {
+                return;
+            }
             logger.info("\tDeflating slots {} -> {}", entry.getKey(), slots.length);
             dto.slots.put(entry.getKey(), Arrays.stream(slots).map(NodeDTO::asDTO).toArray(NodeDTO[]::new));
         });
@@ -51,8 +56,8 @@ public class NodeDTO {
     public INode asTemplate(ILibrary library) {
         logger.info("Inflating node {}", getName());
         Optional<Class> nodeClass = library.getNodeClass(getName());
-        if(nodeClass.isEmpty()) {
-            throw new IllegalArgumentException("Not supported "+getName());
+        if (nodeClass.isEmpty()) {
+            throw new IllegalArgumentException("Not supported " + getName());
         }
         INode node = null;
         try {
@@ -60,36 +65,47 @@ public class NodeDTO {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("Oops "+getName());
+            throw new IllegalArgumentException("Oops " + getName());
         }
         var parser = new ExpressionParser();
         final INode finalNode = node;
-        arguments.entrySet().stream().forEach(entry->{
-            var raw=entry.getValue();
-            if(StringUtils.isEmpty(raw)) return;
+        arguments.entrySet().stream().forEach(entry -> {
+            var raw = entry.getValue();
+            if (StringUtils.isEmpty(raw)) {
+                return;
+            }
             logger.info("\tInflating argument {} -> {}", entry.getKey(), raw);
             finalNode.getArguments().put(entry.getKey(), parser.parse(raw));
         });
-        slots.entrySet().stream().forEach(entry->{
-            var raw=entry.getValue();
-            if(raw == null) return;
-            ISlotPattern slotPattern = finalNode.getSlotTypes().get(toSlotName(entry.getKey()));
+        slots.entrySet().stream().forEach(entry -> {
+            var raw = entry.getValue();
+            if (raw == null) {
+                return;
+            }
+            String slotFieldName = toSlotName(entry.getKey());
+            ISlotPattern slotPattern = finalNode.getSlotTypes().get(slotFieldName);
+            if(slotPattern==null){
+                throw new IllegalArgumentException(MessageFormat
+                        .format("Node {0} doesn''t have slot(or field) named {1}", getName(), slotFieldName));
+            }
             var limit = slotPattern.getLimit();
-            if(limit!=null){
+            if (limit != null) {
                 library.push(limit);
             }
             finalNode.getSlots().put(entry.getKey(),
-                    Arrays.stream(raw).map(c->c.asTemplate(library)).toArray(INode[]::new)
+                    Arrays.stream(raw).map(c -> c.asTemplate(library)).toArray(INode[]::new)
             );
-            if(limit!=null){
+            if (limit != null) {
                 library.pop();
             }
         });
         return node;
     }
 
-    public static String toSlotName(String slotName){
-        if(slotName.endsWith("Node")) return slotName;
-        return slotName+"Node";
+    public static String toSlotName(String slotName) {
+        if (slotName.endsWith("Node")) {
+            return slotName;
+        }
+        return slotName + "Node";
     }
 }

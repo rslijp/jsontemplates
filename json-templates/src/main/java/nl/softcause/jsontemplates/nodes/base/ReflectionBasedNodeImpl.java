@@ -22,10 +22,7 @@ import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.INodeWithParent;
-import nl.softcause.jsontemplates.nodes.types.ISlotPattern;
-import nl.softcause.jsontemplates.nodes.types.LimitedSlot;
-import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
-import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
+import nl.softcause.jsontemplates.nodes.types.*;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
 import org.apache.commons.lang3.StringUtils;
@@ -119,8 +116,12 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         var fieldName = field.getName();
         var required = field.getAnnotation(RequiredSlot.class) != null;
         var limit = field.getAnnotation(LimitSlots.class);
+        var singleSlot = field.getAnnotation(SingleSlot.class) != null;
+        var optional = !(required || singleSlot);
         ISlotPattern slotPattern = limit != null ? new LimitedSlot(limit.allowed()) : new WildCardSlot();
-        getSlotTypes().put(fieldName, required ? slotPattern : new OptionalSlot(slotPattern));
+        slotPattern = singleSlot ? new SinglePositionSlot(slotPattern) : slotPattern;
+        slotPattern = optional ? new OptionalSlot(slotPattern) : slotPattern;
+        getSlotTypes().put(fieldName, slotPattern);
     }
 
 
@@ -343,6 +344,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     @Target({ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface RequiredSlot {
+    }
+
+    @Target({ElementType.FIELD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface SingleSlot {
     }
 
     @Target({ElementType.FIELD})

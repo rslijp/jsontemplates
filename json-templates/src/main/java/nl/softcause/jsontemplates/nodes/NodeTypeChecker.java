@@ -39,7 +39,7 @@ public class NodeTypeChecker {
 
     public void check(List<INode> nodes, ISlotPattern pattern) {
         nodes.stream().forEach(node -> {
-            guardPattern("toplevel", pattern, node);
+            guardPattern("toplevel", pattern, node, nodes.size());
             this.check(node);
         });
     }
@@ -53,10 +53,10 @@ public class NodeTypeChecker {
         node.getSlotTypes().forEach((name, pattern) -> {
             var slotArray = node.getSlots().get(NodeUtil.slotName(name));
             if (slotArray == null || slotArray.length == 0) {
-                guardPattern(name, pattern, null);
+                guardPattern(name, pattern, null, 0);
             } else {
                 Arrays.stream(slotArray).forEach(slot -> {
-                    guardPattern(name, pattern, slot);
+                    guardPattern(name, pattern, slot, slotArray.length);
                     check(slot);
                 });
             }
@@ -64,9 +64,11 @@ public class NodeTypeChecker {
         node.revokeDefinitions(modelDefinition);
     }
 
-    private void guardPattern(String name, ISlotPattern pattern, INode singleNode) {
-        if (!pattern.match(singleNode)) {
-            throw TypeCheckException.slotMismatch(NodeUtil.slotName(name), pattern, singleNode);
+    private void guardPattern(String name, ISlotPattern pattern, INode singleNode, int nodesInSlot) {
+        String error = pattern.
+                match(NodeUtil.slotName(name), singleNode != null ? singleNode.getClass() : null, nodesInSlot);
+        if (error != null) {
+            throw TypeCheckException.slotMismatch(error);
         }
     }
 

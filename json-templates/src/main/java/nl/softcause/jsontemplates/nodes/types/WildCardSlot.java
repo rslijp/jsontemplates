@@ -6,8 +6,8 @@ import lombok.Value;
 public class WildCardSlot implements ISlotPattern {
 
     @Override
-    public boolean match(Object object) {
-        return object != null;
+    public String match(String slotName, Class clazz, @SuppressWarnings("unused") int nodesInSlot) {
+        return clazz == null ? "Node for slot is empty" : null;
     }
 
     @Override
