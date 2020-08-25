@@ -10,7 +10,6 @@ import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.IDescriptionBuilder;
 import nl.softcause.jsontemplates.nodes.base.ReflectionBasedNodeImpl;
-import nl.softcause.jsontemplates.types.Optional;
 import nl.softcause.jsontemplates.types.Types;
 
 @EqualsAndHashCode(callSuper = true)
@@ -34,7 +33,6 @@ public class Set extends ReflectionBasedNodeImpl {
     @Override
     public void registerDefinitions(ITemplateModelDefinition model) {
         var type = getArguments().get("value").getReturnType(model);
-        type = Types.byName(Optional.name(type));
         var path = Types.TEXT.convert(getArguments().get("path").evaluate(null));
         getArgumentsTypes().put("value", new ArgumentDefinition(type, null));
         if (path.startsWith("scope.")) {

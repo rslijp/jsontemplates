@@ -25,6 +25,7 @@ import nl.softcause.jsontemplates.nodes.INodeWithParent;
 import nl.softcause.jsontemplates.nodes.types.*;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Data
@@ -200,12 +201,17 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         var fieldName = field.getName();
         try {
             if (getArguments().get(fieldName) != null) {
-                var value = getArguments().get(fieldName).evaluate(model);
+                var argumentExpression = getArguments().get(fieldName);
+                var value = argumentExpression.evaluate(model);
                 if (field.getType().isEnum() && value instanceof String) {
                     value = TextEnumType.getEnumValue(field.getType(), (String) value);
                 }
                 if (value != null && field.getAnnotation(AllowedValues.class) != null) {
                     guardFieldValue(value, fieldName, model, field.getAnnotation(AllowedValues.class));
+                }
+                var fieldType = field.getType();
+                if (value != null && Types.isPrimitive(Types.determine(fieldType))) {
+                    value = ConvertUtils.convert(value, fieldType);
                 }
                 field.set(this, value);
             } else {

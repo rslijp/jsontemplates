@@ -74,6 +74,7 @@ public class ScopeModelTest {
         //Case
         try {
             model.addDefintion("known", Types.INTEGER, null, true, true, null, null);
+            model.get("known");
             fail();
         } catch (ScopeException Te) {
             //Then

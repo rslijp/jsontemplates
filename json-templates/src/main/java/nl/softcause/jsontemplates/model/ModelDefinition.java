@@ -31,6 +31,7 @@ public class ModelDefinition<T> implements IModelDefinition {
             } else if (definition.getType().baseType() != Types.OBJECT) {
                 throw ModelException.primitiveCantHaveProperty(definition.getType(), parts[i], name);
             }
+            c = definition.getNested();
         }
         throw new RuntimeException("bug");
     }

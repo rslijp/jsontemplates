@@ -20,4 +20,16 @@ public class DefinitionRegistryEntry {
         return type;
     }
 
+    public boolean fits(DefinitionRegistryEntry rhs) {
+        if (this.equals(rhs)) {
+            return true;
+        }
+        if (!this.name.equals(rhs.name)) {
+            return false;
+        }
+        if (type.baseType().equals(Types.OBJECT)) {
+            return false;
+        }
+        return Types.typesMatch(type, rhs.type);
+    }
 }

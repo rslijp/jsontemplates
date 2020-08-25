@@ -13,6 +13,7 @@ import nl.softcause.jsontemplates.model.*;
 import nl.softcause.jsontemplates.nodes.IScopeChange;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
+import org.apache.commons.beanutils.ConvertUtils;
 
 @Data
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
@@ -120,6 +121,10 @@ public abstract class ReflectionBasedNodeWithScopeImpl<T> extends ReflectionBase
                 throw ScopeException.notFoundForOwner(this);
             }
             var value = scope.get().get(fieldName);
+            var fieldType = field.getType();
+            if (value != null && Types.isPrimitive(Types.determine(fieldType))) {
+                value = ConvertUtils.convert(value, fieldType);
+            }
             field.set(instance, value);
         } catch (IllegalAccessException IAe) {
             throw ReflectionBasedNodeException.illegalSetAccessOfScopeField(scopeModel, fieldName);

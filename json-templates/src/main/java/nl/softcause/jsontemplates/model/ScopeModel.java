@@ -25,6 +25,8 @@ public class ScopeModel implements IModel {
     private Map<String, DefinitionRegistryEntry> definitions = new HashMap<>();
 
     private Map<String, Object> values = new HashMap<>();
+    private Map<String, Object> defaultValues = new HashMap<>();
+
 
     public ScopeModel(Object owner) {
         this.owner = owner;
@@ -40,10 +42,13 @@ public class ScopeModel implements IModel {
         guardNesting(name);
         var defaultType = Types.determineConstant(defaultValue);
         var newDefinition = new DefinitionRegistryEntry(name, type, nested, readable, writable, allowedValues);
-        if (definitions.containsKey(name) && !definitions.get(name).equals(newDefinition)) {
-            throw ScopeException.alreadyDefined(name);
+        if (definitions.containsKey(name) && !definitions.get(name).fits(newDefinition)) {
+            if (!newDefinition.fits(definitions.get(name))) {
+                throw ScopeException.alreadyDefined(name);
+            }
+            definitions.put(name, newDefinition);
         }
-        if (!Types.runtimeTypesMatch(type, defaultType)) {
+        if (defaultValue != null && !Types.runtimeTypesMatch(type, defaultType)) {
             throw ScopeException.defaultValueTypeError(name, type, defaultType);
         }
         if ((type.baseType().equals(Types.OBJECT) || type.baseType().equals(Types.GENERIC)) && defaultValue != null &&
@@ -54,7 +59,10 @@ public class ScopeModel implements IModel {
             }
         }
         definitions.put(name, newDefinition);
-        values.put(name, type.convert(defaultValue));
+//        values.put(name, type.convert(defaultValue));
+        if (defaultValue != null) {
+            defaultValues.put(name, type.convert(defaultValue));
+        }
     }
 
     public void dropDefintion(String name) {
@@ -120,7 +128,11 @@ public class ScopeModel implements IModel {
 
         var def = getDefinition(localName);
         if (def.isReadable()) {
-            var value = def.getType().convert(values.get(localName));
+            var rawValue = values.containsKey(localName) ? values.get(localName) : defaultValues.get(localName);
+            if (!Types.isNullable(def.getType()) && rawValue == null) {
+                throw ScopeException.defaultValueTypeError(name, def.getType(), Types.NULL);
+            }
+            var value = def.getType().convert(rawValue);
             if (parts.length > 1) {
                 if (def.getNested() == null) {
                     throw ScopeException.nestedDefinitionNotAllowed(name);

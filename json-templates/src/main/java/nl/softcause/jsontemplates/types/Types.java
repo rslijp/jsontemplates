@@ -93,7 +93,7 @@ public class Types {
     //Optional types are not auto guessed
 
     public static IExpressionType determineConstant(Object src) {
-        return  Arrays.stream(types).
+        return Arrays.stream(types).
                 filter(c -> c.isA(src)).
                 findFirst().
                 get();
@@ -141,10 +141,7 @@ public class Types {
         if (target.equals(candidate)) {
             return true;
         }
-        if (target.equals(DecimalType.class) && candidate.equals(IntegerType.class)) {
-            return true;
-        }
-        return false;
+        return target.equals(DecimalType.class) && candidate.equals(IntegerType.class);
     }
 
     public static boolean typesMatch(IExpressionType target, IExpressionType candidate) {
@@ -161,6 +158,9 @@ public class Types {
             if (candidate == Types.NULL) {
                 return true;
             }
+            if (candidate instanceof Optional) {
+                return typesMatch(target.baseType(), candidate.baseType());
+            }
             return typesMatch(target.baseType(), candidate);
         }
         return false;
@@ -170,4 +170,24 @@ public class Types {
         return new ModelDecoratedType(type, modelType);
     }
 
+    public static boolean isNullable(IExpressionType candidate) {
+        return candidate instanceof Optional || candidate.isA(null);
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    public static boolean isPrimitive(IExpressionType candidate) {
+        if (candidate instanceof ListOf) {
+            return false;
+        }
+        if (candidate instanceof MapOf) {
+            return false;
+        }
+        if (candidate.baseType() == Types.OBJECT) {
+            return false;
+        }
+        if (candidate.baseType() == Types.GENERIC) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -6,11 +6,14 @@ import static org.junit.Assert.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Map;
+import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
+import nl.softcause.jsontemplates.expressions.arithmetic.Add;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.base.MultiNode;
 import org.junit.Test;
 
 public class SetTest {
@@ -41,6 +44,27 @@ public class SetTest {
         setNode.evaluate(model);
 
         assertThat(model.scope().get("name"), is("Hello world"));
+    }
+
+    @Test
+    public void should_update_value_on_scope() {
+        var setNode = new MultiNode(
+                new INode[]{
+                    Set.create(
+                         Map.of("path", new Constant("scope.count"),
+                                "value", new Constant(1))
+                    ),
+                    Set.create(
+                            Map.of("path", new Constant("scope.count"),
+                                    "value", new ExpressionParser().parse("$scope.count+2"))
+                    )
+                }
+        );
+
+        var model = new TemplateModel<>(new TestDefinition());
+        setNode.evaluate(model);
+
+        assertThat(model.scope().get("count"), is(3.0));
     }
 
     @Test
