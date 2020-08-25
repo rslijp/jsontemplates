@@ -1,4 +1,4 @@
-import {Card, Col, Container, Row} from "react-bootstrap";
+import {Alert, Card, Col, Container, Row} from "react-bootstrap";
 import React, {useState} from 'react';
 import {any, arrayOf, shape, string} from "prop-types";
 import {canAcceptNode, clearNode, displayName, getNode, hasFocus, setFocus, setNode, slotNodes} from '../model/JsonTemplate';
@@ -66,13 +66,19 @@ function Slot({node,path,allNodes,forSlot}) {
 
     function renderNodeSlots(nodeSlots){
         if(!nodeSlots) return null;
-        const result = Object.entries(nodeSlots).map(([k,v]) => {
+        const entries = Object.entries(nodeSlots);
+        const result = entries.map(([k,v]) => {
             let value = v;
-            const optional = v.endsWith("?");
-            const name = k.endsWith("Node")?k.substr(0,k.length-4):k;
+            const optional = value.endsWith("?");
             if(optional){
                 value=value.substr(0,value.length-1);
             }
+            const single = value.endsWith("[1]");
+            if(single){
+                value=value.substr(0,value.length-3);
+            }
+            const name = k.endsWith("Node")?k.substr(0,k.length-4):k;
+
             if(value==='limited'){
                 const refIds = node.nodeSlotLimits[k];
                 const refNodes = allNodes.filter(node=>refIds.includes(node.id));
@@ -86,8 +92,9 @@ function Slot({node,path,allNodes,forSlot}) {
                 const currentPath = childPath+"."+i;
                 return (<Slot key={i} forSlot={name} path={currentPath} node={node} allNodes={allNodes}/>);
             });
-            const addSlot =/*dropArea(*/<EmptySlot forSlot={name+"Node"} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/>;/*, childPath);*/
-            return (<Row className="mb-2" key={k}><Col sm>{slots}{addSlot}</Col></Row>);
+            const addSlot = (!single || children.length<1) ? <EmptySlot forSlot={name+"Node"} optional={optional} path={childPath+".push"} parentPath={path} limit={value}/> : null;/*, childPath);*/
+            const requiredAlert = (!optional && children.length === 0) ? <Alert variant={'danger'}>This is slot is required</Alert> : null;
+            return (<Row className="mb-2" key={k}><Col sm>{slots}{addSlot}{requiredAlert}</Col></Row>);
         });
         return (
             <div>

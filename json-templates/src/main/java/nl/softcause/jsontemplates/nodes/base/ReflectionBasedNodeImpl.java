@@ -117,7 +117,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         var required = field.getAnnotation(RequiredSlot.class) != null;
         var limit = field.getAnnotation(LimitSlots.class);
         var singleSlot = field.getAnnotation(SingleSlot.class) != null;
-        var optional = !(required || singleSlot);
+        var optional = !required;
         ISlotPattern slotPattern = limit != null ? new LimitedSlot(limit.allowed()) : new WildCardSlot();
         slotPattern = singleSlot ? new SinglePositionSlot(slotPattern) : slotPattern;
         slotPattern = optional ? new OptionalSlot(slotPattern) : slotPattern;

@@ -36,7 +36,15 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private DescribeTemplateLibrary buildLibrary() {
         return new DescribeTemplateLibrary().
-                addMainNodes(Log.class, LogWithEnum.class, LogWithContext.class, LogParent.class, LogWithContextFromParent.class, LogParentNested.class);
+                addMainNodes(
+                        Log.class,
+                        LogWithEnum.class,
+                        LogWithContext.class,
+                        LogParent.class,
+                        LogWithContextFromParent.class,
+                        LogParentNested.class,
+                        SingleNode.class,
+                        SingleRequiredNode.class);
     }
 
     @Override
@@ -175,6 +183,47 @@ public class DatabaseLoader implements CommandLineRunner {
         public void describe(IDescriptionBuilder builder) {
             builder.phrase().expression(getArguments().get("level")).
                     expression(getArguments().get("message")).end();
+        }
+    }
+
+    public static class SingleNode extends ReflectionBasedNodeImpl {
+
+
+        @SingleSlot
+        private INode singleNode = null;
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase("Single node").describeIfPresent("Action", getSlots().get("single"));
+
+        }
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            if(singleNode!=null){
+                singleNode.evaluate(model);
+            }
+        }
+    }
+
+    public static class SingleRequiredNode extends ReflectionBasedNodeImpl {
+
+
+        @RequiredSlot
+        @SingleSlot
+        private INode singleNode = null;
+
+        @Override
+        public void describe(IDescriptionBuilder builder) {
+            builder.phrase("Single required node").describeIfPresent("Action", getSlots().get("single"));
+
+        }
+
+        @Override
+        protected void internalEvaluate(TemplateModel model) {
+            if(singleNode!=null){
+                singleNode.evaluate(model);
+            }
         }
     }
 
