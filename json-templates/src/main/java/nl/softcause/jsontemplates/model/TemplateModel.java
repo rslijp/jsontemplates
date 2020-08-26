@@ -106,10 +106,10 @@ public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
     @Override
     public void set(String name, Object value) {
-        resolve(name, false).set(value);
+        resolve(name, true).set(value);
     }
 
-    private ResolvedModel resolve(@NonNull String path, boolean parentsAllowed) {
+    private ResolvedModel resolve(@NonNull String path, @SuppressWarnings("SameParameterValue") boolean parentsAllowed) {
         var parts = path.split(SEPARATOR);
         var localName = parts[0];
         if (!(localName.equals(SCOPE) || localName.equals(PARENT))) {

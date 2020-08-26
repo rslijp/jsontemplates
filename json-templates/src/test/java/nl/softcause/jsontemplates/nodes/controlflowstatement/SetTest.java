@@ -1,5 +1,7 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import static nl.softcause.jsontemplates.nodes.controlflowstatement.TestBuilderTool.node;
+import static nl.softcause.jsontemplates.nodes.controlflowstatement.TestBuilderTool.set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -13,6 +15,7 @@ import nl.softcause.jsontemplates.expressions.arithmetic.Add;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.IntScopeSlotNode;
 import nl.softcause.jsontemplates.nodes.base.MultiNode;
 import org.junit.Test;
 
@@ -44,6 +47,23 @@ public class SetTest {
         setNode.evaluate(model);
 
         assertThat(model.scope().get("name"), is("Hello world"));
+    }
+
+    @Test
+    public void should_set_int_value_on_tag_scope() {
+        var setNode = node(
+                set("scope.x", "30"),
+                set("scope.x", "$scope.x+7"),
+                IntScopeSlotNode.create("age",
+                        set("scope.value", "$scope.x"))
+
+            );
+
+        var m = new TestDefinition();
+        var model = new TemplateModel<>(m);
+        setNode.evaluate(model);
+
+        assertThat(m.getAge(), is(37));
     }
 
     @Test

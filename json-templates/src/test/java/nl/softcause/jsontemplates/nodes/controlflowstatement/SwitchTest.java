@@ -1,5 +1,6 @@
 package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
+import static nl.softcause.jsontemplates.nodes.controlflowstatement.TestBuilderTool.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -12,6 +13,7 @@ import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.model.TestDefinition;
 import nl.softcause.jsontemplates.nodes.AssertionNode;
 import nl.softcause.jsontemplates.nodes.INode;
+import nl.softcause.jsontemplates.nodes.base.MultiNode;
 import nl.softcause.jsontemplates.nodes.types.LimitedSlot;
 import nl.softcause.jsontemplates.nodes.types.OptionalSlot;
 import nl.softcause.jsontemplates.nodes.types.WildCardSlot;
@@ -146,6 +148,23 @@ public class SwitchTest {
         assertThat(assertionNodeFirst.isCalled(), is(true));
         assertThat(assertionNodeSecond.isCalled(), is(false));
         assertThat(assertionNodeOther.isCalled(), is(false));
+    }
+
+    @Test
+    public void should_onlt_execute_allow_access_to_parent_scope() {
+        var template = node(
+                set("scope.value", "1"),
+                set("scope.switch", "true"),
+                switchCases(
+                        inCase("$scope.switch", set("parent.scope.value", "10")),
+                        inCase("!$scope.switch", set("parent.scope.value", "5"))
+                ),
+                set("age", "$scope.value")
+        );
+        var m = new TestDefinition();
+        template.evaluate(new TemplateModel<>(m));
+
+        assertThat(m.getAge(), is(10));
     }
 
     @Test
