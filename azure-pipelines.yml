@@ -29,8 +29,7 @@ steps:
       
       cd ..
 
-      ls 
-      ls builds
+      mkdir jdk
       
       echo "Done"
 - task: JavaToolInstaller@0
@@ -38,6 +37,6 @@ steps:
     versionSpec: '13'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'LocalDirectory'
-    jdkFile: 'builds/downloads/openjdk-13+33_linux-x64_bin.tar.gz'
-    jdkDestinationDirectory: 'builds/jdk'
+    jdkFile: 'downloads/openjdk-13+33_linux-x64_bin.tar.gz'
+    jdkDestinationDirectory: 'jdk'
     cleanDestinationDirectory: true
