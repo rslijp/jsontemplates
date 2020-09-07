@@ -18,6 +18,8 @@ steps:
       
       echo 'Hello world'
       pwd
+
+      ls
       
       mkdir downloads
       
@@ -25,9 +27,10 @@ steps:
       
       curl -O https://download.java.net/openjdk/jdk13/ri/openjdk-13+33_linux-x64_bin.tar.gz
       
-      ls /builds
-      
-      ls /builds/downloads
+      cd ..
+
+      ls 
+      ls builds
       
       echo "Done"
 - task: JavaToolInstaller@0
@@ -35,6 +38,6 @@ steps:
     versionSpec: '13'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'LocalDirectory'
-    jdkFile: '/builds/downloads/openjdk-13+33_linux-x64_bin.tar.gz'
-    jdkDestinationDirectory: 'build/jdk'
+    jdkFile: 'builds/downloads/openjdk-13+33_linux-x64_bin.tar.gz'
+    jdkDestinationDirectory: 'builds/jdk'
     cleanDestinationDirectory: true
