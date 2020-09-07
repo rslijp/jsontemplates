@@ -40,3 +40,13 @@ steps:
     jdkFile: 'downloads/openjdk-13+33_linux-x64_bin.tar.gz'
     jdkDestinationDirectory: 'jdk'
     cleanDestinationDirectory: true
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '13'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
