@@ -30,7 +30,7 @@ public class NodeDTO {
     }
 
     public static NodeDTO asDTO(INode node) {
-        logger.info("Deflating node {}", node.getClass().getSimpleName());
+        logger.debug("Deflating node {}", node.getClass().getSimpleName());
         var dto = new NodeDTO();
         dto.setName(node.getClass().getSimpleName());
         var formatter = new ExpressionFormatter();
@@ -39,7 +39,7 @@ public class NodeDTO {
             if (expression == null) {
                 return;
             }
-            logger.info("\tDeflating argument {} -> {}", entry.getKey(), expression);
+            logger.debug("\tDeflating argument {} -> {}", entry.getKey(), expression);
             dto.arguments.put(entry.getKey(), formatter.format(expression));
         });
         node.getSlots().entrySet().stream().forEach(entry -> {
@@ -47,14 +47,14 @@ public class NodeDTO {
             if (slots == null) {
                 return;
             }
-            logger.info("\tDeflating slots {} -> {}", entry.getKey(), slots.length);
+            logger.debug("\tDeflating slots {} -> {}", entry.getKey(), slots.length);
             dto.slots.put(entry.getKey(), Arrays.stream(slots).map(NodeDTO::asDTO).toArray(NodeDTO[]::new));
         });
         return dto;
     }
 
     public INode asTemplate(ILibrary library) {
-        logger.info("Inflating node {}", getName());
+        logger.debug("Inflating node {}", getName());
         Optional<Class> nodeClass = library.getNodeClass(getName());
         if (nodeClass.isEmpty()) {
             throw new IllegalArgumentException("Not supported " + getName());
@@ -74,7 +74,7 @@ public class NodeDTO {
             if (StringUtils.isEmpty(raw)) {
                 return;
             }
-            logger.info("\tInflating argument {} -> {}", entry.getKey(), raw);
+            logger.debug("\tInflating argument {} -> {}", entry.getKey(), raw);
             finalNode.getArguments().put(entry.getKey(), parser.parse(raw));
         });
         slots.entrySet().stream().forEach(entry -> {
