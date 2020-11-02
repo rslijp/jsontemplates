@@ -19,6 +19,7 @@ import nl.softcause.jsontemplates.nodes.controlflowstatement.Switch;
 import nl.softcause.jsontemplates.types.AllowedValueSets;
 import nl.softcause.jsontemplates.types.IAllowedValuesProvider;
 import nl.softcause.jsontemplates.types.StaticValuesProvider;
+import nl.softcause.workbench.WorkBenchDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

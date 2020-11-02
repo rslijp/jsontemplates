@@ -2,6 +2,7 @@ package nl.softcause.referenceapi;
 
 import nl.softcause.dto.TemplateAndDescriptionDTO;
 import nl.softcause.dto.TemplateDTO;
+import nl.softcause.workbench.WorkBenchDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;

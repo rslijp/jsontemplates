@@ -1,9 +1,6 @@
-package nl.softcause.referenceapi;
+package nl.softcause.workbench;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import nl.softcause.dto.TemplateAndDescriptionDTO;
@@ -16,9 +13,12 @@ import nl.softcause.jsontemplates.nodes.INode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RequiredArgsConstructor
 public class WorkBenchDatabase {
     private static final Logger logger = LoggerFactory.getLogger(WorkBenchDatabase.class);
-    private Map<String, DatabaseEntry> DATABASE = new ConcurrentHashMap<>();
+
+    @NonNull
+    private IWorkBenchStore DATABASE;
 
     public boolean save(String token, String commitUrl ,String cancelUrl, DescribeTemplateLibrary library, ITemplateModelDefinition model,  INode[] slots) {
         logger.info("Saving {}", token);
@@ -39,8 +39,7 @@ public class WorkBenchDatabase {
         var entry = DATABASE.get(token);
         try {
             var slots = dto.asTemplate(entry.getLibrary());
-            entry.slots = slots;
-            entry.saved = true;
+            DATABASE.put(token, entry.update(slots));
             return true;
         } catch (Exception e){
             logger.error("Error on save of "+token, e);
@@ -72,7 +71,7 @@ public class WorkBenchDatabase {
             return null;
         }
         var entry = DATABASE.get(token);
-        return new TemplateAndDescriptionDTO(TemplateDTO.asDTO(entry.slots), entry.library.describe(entry.model), entry.commitUrl, entry.cancelUrl);
+        return new TemplateAndDescriptionDTO(TemplateDTO.asDTO(entry.slots), entry.getLibrary().describe(entry.getModel()), entry.getCommitUrl(), entry.getCancelUrl());
     }
 
     public INode[] getNodes(String token) {
@@ -95,30 +94,9 @@ public class WorkBenchDatabase {
             return null;
         }
         var entry = DATABASE.get(token);
-        entry.slots = entry.original;
+        DATABASE.put(token, entry.revert());
         return TemplateDTO.asDTO(entry.slots);
     }
 
 
-    @SuppressWarnings("UnusedAssignment")
-    @Data
-    @RequiredArgsConstructor
-    class DatabaseEntry {
-        @NonNull
-        String token;
-        @NonNull
-        String commitUrl;
-        @NonNull
-        String cancelUrl;
-        @NonNull
-        INode[] slots;
-        @NonNull
-        INode[] original;
-        @NonNull
-        DescribeTemplateLibrary library;
-        @NonNull
-        ITemplateModelDefinition model;
-        boolean saved=false;
-        Map<String, Object> additionalData=new HashMap<>();
-    }
 }
