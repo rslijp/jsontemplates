@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.comparison.Equals;

@@ -1,7 +1,7 @@
 package nl.softcause.jsontemplates.types;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

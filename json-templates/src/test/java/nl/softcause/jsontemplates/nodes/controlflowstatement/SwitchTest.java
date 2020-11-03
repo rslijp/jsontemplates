@@ -2,7 +2,7 @@ package nl.softcause.jsontemplates.nodes.controlflowstatement;
 
 import static nl.softcause.jsontemplates.nodes.controlflowstatement.TestBuilderTool.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

@@ -1,12 +1,16 @@
 package nl.softcause.jsontemplates.definition;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.For;
@@ -16,6 +20,8 @@ import nl.softcause.jsontemplates.nodes.controlflowstatement.Switch;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Try;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.While;
 
+@NoArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class DescribeTemplateLibrary implements ILibrary {
 
     private static final boolean LOG = true;
@@ -23,10 +29,33 @@ public class DescribeTemplateLibrary implements ILibrary {
     private static final Class[] MAIN_NODES =
             new Class[] {For.class, If.class, Set.class, Switch.class, Try.class, While.class};
 
-
     private List<Class> mainNodes = new ArrayList<>(Arrays.asList(MAIN_NODES));
+
     private Stack<List<Class>> additionalNodes = new Stack<>();
+
     private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(ExpressionParser.DEFAULT_EXPRESIONS));
+
+    public DescribeTemplateLibrary(
+            @JsonProperty("mainNodes") List<Class> mainNodes,
+            @JsonProperty("additionalNodes") Stack<List<Class>> additionalNodes,
+            @JsonProperty("mainExpressions") List<Class> mainExpressions) {
+        this.mainNodes = mainNodes;
+        this.additionalNodes = additionalNodes;
+        this.mainExpressions = mainExpressions;
+    }
+
+    public Collection<Class> getMainNodes() {
+        return Collections.unmodifiableCollection(mainNodes);
+    }
+
+    public Collection<List<Class>> getAdditionalNodes() {
+        return Collections.unmodifiableCollection(additionalNodes);
+    }
+
+    public Collection<Class> getMainExpressions() {
+        return Collections.unmodifiableCollection(mainExpressions);
+    }
+
 
     public TemplateDescription describe(ITemplateModelDefinition definition) {
         var description = new TemplateDescription();
@@ -38,20 +67,20 @@ public class DescribeTemplateLibrary implements ILibrary {
     }
 
     public DescribeTemplateLibrary addMainNodes(Class... nodes) {
-        mainNodes.addAll(Arrays.asList(nodes));
+        mainNodes.addAll(List.of(nodes));
         return this;
     }
 
     @SuppressWarnings("unused")
     public DescribeTemplateLibrary addExpressions(Class... expressions) {
-        mainExpressions.addAll(Arrays.asList(expressions));
+        mainExpressions.addAll(List.of(expressions));
         return this;
     }
 
     public Optional<Class> getNodeClass(String name) {
         var result = findNodeClass(name, mainNodes);
         for (var stack : additionalNodes) {
-            if(result.isEmpty()) {
+            if (result.isEmpty()) {
                 result = findNodeClass(name, stack);
             }
         }

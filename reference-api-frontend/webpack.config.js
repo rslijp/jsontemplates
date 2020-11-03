@@ -3,6 +3,18 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 var path = require('path');
+
+function htmlMixin(env){
+    var mixin = {
+        template: path.resolve(__dirname, 'src/workbench.ejs'),
+        inject: true
+    }
+    if(env==='production'){
+        mixin.filename='workbench.html';
+    }
+    return mixin;
+}
+
 module.exports = env => {
     console.log("*** "+env+" ***");
     var config =  {
@@ -22,12 +34,8 @@ module.exports = env => {
                     use: ['style-loader', 'css-loader'],
                 },
                 {
-                    // If you see a file that ends in .html, send it to these loaders.
-                    // test: path.join(__dirname, '.'),
                     test: /\.js$/,
                     exclude: /(node_modules)/,
-                    // Chained loaders run last to first. So it will run
-                    // polymer-webpack-loader, and hand the output to
                     // babel-loader. This let's us transpile JS in our `<script>` elements.
                     use: [
                         {   loader: 'babel-loader',
@@ -72,11 +80,7 @@ module.exports = env => {
             env === "production" ? new UglifyJsPlugin() : null,  // This plugin will generate an index.ejs file for us that can be used
             // by the Webpack dev server. We can give it a template file (written in EJS)
             // and it will handle injecting our bundle for us.
-            new HtmlWebpackPlugin({
-                filename: 'workbench.html',
-                template: path.resolve(__dirname, 'src/workbench.ejs'),
-                inject: true
-            }),
+            new HtmlWebpackPlugin(htmlMixin(env)),
             new CopyWebpackPlugin([{
                     from: path.resolve(__dirname, 'content/**/*'),
                     to: '[path]/[name].[ext]'

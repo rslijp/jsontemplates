@@ -1,16 +1,23 @@
 package nl.softcause.jsontemplates.model;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class TemplateModel<T> implements IModel, ITemplateModelDefinition {
 
 

@@ -6,9 +6,6 @@ import lombok.RequiredArgsConstructor;
 import nl.softcause.dto.TemplateAndDescriptionDTO;
 import nl.softcause.dto.TemplateDTO;
 import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
-import nl.softcause.jsontemplates.model.DefinedModel;
-import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
-import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.INode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +17,10 @@ public class WorkBenchDatabase {
     @NonNull
     private IWorkBenchStore DATABASE;
 
-    public boolean save(String token, String commitUrl ,String cancelUrl, DescribeTemplateLibrary library, ITemplateModelDefinition model,  INode[] slots) {
+    public boolean save(String token, String commitUrl ,String cancelUrl, DescribeTemplateLibrary library, Class modelClass,  INode[] slots) {
         logger.info("Saving {}", token);
-        DATABASE.put(token, new DatabaseEntry(token, commitUrl, cancelUrl, slots, slots, library, model));
+        DATABASE.put(token, new DatabaseEntry(token, commitUrl, cancelUrl, slots, slots, library, modelClass));
         return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    public boolean save(String token, String commitUrl ,String cancelUrl, DescribeTemplateLibrary library, Class modelClass, INode[] slots) {
-        ITemplateModelDefinition modelDefinition = new TemplateModel<>(new DefinedModel<>(modelClass));
-        return save(token, commitUrl, cancelUrl, library, modelDefinition, slots);
     }
 
     public boolean update(String token, TemplateDTO dto) {
@@ -57,12 +48,22 @@ public class WorkBenchDatabase {
     }
 
     public Map<String,Object> getAdditionalData(String token) {
-        logger.info("Get addtional data of {}", token);
+        logger.info("Get additional data of {}", token);
         if (!DATABASE.containsKey(token)) {
             return null;
         }
         var entry = DATABASE.get(token);
         return entry.getAdditionalData();
+    }
+
+    public void saveAdditionalData(String token, Map<String,Object> additionalData) {
+        logger.info("Saving additional data of {}", token);
+        if (!DATABASE.containsKey(token)) {
+            return;
+        }
+        var entry = DATABASE.get(token);
+        entry = entry.update(additionalData);
+        DATABASE.put(token, entry);
     }
 
     public TemplateAndDescriptionDTO getFullDto(String token) {

@@ -35,7 +35,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.database = database;
     }
 
-    private DescribeTemplateLibrary buildLibrary() {
+    public static DescribeTemplateLibrary buildLibrary() {
         return new DescribeTemplateLibrary().
                 addMainNodes(
                         Log.class,
@@ -53,6 +53,7 @@ public class DatabaseLoader implements CommandLineRunner {
         loadEmpty();
         loadPreloadSingle();
         loadPreloadDouble();
+        loadPreloadDoubleX();
         loadPreloadNested();
     }
 
@@ -89,6 +90,21 @@ public class DatabaseLoader implements CommandLineRunner {
 
         database.save("TEST-DOUBLE", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{setNode1, setNode2});
     }
+
+    private void loadPreloadDoubleX() {
+        var setNode1 = Set.create(
+                Map.of("path", new Constant("myAge"),
+                        "value", new Variable("age"))
+        );
+        var setNode2 = Set.create(
+                Map.of("path", new Constant("myMentalAge"),
+                        "value", new Variable("mentalAge"))
+        );
+
+        database.save("TEST-DOUBLE-X", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html", buildLibrary(), TestDefinition.class, new INode[]{setNode1, setNode2});
+        database.saveAdditionalData("TEST-DOUBLE-X", Collections.singletonMap("RANDOM","DATA"));
+    }
+
 
     private void loadPreloadNested() {
         var setNode1 = Set.create(

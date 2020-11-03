@@ -1,7 +1,7 @@
 package nl.softcause.jsontemplates.model;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import nl.softcause.jsontemplates.types.Types;
