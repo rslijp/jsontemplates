@@ -1,16 +1,18 @@
 package nl.softcause.dto;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collections;
 import java.util.Map;
 import lombok.SneakyThrows;
 import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
-import nl.softcause.jsontemplates.definition.TemplateDescription;
 import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.model.DefinedModel;
-import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
 import nl.softcause.jsontemplates.model.TemplateModel;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.controlflowstatement.Set;
@@ -19,10 +21,6 @@ import nl.softcause.referenceapi.DatabaseLoader;
 import nl.softcause.referenceapi.TestDefinition;
 import nl.softcause.workbench.DatabaseEntry;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class DatabaseEntryTest {
 
@@ -55,22 +53,41 @@ public class DatabaseEntryTest {
                         "default", new INode[] {setNodeOther}
                 )
         );
-        var slots = new INode[]{switchNode};
+        var slots = TemplateDTO.asDTO(new INode[]{switchNode});
         var library = DatabaseLoader.buildLibrary();
 
         var entry = new DatabaseEntry(
                 "TEST-NESTED", "http://localhost:8080/commit.html", "http://localhost:8080/cancel.html",
                 slots, slots, library, TestDefinition.class);
 
-        var json = new ObjectMapper().writeValueAsString(entry);
+        var raw = serialize(entry);
 
-        assertThat(json.isEmpty(), is(false));
+        assertThat(raw.length==0, is(false));
 
-        var reconstructed = new ObjectMapper().readValue(json, DatabaseEntry.class);
+        DatabaseEntry reconstructed = deserialize(raw);
 
         assertThat(reconstructed, notNullValue());
-        assertThat(json, is(new ObjectMapper().writeValueAsString(reconstructed)));
+        assertThat(entry.getToken(), is(reconstructed.getToken()));
 
+    }
+
+    @SneakyThrows
+    private <T> byte[] serialize(T subject) {
+        try (var bos = new ByteArrayOutputStream()){
+        try (var out = new ObjectOutputStream(bos)){
+            out.writeObject(subject);
+            out.flush();
+            return bos.toByteArray();
+        }}
+    }
+
+    @SneakyThrows
+    private <T> T deserialize(byte[] bytes) {
+        try (var bis = new ByteArrayInputStream(bytes)){
+            try (var in = new ObjectInputStream(bis)){
+                Object o = in.readObject();
+                return (T) o;
+            }}
     }
 
     @Test

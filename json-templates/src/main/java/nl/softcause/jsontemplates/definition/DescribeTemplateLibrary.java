@@ -1,14 +1,12 @@
 package nl.softcause.jsontemplates.definition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
@@ -22,7 +20,7 @@ import nl.softcause.jsontemplates.nodes.controlflowstatement.While;
 
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
-public class DescribeTemplateLibrary implements ILibrary {
+public class DescribeTemplateLibrary implements ILibrary, Serializable {
 
     private static final boolean LOG = true;
 
@@ -34,28 +32,6 @@ public class DescribeTemplateLibrary implements ILibrary {
     private Stack<List<Class>> additionalNodes = new Stack<>();
 
     private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(ExpressionParser.DEFAULT_EXPRESIONS));
-
-    public DescribeTemplateLibrary(
-            @JsonProperty("mainNodes") List<Class> mainNodes,
-            @JsonProperty("additionalNodes") Stack<List<Class>> additionalNodes,
-            @JsonProperty("mainExpressions") List<Class> mainExpressions) {
-        this.mainNodes = mainNodes;
-        this.additionalNodes = additionalNodes;
-        this.mainExpressions = mainExpressions;
-    }
-
-    public Collection<Class> getMainNodes() {
-        return Collections.unmodifiableCollection(mainNodes);
-    }
-
-    public Collection<List<Class>> getAdditionalNodes() {
-        return Collections.unmodifiableCollection(additionalNodes);
-    }
-
-    public Collection<Class> getMainExpressions() {
-        return Collections.unmodifiableCollection(mainExpressions);
-    }
-
 
     public TemplateDescription describe(ITemplateModelDefinition definition) {
         var description = new TemplateDescription();

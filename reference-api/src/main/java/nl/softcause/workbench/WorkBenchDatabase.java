@@ -19,7 +19,8 @@ public class WorkBenchDatabase {
 
     public boolean save(String token, String commitUrl ,String cancelUrl, DescribeTemplateLibrary library, Class modelClass,  INode[] slots) {
         logger.info("Saving {}", token);
-        DATABASE.put(token, new DatabaseEntry(token, commitUrl, cancelUrl, slots, slots, library, modelClass));
+        var dto = TemplateDTO.asDTO(slots);
+        DATABASE.put(token, new DatabaseEntry(token, commitUrl, cancelUrl, dto, dto, library, modelClass));
         return true;
     }
 
@@ -29,8 +30,8 @@ public class WorkBenchDatabase {
         }
         var entry = DATABASE.get(token);
         try {
-            var slots = dto.asTemplate(entry.getLibrary());
-            DATABASE.put(token, entry.update(slots));
+//            var slots = dto.asTemplate(entry.getLibrary());
+            DATABASE.put(token, entry.update(dto));
             return true;
         } catch (Exception e){
             logger.error("Error on save of "+token, e);
@@ -44,7 +45,7 @@ public class WorkBenchDatabase {
             return null;
         }
         var entry = DATABASE.get(token);
-        return TemplateDTO.asDTO(entry.slots);
+        return entry.slots;
     }
 
     public Map<String,Object> getAdditionalData(String token) {
@@ -72,7 +73,7 @@ public class WorkBenchDatabase {
             return null;
         }
         var entry = DATABASE.get(token);
-        return new TemplateAndDescriptionDTO(TemplateDTO.asDTO(entry.slots), entry.getLibrary().describe(entry.getModel()), entry.getCommitUrl(), entry.getCancelUrl());
+        return new TemplateAndDescriptionDTO(entry.slots, entry.getLibrary().describe(entry.getModel()), entry.getCommitUrl(), entry.getCancelUrl());
     }
 
     public INode[] getNodes(String token) {
@@ -81,7 +82,7 @@ public class WorkBenchDatabase {
             return null;
         }
         var entry = DATABASE.get(token);
-        return entry.slots;
+        return entry.slots.asTemplate(entry.library);
     }
 
     public void remove(String token) {
@@ -96,7 +97,7 @@ public class WorkBenchDatabase {
         }
         var entry = DATABASE.get(token);
         DATABASE.put(token, entry.revert());
-        return TemplateDTO.asDTO(entry.slots);
+        return entry.slots.clone();
     }
 
 

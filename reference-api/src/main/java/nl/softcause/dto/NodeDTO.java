@@ -1,5 +1,6 @@
 package nl.softcause.dto;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 @Data
-public class NodeDTO {
+public class NodeDTO implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(NodeDTO.class);
 
     private String name;

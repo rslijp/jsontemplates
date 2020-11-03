@@ -1,20 +1,22 @@
 package nl.softcause.workbench;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.*;
+import nl.softcause.dto.NodeDTO;
+import nl.softcause.dto.TemplateDTO;
 import nl.softcause.jsontemplates.definition.DescribeTemplateLibrary;
 import nl.softcause.jsontemplates.model.DefinedModel;
 import nl.softcause.jsontemplates.model.TemplateModel;
-import nl.softcause.jsontemplates.nodes.INode;
 
 @Getter
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class DatabaseEntry {
+public class DatabaseEntry implements Serializable {
 
     private static Map<Class, TemplateModel> RUNTIME_CACHE = new ConcurrentHashMap<>();
 
@@ -26,9 +28,9 @@ public class DatabaseEntry {
     String cancelUrl;
     @NonNull
     public
-    INode[] slots;
+    TemplateDTO slots;
     @NonNull
-    INode[] original;
+    TemplateDTO original;
     @NonNull
     DescribeTemplateLibrary library;
     @NonNull
@@ -38,7 +40,7 @@ public class DatabaseEntry {
 
     Map<String, Object> additionalData=new HashMap<>();
 
-    public DatabaseEntry update(INode[] update) {
+    public DatabaseEntry update(TemplateDTO update) {
         return new DatabaseEntry(token ,commitUrl, cancelUrl, update, original, library, modelClass, true, additionalData);
     }
 
