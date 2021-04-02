@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Stack;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.model.ITemplateModelDefinition;
@@ -27,10 +28,13 @@ public class DescribeTemplateLibrary implements ILibrary, Serializable {
     private static final Class[] MAIN_NODES =
             new Class[] {For.class, If.class, Set.class, Switch.class, Try.class, While.class};
 
+    @Getter
     private List<Class> mainNodes = new ArrayList<>(Arrays.asList(MAIN_NODES));
 
+    @Getter
     private Stack<List<Class>> additionalNodes = new Stack<>();
 
+    @Getter
     private List<Class> mainExpressions = new ArrayList<>(Arrays.asList(ExpressionParser.DEFAULT_EXPRESIONS));
 
     public TemplateDescription describe(ITemplateModelDefinition definition) {

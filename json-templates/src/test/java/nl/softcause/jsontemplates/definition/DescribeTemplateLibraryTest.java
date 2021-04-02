@@ -3,6 +3,7 @@ package nl.softcause.jsontemplates.definition;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.*;
@@ -267,6 +268,35 @@ public class DescribeTemplateLibraryTest {
 //        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
     }
 
+    @Test
+    public void should_describe_simple_node_with_allowed_values_even_after_serialization() throws
+            JsonProcessingException {
+        var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
+        var original = new DescribeTemplateLibrary().addMainNodes(AllowedValuesTestNode.class);
+
+        var mapper = new ObjectMapper();
+        var json = mapper.writeValueAsString(original);
+        System.out.println(json);
+        var reconstructed = mapper.readValue(json, DescribeTemplateLibrary.class);
+        var description = reconstructed.describe(modelDefinition);
+
+        var nodeDefOpt =
+                description.getNodeDescriptions().stream().filter(f -> f.getName().equals("AllowedValuesTestNode")).findFirst();
+        assertThat(nodeDefOpt.isPresent(), is(true));
+        var nodeDef = nodeDefOpt.orElseThrow();
+        assertThat(nodeDef.getName(), is("AllowedValuesTestNode"));
+        assertThat(nodeDef.getNodeSlots(), nullValue());
+        assertThat(nodeDef.getNodeSlotLimits(), nullValue());
+        assertThat(nodeDef.getArgumentTypes(), is(Map.of(
+                "value", "text?",
+                "output", "text?"
+        )));
+        assertThat(nodeDef.getAllowedValues(), is(Map.of(
+                "value", new AllowedValuesDescription("","", new AllowedValuesProvider().allValues())
+        )));
+//        assertThat(nodeDef.getScopeChanges(), is(Collections.emptyMap()));
+    }
+
 
     public static class AllowedValuesTestNodeWithBase extends AllowedValuesTestNode {
 
@@ -340,27 +370,6 @@ public class DescribeTemplateLibraryTest {
                 is(Collections.singletonMap("picked", new NodeScopeDescription(Types.BOOLEAN.getType(), false))));
     }
 
-    @Test
-    public void should_describe_main_nodes() {
-        var modelDefinition = new TemplateModel<>(new DefinedModel<>(TestDefinition.class));
-        var description = new DescribeTemplateLibrary().describe(modelDefinition);
-
-        var forId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("For")).findFirst()
-                .orElseThrow().getId();
-        var ifId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("If")).findFirst()
-                .orElseThrow().getId();
-        var setId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("Set")).findFirst()
-                .orElseThrow().getId();
-        var switchId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("Switch")).findFirst()
-                .orElseThrow().getId();
-        var tryId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("Try")).findFirst()
-                .orElseThrow().getId();
-        var whileId = description.getNodeDescriptions().stream().filter(f -> f.getName().equals("While")).findFirst()
-                .orElseThrow().getId();
-
-        assertThat(description.getMainNodeIds().size(), is(6));
-        assertThat(description.getMainNodeIds(), hasItems(forId, ifId, setId, switchId, tryId, whileId));
-    }
 
     @Test
     public void should_describe_main_model() {
