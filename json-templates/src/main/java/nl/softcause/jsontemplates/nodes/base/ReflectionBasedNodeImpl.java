@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -71,6 +72,9 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         for (var field : fields) {
             var fieldType = field.getType();
             if (field.getAnnotation(IgnoreArgument.class) != null) {
+                continue;
+            }
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
             if (INode.class.isAssignableFrom(fieldType)) {
@@ -168,6 +172,9 @@ public abstract class ReflectionBasedNodeImpl implements INode {
             ((INodeWithParent<INode>) this).registerParent(parent);
         }
         for (var field : fields) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
             populateField(model, field);
         }
 
