@@ -73,6 +73,9 @@ public class Constant implements IExpression {
         if (type == Types.BOOLEAN) {
             return String.format((boolean) value ? "true" : "false");
         }
+        if (type == Types.NULL) {
+            return "null";
+        }
 //        if(type==Types.DATETIME){
 //            return DateFormatterUtils.formatToIso((Instant) value);
 //        }
