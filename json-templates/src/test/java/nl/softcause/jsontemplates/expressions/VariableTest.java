@@ -60,9 +60,9 @@ public class VariableTest {
                 .writeValueAsString(c);
         var obj = (Variable) new ObjectMapper().readValue(json, IExpression.class);
 
-        Assert.assertThat(obj, is(c));
-        Assert.assertThat(obj, isA(Variable.class));
-        Assert.assertThat(obj.getName(), is("wrong"));
+        assertThat(obj, is(c));
+        assertThat(obj, isA(Variable.class));
+        assertThat(obj.getName(), is("wrong"));
     }
 
     public class VariableTestModel {

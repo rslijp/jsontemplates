@@ -20,18 +20,21 @@ class ParseContext {
     private static final boolean LOG = false;
     private static final Pattern LONG_PATTERN = Pattern.compile("^(-?[0-9]+)");
     private static final Pattern DOUBLE_PATTERN = Pattern.compile("^(-?[0-9]+\\.[0-9]+)");
-//    private static final Pattern TEXT_PATTERN = Pattern.compile("^'((\\w|\\s|[-!?.\";:{}/\\\\#])+)'");
+    //    private static final Pattern TEXT_PATTERN = Pattern.compile("^'((\\w|\\s|[-!?.\";:{}/\\\\#])+)'");
     private static final Pattern TEXT_PATTERN = Pattern.compile("^'((?:[^'\\\\]|\\\\.)*)'");
-//    /'(?:[^'\\]|\\.)*'/
+    //    /'(?:[^'\\]|\\.)*'/
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("^\\$([0-9A-Za-z\\.]+)");
     private static final String BRACKET_OPEN = "(";
     private static final String PARAMETER_SEPARATOR = ",";
     private static final String BRACKET_CLOSE = ")";
+    private static final Pattern NULL_TRAIL = Pattern.compile("^null([0-9A-Za-z\\.]+)");
+    private static final Pattern TRUE_TRAIL = Pattern.compile("^true([0-9A-Za-z\\.]+)");
+    private static final Pattern FALSE_TRAIL = Pattern.compile("^false([0-9A-Za-z\\.]+)");
 
     private Stack<IExpression> parseStack = new Stack<>();
-    private Stack<Stack<IExpression>> parseStackStash = new Stack<>();
+    private final Stack<Stack<IExpression>> parseStackStash = new Stack<>();
 
-    private ParseCursor cursor;
+    private final ParseCursor cursor;
     private Map<String, Class> unaryLib;
     private Map<String, Class> functionLib;
     private Map<String, Class> infixLib;
@@ -58,7 +61,8 @@ class ParseContext {
     void parseExpression(String[] until) {
         while (!done() && (until == null || !cursor.at(until))) {
             log("========");
-            if (tryLongConstant() ||
+            if (tryNullConstant() ||
+                    tryLongConstant() ||
                     tryBooleanConstant() ||
                     tryDoubleConstant() ||
                     tryStringConstant() ||
@@ -99,13 +103,22 @@ class ParseContext {
         return false;
     }
 
+    private boolean tryNullConstant() {
+        if (cursor.at("null") && !cursor.at(NULL_TRAIL)) {
+            cursor.read("null");
+            push(new Constant(null));
+            return true;
+        }
+        return false;
+    }
+
     private boolean tryBooleanConstant() {
-        if (cursor.at("true")) {
+        if (cursor.at("true") && !cursor.at(TRUE_TRAIL)) {
             cursor.read("true");
             push(new Constant(true));
             return true;
         }
-        if (cursor.at("false")) {
+        if (cursor.at("false") && !cursor.at(FALSE_TRAIL)) {
             cursor.read("false");
             push(new Constant(false));
             return true;
