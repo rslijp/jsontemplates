@@ -31,6 +31,8 @@ class ParseContext {
     private static final Pattern TRUE_TRAIL = Pattern.compile("^true([0-9A-Za-z\\.]+)");
     private static final Pattern FALSE_TRAIL = Pattern.compile("^false([0-9A-Za-z\\.]+)");
 
+    private static final Pattern UNARY_TRAIL = Pattern.compile("^[ ()$.]+");
+
     private Stack<IExpression> parseStack = new Stack<>();
     private final Stack<Stack<IExpression>> parseStackStash = new Stack<>();
 
@@ -88,6 +90,21 @@ class ParseContext {
 
         for (var e : operators) {
             if (tryParse.apply(e)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean eagerLibScan(Map<String, Class> lib, int minimalLength) {
+        var operators = lib
+                .keySet()
+                .stream()
+                .sorted(Comparator.comparingInt(e -> -e.length()))
+                .toArray(String[]::new);
+
+        for (var e : operators) {
+            if (minimalLength < e.length() && cursor.at(e)) {
                 return true;
             }
         }
@@ -203,17 +220,9 @@ class ParseContext {
         parseStack = new Stack<>();
 
     }
-//
-//    private static void validateCompletenessOfArgumetns(IExpressionWithArguments expr, IExpressionType[] argumentsTypes, ParseCursor cursor) {
-//        for (var j = expr.getArguments().size(); j < argumentsTypes.length; j++){
-//            if(!(argumentsTypes[j] instanceof nl.softcause.jsontemplates.types.Optional)){
-//                throw ParseException.expectedMoreArguments().at(cursor);
-//            }
-//        }
-//    }
 
     private boolean tryInfix(String operator) {
-        if (cursor.at(operator) && !empty()) {
+        if (cursor.at(operator) && !empty() && !eagerLibScan(functionLib, operator.length())) {
             cursor.read(operator);
             var expr = (IExpressionWithArguments) createExpression(infixLib.get(operator));
             reduce(expr.priority());
@@ -227,7 +236,8 @@ class ParseContext {
     }
 
     private boolean tryUnary(String operator) {
-        if (cursor.at(operator)) {
+        if (cursor.at(operator) && !eagerLibScan(infixLib, operator.length()) &&
+                !eagerLibScan(functionLib, operator.length())) {
             cursor.read(operator);
             var expr = (IExpressionWithArguments) createExpression(unaryLib.get(operator));
             push(expr);

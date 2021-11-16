@@ -28,7 +28,7 @@ import org.junit.Test;
 public class FullTest {
 
     @Test
-    public void should_parse_true_constant() {
+    public void should_parse_null_constant() {
         //Given
         var expression = new ExpressionParser().parse("$name == null");
         var model = new TestDefinition();
@@ -39,6 +39,20 @@ public class FullTest {
 
         //Then
         assertThat(result, is(true));
+    }
+
+    @Test
+    public void should_parse_negation_expression() {
+        //Given
+        var expression = new ExpressionParser().parse("$name != null");
+        var model = new TestDefinition();
+        model.setName(null);
+
+        //When
+        var result = expression.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(result, is(false));
     }
 
 
