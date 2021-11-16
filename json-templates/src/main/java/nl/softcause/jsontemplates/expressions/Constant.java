@@ -59,7 +59,7 @@ public class Constant implements IExpression {
         var type = determineConstantType();
         if (type instanceof Optional) {
             if (value == null) {
-                throw new RuntimeException("kak");
+                throw new RuntimeException("?can't format?");
             }
             type = type.baseType();
         }
@@ -79,6 +79,6 @@ public class Constant implements IExpression {
 //        if(type==Types.DATETIME){
 //            return DateFormatterUtils.formatToIso((Instant) value);
 //        }
-        throw new RuntimeException("kak");
+        throw new RuntimeException("?can't format?");
     }
 }
