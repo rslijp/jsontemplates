@@ -6,7 +6,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
+import lombok.Data;
 import lombok.Getter;
+import nl.softcause.jsontemplates.collections.ObjectList;
 import nl.softcause.jsontemplates.expresionparser.ExpressionParser;
 import nl.softcause.jsontemplates.expresionparser.ParseException;
 import nl.softcause.jsontemplates.expressions.Constant;
@@ -55,5 +57,75 @@ public class FullTest {
         assertThat(result, is(false));
     }
 
+    @Data
+    public static class CallModelDefinition {
+        public String joined;
 
+        public String[] parts;
+
+        public Helper helper = new Helper();
+
+        public static class Helper {
+            public String join(Object part1, Object part2, Object part3) {
+                return part1+":"+part2+":"+part3;
+            }
+        }
+    }
+
+    @Test
+    public void should_handle_array_from_variable() {
+        //Given
+        var model = new CallModelDefinition();
+        model.setParts(new String[]{"a","b","c"});
+        var node = RetrieveDataFromModelNode.create(
+                new ExpressionParser().parse("$helper"),
+                "join",
+                new ExpressionParser().parse("$parts"),
+                "joined"
+        );
+
+        //When
+        node.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(model.getJoined(), is("a:b:c"));
+    }
+
+    @Test
+    public void should_handle_array_build_from_expression() {
+        //Given
+        var model = new CallModelDefinition();
+        model.setParts(new String[]{"a","b","c"});
+        var node = RetrieveDataFromModelNode.create(
+                new ExpressionParser().parse("$helper"),
+                "join",
+                new ExpressionParser().parse("asList('a','b','c')"),
+                "joined"
+        );
+
+        //When
+        node.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(model.getJoined(), is("a:b:c"));
+    }
+
+    @Test
+    public void should_handle_array_build_from_constant() {
+        //Given
+        var model = new CallModelDefinition();
+        model.setParts(new String[]{"a","b","c"});
+        var node = RetrieveDataFromModelNode.create(
+                new ExpressionParser().parse("$helper"),
+                "join",
+                new Constant(new ObjectList("a", "b", "c")),
+                "joined"
+        );
+
+        //When
+        node.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(model.getJoined(), is("a:b:c"));
+    }
 }

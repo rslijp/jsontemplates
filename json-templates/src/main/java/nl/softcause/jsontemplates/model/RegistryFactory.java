@@ -36,8 +36,18 @@ public class RegistryFactory {
 
     private static DefinitionRegistry buildModel(DefinitionRegistry model, Class modelType) {
         var properties = PropertyUtils.getPropertyDescriptors(modelType);
+        RuntimeException error = null;
         for (PropertyDescriptor p : properties) {
-            extractTypeInformation(p, model, modelType);
+            try {
+                extractTypeInformation(p, model, modelType);
+            } catch (RuntimeException t) {
+                if (error == null) {
+                    error = t;
+                }
+            }
+        }
+        if (error != null) {
+            throw error;
         }
         return model.lock();
     }

@@ -47,7 +47,7 @@ public class ListOf<T> implements IExpressionType<List<T>> {
         return elementClass(src.getClass());
     }
 
-    private Class elementClass(Class<?> src) {
+    public static Class elementClass(Class<?> src) {
         if (src.isArray()) {
             return src.getComponentType();
         }
@@ -118,7 +118,7 @@ public class ListOf<T> implements IExpressionType<List<T>> {
         return getType();
     }
 
-    private static class TypedArrayList<E> extends ArrayList<E> {
+    public static class TypedArrayList<E> extends ArrayList<E> {
         @Getter
         private final Class<E> type;
 

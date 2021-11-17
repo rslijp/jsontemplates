@@ -21,6 +21,7 @@ import nl.softcause.jsontemplates.expressions.arithmetic.Power;
 import nl.softcause.jsontemplates.expressions.arithmetic.Random;
 import nl.softcause.jsontemplates.expressions.arithmetic.Round;
 import nl.softcause.jsontemplates.expressions.collections.Append;
+import nl.softcause.jsontemplates.expressions.collections.AsList;
 import nl.softcause.jsontemplates.expressions.collections.HasMember;
 import nl.softcause.jsontemplates.expressions.collections.Head;
 import nl.softcause.jsontemplates.expressions.collections.IsEmpty;
@@ -61,6 +62,7 @@ public class ExpressionParser {
             Add.class,
             And.class,
             Append.class,
+            AsList.class,
             Brackets.class,
             Concat.class,
             Constant.class,

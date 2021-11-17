@@ -24,8 +24,10 @@ import nl.softcause.jsontemplates.nodes.ArgumentDefinition;
 import nl.softcause.jsontemplates.nodes.INode;
 import nl.softcause.jsontemplates.nodes.INodeWithParent;
 import nl.softcause.jsontemplates.nodes.types.*;
+import nl.softcause.jsontemplates.types.ListOf;
 import nl.softcause.jsontemplates.types.TextEnumType;
 import nl.softcause.jsontemplates.types.Types;
+import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -204,6 +206,7 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         }
     }
 
+    @SneakyThrows
     private void populateArgumentField(TemplateModel model, Field field) {
         var fieldName = field.getName();
         try {
@@ -219,6 +222,11 @@ public abstract class ReflectionBasedNodeImpl implements INode {
                 var fieldType = field.getType();
                 if (value != null && Types.isPrimitive(Types.determine(fieldType))) {
                     value = ConvertUtils.convert(value, fieldType);
+                }
+                if (value != null && value instanceof ListOf.TypedArrayList) {
+                    Object[] objects = ((ListOf.TypedArrayList<?>) value).toArray();
+                    value = ConstructorUtils.invokeExactConstructor(fieldType, new Object[] {objects},
+                            new Class[] {ListOf.elementClass(fieldType).arrayType()});
                 }
                 field.set(this, value);
             } else {
