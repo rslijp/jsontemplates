@@ -46,6 +46,18 @@ public class RegistryFactory {
                 }
             }
         }
+        for (var interfaceType : modelType.getInterfaces()) {
+            var interfaceProperties = PropertyUtils.getPropertyDescriptors(interfaceType);
+            for (PropertyDescriptor p : interfaceProperties) {
+                try {
+                    extractTypeInformation(p, model, interfaceType);
+                } catch (RuntimeException t) {
+                    if (error == null) {
+                        error = t;
+                    }
+                }
+            }
+        }
         if (error != null) {
             throw error;
         }

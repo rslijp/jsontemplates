@@ -70,6 +70,23 @@ public class DefinedModelTest {
         assertThat(d, is(new DefinitionRegistryEntry("age", Types.INTEGER, null, true, true, null)));
     }
 
+    @Test
+    public void Should_retrieve_int_property_of_property_outside_interface() {
+        var model = new DefinedModel<>(TestDefinitionWithInterface.class);
+
+        var d = model.getDefinition("age");
+
+        assertThat(d, is(new DefinitionRegistryEntry("age", Types.INTEGER, null, true, true, null)));
+    }
+
+    @Test
+    public void Should_retrieve_int_property_of_property_base_interface() {
+        var model = new DefinedModel<>(TestDefinitionWithExtendingInterfaceContainer.class);
+
+        var d = model.getDefinition("nested.name");
+
+        assertThat(d, is(new DefinitionRegistryEntry("name", Types.OPTIONAL_TEXT, null, true, false, null)));
+    }
 
     @Test
     public void Should_retrieve_Integer_property() {
