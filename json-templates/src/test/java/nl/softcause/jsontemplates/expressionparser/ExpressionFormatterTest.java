@@ -11,6 +11,7 @@ import nl.softcause.jsontemplates.expressions.Constant;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.arithmetic.*;
 import nl.softcause.jsontemplates.expressions.conversion.FormatInteger;
+import nl.softcause.jsontemplates.expressions.logic.Or;
 import nl.softcause.jsontemplates.expressions.logic.Ternary;
 import nl.softcause.jsontemplates.expressions.text.Concat;
 import org.junit.Test;
@@ -133,6 +134,17 @@ public class ExpressionFormatterTest {
         var s = new ExpressionFormatter().format(multiply);
 
         assertThat(s, is("(3.2 + 7.1) * (8 + 9)"));
+
+    }
+
+    @Test
+    public void should_format_nested_logic_expression() {
+        var or = new Or();
+        or.setArguments(Arrays.asList(new Constant(true), new Constant(false)));
+
+        var s = new ExpressionFormatter().format(or);
+
+        assertThat(s, is("true || false"));
 
     }
 

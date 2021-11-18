@@ -16,7 +16,7 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
 @EqualsAndHashCode
-public abstract class LazyTupleExpression<R, F, S> implements IExpressionWithArguments {
+public abstract class LazyTupleExpression<R, F, S> implements ITupleExpression, IExpressionWithArguments {
 
     //    @JsonIgnore
     private final IExpressionType<S> rhs;
