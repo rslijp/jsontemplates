@@ -128,4 +128,27 @@ public class FullTest {
         //Then
         assertThat(model.getJoined(), is("a:b:c"));
     }
+
+    public static enum SomeEnumLevel {
+        NONE, FUNDAMENTAL, NOVICE, INTERMEDIATE, ADVANCED, EXPERT;
+    }
+
+    @Data
+    public static class EnumModelDefinition {
+        public SomeEnumLevel level;
+
+    }
+
+    @Test
+    public void should_compare_enum_by_string() {
+        //Given
+        var model = new EnumModelDefinition();
+        model.setLevel(SomeEnumLevel.EXPERT);
+        var expr = new ExpressionParser().parse("$level == 'EXPERT'");
+        //When
+        var result = expr.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(result, is(true));
+    }
 }

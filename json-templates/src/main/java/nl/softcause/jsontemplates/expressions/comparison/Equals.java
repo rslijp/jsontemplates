@@ -16,7 +16,7 @@ import nl.softcause.jsontemplates.types.Types;
 public class Equals extends TupleExpression<java.lang.Boolean, Object, Object> {
 
     @Getter
-    private IExpressionType returnType = BOOLEAN;
+    private final IExpressionType returnType = BOOLEAN;
 
     public Equals() {
         super(GENERIC, GENERIC, new ArrayList<>());
@@ -32,6 +32,12 @@ public class Equals extends TupleExpression<java.lang.Boolean, Object, Object> {
             }
             if (lhsType == Types.DECIMAL && rhsType == Types.INTEGER) {
                 rhs = Types.OPTIONAL_DECIMAL.convert(rhs);
+            }
+            if (lhsType.baseType() == Types.ENUM && rhsType.baseType() == Types.TEXT) {
+                lhs = lhs.toString();
+            }
+            if (rhsType.baseType() == Types.ENUM && lhsType.baseType() == Types.TEXT) {
+                rhs = rhs != null ? rhs.toString() : null;
             }
             return lhs.equals(rhs);
         }
