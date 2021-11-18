@@ -57,6 +57,21 @@ public class FullTest {
         assertThat(result, is(false));
     }
 
+
+    @Test
+    public void should_type_check_lazy() {
+        //Given
+        var expression = new ExpressionParser().parse("$name == null || $nested.name == null");
+        var model = new TestDefinition();
+        model.setName(null);
+
+        //When
+        var result = expression.evaluate(new TemplateModel<>(model));
+
+        //Then
+        assertThat(result, is(true));
+    }
+
     @Data
     public static class CallModelDefinition {
         public String joined;

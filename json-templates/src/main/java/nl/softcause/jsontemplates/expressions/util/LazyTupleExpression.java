@@ -15,18 +15,18 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
 @EqualsAndHashCode
-public abstract class TupleExpression<R, F, S> implements IExpressionWithArguments {
+public abstract class LazyTupleExpression<R, F, S> implements IExpressionWithArguments {
 
     //    @JsonIgnore
-    protected final IExpressionType<S> rhs;
+    private final IExpressionType<S> rhs;
     //    @JsonIgnore
-    protected final IExpressionType<F> lhs;
+    private final IExpressionType<F> lhs;
 
     @Getter
     private final IExpressionType[] argumentsTypes;
 
-    protected TupleExpression(@NonNull IExpressionType<F> lhs, @NonNull IExpressionType<S> rhs,
-                              @NonNull List<IExpression> arguments) {
+    protected LazyTupleExpression(@NonNull IExpressionType<F> lhs, @NonNull IExpressionType<S> rhs,
+                                  @NonNull List<IExpression> arguments) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.argumentsTypes = new IExpressionType[] {lhs, rhs};
@@ -44,13 +44,19 @@ public abstract class TupleExpression<R, F, S> implements IExpressionWithArgumen
         if (getArguments().size() != 2) {
             throw TupleExpressionException.notATuple(getArguments().size());
         }
-        return innerEvaluate(
-                lhs.convert(getArguments().get(0).evaluate(model)),
-                rhs.convert(getArguments().get(1).evaluate(model))
-        );
+        return innerEvaluate(model);
     }
 
-    protected abstract R innerEvaluate(F lhs, S rhs);
+
+    protected F getLhs(IModel model) {
+        return lhs.convert(getArguments().get(0).evaluate(model));
+    }
+
+    protected S getRhs(IModel model) {
+        return rhs.convert(getArguments().get(1).evaluate(model));
+    }
+
+    protected abstract R innerEvaluate(IModel model);
 
     protected abstract IExpressionType getReturnType();
 

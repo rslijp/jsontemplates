@@ -1,13 +1,13 @@
 package nl.softcause.jsontemplates.expressions.logic;
 
 import nl.softcause.jsontemplates.OperatorPrecendence;
+import nl.softcause.jsontemplates.model.IModel;
 
 public class And extends BooleanTupleExpression {
 
-
     @Override
-    protected Boolean innerEvaluate(Boolean lhs, Boolean rhs) {
-        return lhs && rhs;
+    protected Boolean innerEvaluate(IModel model) {
+        return getLhs(model) && getRhs(model);
     }
 
     @Override
