@@ -9,7 +9,6 @@ import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.logic.Ternary;
 import nl.softcause.jsontemplates.expressions.util.ITupleExpression;
-import nl.softcause.jsontemplates.expressions.util.TupleExpression;
 
 public class ExpressionFormatter {
 
@@ -25,7 +24,7 @@ public class ExpressionFormatter {
             case UNARY:
                 return formatUnary((IExpressionWithArguments) expression);
             case INFIX:
-                return formatInfix((TupleExpression) expression);
+                return formatInfix((ITupleExpression) expression);
             case FUNCTION:
                 return formatFunction(expression);
             case TERNARY:
