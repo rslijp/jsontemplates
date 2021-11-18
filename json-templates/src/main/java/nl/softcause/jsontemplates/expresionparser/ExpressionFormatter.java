@@ -8,6 +8,7 @@ import nl.softcause.jsontemplates.expressions.IExpression;
 import nl.softcause.jsontemplates.expressions.IExpressionWithArguments;
 import nl.softcause.jsontemplates.expressions.Variable;
 import nl.softcause.jsontemplates.expressions.logic.Ternary;
+import nl.softcause.jsontemplates.expressions.util.ITupleExpression;
 import nl.softcause.jsontemplates.expressions.util.TupleExpression;
 
 public class ExpressionFormatter {
@@ -58,9 +59,9 @@ public class ExpressionFormatter {
     }
 
 
-    private String formatInfix(TupleExpression expression) {
-        var lhs = (IExpression) expression.getArguments().get(0);
-        var rhs = (IExpression) expression.getArguments().get(1);
+    private String formatInfix(ITupleExpression expression) {
+        var lhs = (IExpression) expression.getLhsArgument();
+        var rhs = (IExpression) expression.getRhsArgument();
         var operator = operator(expression);
         var builder = new StringBuilder();
         if (lhs.priority() != null && lhs.priority() <= expression.priority()) {

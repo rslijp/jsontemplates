@@ -2,6 +2,7 @@ package nl.softcause.jsontemplates.expressions.util;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,12 +49,22 @@ public abstract class LazyTupleExpression<R, F, S> implements IExpressionWithArg
     }
 
 
+    @JsonIgnore
+    public IExpression getLhsArgument() {
+        return getArguments().get(0);
+    }
+
+    @JsonIgnore
+    public IExpression getRhsArgument() {
+        return getArguments().get(1);
+    }
+
     protected F getLhs(IModel model) {
-        return lhs.convert(getArguments().get(0).evaluate(model));
+        return lhs.convert(getLhsArgument().evaluate(model));
     }
 
     protected S getRhs(IModel model) {
-        return rhs.convert(getArguments().get(1).evaluate(model));
+        return rhs.convert(getRhsArgument().evaluate(model));
     }
 
     protected abstract R innerEvaluate(IModel model);

@@ -2,6 +2,7 @@ package nl.softcause.jsontemplates.expressions.util;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import nl.softcause.jsontemplates.model.IModelDefinition;
 import nl.softcause.jsontemplates.types.IExpressionType;
 
 @EqualsAndHashCode
-public abstract class TupleExpression<R, F, S> implements IExpressionWithArguments {
+public abstract class TupleExpression<R, F, S> implements ITupleExpression, IExpressionWithArguments {
 
     //    @JsonIgnore
     protected final IExpressionType<S> rhs;
@@ -45,9 +46,19 @@ public abstract class TupleExpression<R, F, S> implements IExpressionWithArgumen
             throw TupleExpressionException.notATuple(getArguments().size());
         }
         return innerEvaluate(
-                lhs.convert(getArguments().get(0).evaluate(model)),
-                rhs.convert(getArguments().get(1).evaluate(model))
+                lhs.convert(getLhsArgument().evaluate(model)),
+                rhs.convert(getRhsArgument().evaluate(model))
         );
+    }
+
+    @JsonIgnore
+    public IExpression getLhsArgument() {
+        return getArguments().get(0);
+    }
+
+    @JsonIgnore
+    public IExpression getRhsArgument() {
+        return getArguments().get(1);
     }
 
     protected abstract R innerEvaluate(F lhs, S rhs);
