@@ -73,6 +73,10 @@ public class ScopeModel implements IModel {
         definitions.remove(name);
     }
 
+    public void clear() {
+        definitions.clear();
+    }
+
     public boolean hasDefinition(@NonNull String name) {
         var parts = name.split(TemplateModel.SEPARATOR);
         var localName = parts[0];
