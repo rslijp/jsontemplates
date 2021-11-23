@@ -8,6 +8,11 @@ public class ReflectionBasedNodeException extends RuntimeException {
         super(msg);
     }
 
+    static ReflectionBasedNodeException lazyInitNotAllowed(Class node, String fieldName) {
+        return new ReflectionBasedNodeException(
+                String.format("Field %s cannot be lazy initialized on node %s. LazyInitialized annotation is missing", node.getSimpleName(), fieldName));
+    }
+
     static ReflectionBasedNodeException noSuchField(Class node, String fieldName) {
         return new ReflectionBasedNodeException(
                 String.format("Field %s not found on node %s", node.getSimpleName(), fieldName));

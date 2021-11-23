@@ -197,6 +197,9 @@ public abstract class ReflectionBasedNodeImpl implements INode {
     }
 
     private void populateField(TemplateModel model, Field field) {
+        if (field.getAnnotation(LazyInitialized.class) != null) {
+            return;
+        }
         field.setAccessible(true);
         var fieldType = field.getType();
         if (INode.class.isAssignableFrom(fieldType)) {
@@ -204,6 +207,21 @@ public abstract class ReflectionBasedNodeImpl implements INode {
         } else {
             populateArgumentField(model, field);
         }
+    }
+
+    protected void initializeLazyField(TemplateModel model, String fieldName) {
+        Field field;
+        try {
+            field = nodeClass.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            throw ReflectionBasedNodeException.noSuchField(nodeClass, fieldName);
+        }
+        if (field.getAnnotation(LazyInitialized.class) == null) {
+            throw ReflectionBasedNodeException.lazyInitNotAllowed(nodeClass, fieldName);
+        }
+        field.setAccessible(true);
+        populateArgumentField(model, field);
+
     }
 
     @SneakyThrows
