@@ -11,8 +11,16 @@
     
     <groupId>nl.softcause</groupId>
     <artifactId>json-templates-bundle</artifactId>
-    <version>0.1.0-alpha</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub rslijp Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/rslijp/jsontemplates</url>
+        </repository>
+    </distributionManagement>
 
     <name>JSON templates</name>
 
